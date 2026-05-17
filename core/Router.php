@@ -18,6 +18,36 @@ class Router {
             echo 'Landing page tidak ditemukan.';
             return;
         }
+        if (strpos($uri, '/pendaftaran/pilih-jalur') !== false) {
+            $view = __DIR__ . '/../app/views/pendaftaran/pilih_jalur.php';
+            if (file_exists($view)) {
+                require $view;
+                return;
+            }
+        }
+        
+        if (strpos($uri, '/pendaftaran/form') !== false) {
+            $view = __DIR__ . '/../app/views/pendaftaran/form.php';
+            if (file_exists($view)) {
+                require $view;
+                return;
+            }
+        }
+        if (strpos($uri, '/auth/login') !== false) {
+            $view = __DIR__ . '/../app/views/auth/login.php';
+            if (file_exists($view)) {
+                require $view;
+                return;
+            }
+        }
+
+        if (strpos($uri, '/keluarga/dashboard') !== false) {
+            $view = __DIR__ . '/../app/views/keluarga/dashboard.php';
+            if (file_exists($view)) {
+                require $view;
+                return;
+            }
+        }
 
         // default
         echo 'Router Berjalan';
