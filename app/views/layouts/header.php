@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="<?= BASEURL; ?>/css/custom.css">
     <link rel="stylesheet" href="<?= BASEURL; ?>/css/landing.css">
+    <link rel="stylesheet" href="<?= BASEURL; ?>/css/pendaftaran.css">
     <!-- AOS CSS -->
 <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css">
 </head>
@@ -27,9 +28,9 @@
 
     <div class="collapse navbar-collapse" id="navbarMain">
       <ul class="navbar-nav ms-auto align-items-center">
-        <li class="nav-item"><a class="nav-link text-white px-3" href="#beranda">Beranda</a></li>
-        <li class="nav-item"><a class="nav-link text-white px-3" href="<?= BASEURL; ?>/pendaftaran/pilih-jalur">Portal Pendaftaran</a></li>
-        <li class="nav-item"><a class="nav-link text-white px-3" href="#panduan">Panduan Admisi</a></li>
+        <li class="nav-item"><a class="nav-link text-white px-3" href="<?= BASEURL; ?>/">Beranda</a></li>   
+        <li class="nav-item"><a class="nav-link text-white px-3" href="<?= BASEURL; ?>/pendaftaran/form">Portal Pendaftaran</a></li>
+        <li class="nav-item"><a class="nav-link text-white px-3" href="<?= BASEURL; ?>/#panduan">Panduan Admisi</a></li>
         <li class="nav-item ms-3"><a class="btn btn-icu-primary" href="<?= BASEURL; ?>/auth/login">Sign In</a></li>
       </ul>
     </div>
