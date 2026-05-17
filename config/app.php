@@ -1,5 +1,4 @@
 <?php
-return [
-    'base_url' => 'http://localhost/sistem-icu/public',
-    'name' => 'Sistem Informasi ICU'
-];
+
+// Pastikan slash (/) di akhir atau polanya sesuai dengan struktur routingmu
+define('BASEURL', 'http://localhost/sigap-project/public');

@@ -1,0 +1,49 @@
+:root{
+  --bg: #000000;
+  --outer-border: #4a2e2e;
+  --card-bg: #0b0b0b;
+  --darkgreen: #0b5d40;
+  --teal: #13c898;
+  --white: #ffffff;
+  --inter-font: 'Inter', sans-serif;
+}
+
+body.landing-body{
+  font-family: var(--inter-font);
+  background-image: url('/assets/img/Bg_LandingPage.png');
+  background-size: cover;
+  background-position: center;
+  background-color: var(--bg);
+  color: var(--white);
+}
+
+.logo{ height:48px; }
+.palette-wrap{ padding: 20px; }
+.outer-card{
+  border-radius: 30px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  box-shadow: 0 6px 0 0 rgba(0,0,0,0.6), 0 0 0 8px var(--outer-border);
+}
+.inner-card{
+  border-radius: 18px;
+  background: var(--card-bg);
+  border: 2px solid rgba(255,255,255,0.06);
+}
+.title{
+  font-weight: 600;
+  font-size: 48px;
+  letter-spacing: 1px;
+}
+.circles .circle{
+  width: 80px; height: 80px; border-radius: 50%;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+}
+.circle.darkgreen{ background: var(--darkgreen); }
+.circle.white{ background: var(--white); }
+.circle.teal{ background: var(--teal); }
+
+@media (max-width: 576px){
+  .title{ font-size: 28px; }
+  .circles .circle{ width:60px; height:60px }
+  .outer-card{ border-radius: 20px }
+}
