@@ -1,0 +1,718 @@
+/* =============================================
+   LANDING.CSS — ICU Central Specialist Hospital
+   ============================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --darkgreen: #043622;
+  --midgreen: #0b5d40;
+  --teal: #14b8a6;
+  --teal-dark: #0f8577;
+  --teal-light: #ccfbf1;
+  --white: #ffffff;
+  --off-white: #f8faf9;
+  --text-dark: #0f1a15;
+  --text-muted: #6b7280;
+}
+
+/* =====================
+   Base
+   ===================== */
+body {
+  font-family: 'Plus Jakarta Sans', 'Segoe UI', sans-serif;
+}
+
+/* =====================
+   Navbar
+   ===================== */
+.nav-link-white,
+.nav-link-white:hover,
+.nav-link-white:focus,
+.nav-link-white.active {
+  color: #ffffff !important;
+  opacity: 0.9;
+  font-size: 0.9rem;
+  font-weight: 400;
+  transition: opacity 0.2s;
+}
+
+.nav-link-white:hover {
+  opacity: 1;
+}
+
+/* =====================
+   Hero Section
+   ===================== */
+.hero-section {
+  position: relative;
+  min-height: calc(100vh - 72px);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  overflow: hidden;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to bottom, rgba(4, 54, 34, 0.20) 0%, rgba(4, 15, 10, 0.65) 100%),
+    linear-gradient(to right, rgba(0, 0, 0, 0.70) 0%, rgba(0, 0, 0, 0.10) 60%);
+  z-index: 1;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  padding-top: 6rem;
+  padding-bottom: 6rem;
+}
+
+.hero-eyebrow {
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  color: var(--teal);
+}
+
+.hero-title {
+  font-size: clamp(2.8rem, 6vw, 4.4rem);
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.hero-subtitle {
+  font-size: clamp(2.8rem, 6vw, 4.4rem);
+  line-height: 1.05;
+  font-weight: 800;
+  color: var(--teal);
+  letter-spacing: -0.5px;
+  margin-top: 0.15rem;
+}
+
+.hero-desc {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  max-width: 560px;
+  opacity: 0.82;
+}
+
+.btn-hero {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--teal-dark);
+  color: var(--white);
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.25s, transform 0.2s, box-shadow 0.25s;
+  box-shadow: 0 4px 16px rgba(15, 133, 119, 0.35);
+}
+
+.btn-hero:hover {
+  background-color: var(--teal);
+  color: var(--white);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(20, 184, 166, 0.4);
+}
+
+/* =====================
+   Shared Section Elements
+   ===================== */
+.section-label {
+  font-size: 0.7rem;
+  letter-spacing: 2.5px;
+  color: var(--teal-dark);
+}
+
+.section-title {
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  line-height: 1.15;
+  color: var(--text-dark);
+}
+
+.section-divider {
+  width: 48px;
+  height: 3px;
+  background: var(--teal);
+  border-radius: 2px;
+}
+
+/* =====================
+   Layanan Spesialisasi
+   ===================== */
+.section-layanan {
+  background-color: #ffffff;
+  padding: 5rem 0 4rem;
+}
+
+/* Container layout */
+.layanan-container {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+/* Header: judul & deskripsi di kiri atas */
+.layanan-header {
+  max-width: 520px;
+}
+
+.layanan-title {
+  font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+  line-height: 1.1;
+  color: var(--darkgreen);
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-bottom: 1rem;
+}
+
+.layanan-desc {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #4b5563;
+  margin: 0;
+}
+
+/* Cards row: 4 kartu berjejer horizontal */
+.layanan-cards-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+}
+
+/* Card: minimalis, ikon atas, teks deskripsi */
+.card-layanan-item {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 2rem 1.5rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.25rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  transition: all 0.28s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-layanan-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(to right, var(--darkgreen), var(--midgreen));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.card-layanan-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(4, 54, 34, 0.10);
+  border-color: rgba(4, 54, 34, 0.18);
+}
+
+.card-layanan-item:hover::before {
+  transform: scaleX(1);
+}
+
+/* Ikon: outline tipis, hijau tua */
+.layanan-icon-wrap {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.55rem;
+  color: var(--midgreen);
+  border: 1.5px solid rgba(4, 54, 34, 0.15);
+  border-radius: 12px;
+  background: transparent;
+  flex-shrink: 0;
+}
+
+/* Agar SVG inline ikut warna midgreen */
+.layanan-icon-wrap svg {
+  width: 26px;
+  height: 26px;
+  color: var(--midgreen);
+  stroke: var(--midgreen);
+}
+
+
+/* Teks deskripsi kartu */
+.layanan-card-desc {
+  font-size: 0.875rem;
+  line-height: 1.65;
+  color: #4b5563;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 991px) {
+  .layanan-cards-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 575px) {
+  .layanan-cards-row {
+    grid-template-columns: 1fr;
+  }
+
+  .layanan-title {
+    font-size: 1.8rem;
+  }
+}
+
+/* =====================
+   Fasilitas & Layanan — Slider
+   ===================== */
+.section-fasilitas {
+  background-color: #edf7f2;
+  padding: 3.5rem 0 4rem;
+  overflow: hidden;
+}
+
+/* Header judul — centered */
+.fasilitas-header {
+  text-align: center;
+  padding: 0 2rem 2.75rem;
+}
+
+.fasilitas-main-title {
+  font-size: 2rem;
+  color: var(--darkgreen);
+  font-weight: 700;
+  margin: 0 0 0.75rem;
+}
+
+.fasilitas-header .section-divider {
+  margin: 0 auto;
+}
+
+/* ── Slider wrapper: full-width, panah di tepi ── */
+.fasilitas-slider-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* Panah navigasi di TEPI kiri/kanan viewport */
+.fasilitas-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  font-size: 2.2rem;
+  font-weight: 300;
+  color: var(--midgreen);
+  cursor: pointer;
+  line-height: 1;
+  z-index: 10;
+  padding: 0 1rem;
+  transition: opacity 0.2s, transform 0.2s;
+  opacity: 0.65;
+  user-select: none;
+}
+
+.fasilitas-nav:hover {
+  opacity: 1;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.fasilitas-prev {
+  left: 0.5rem;
+}
+
+.fasilitas-next {
+  right: 0.5rem;
+}
+
+/* ── Track ── */
+.fasilitas-track {
+  width: 100%;
+}
+
+.fasilitas-slide {
+  display: none;
+}
+
+.fasilitas-slide.active {
+  display: block;
+  animation: fadeSlide 0.4s ease;
+}
+
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ── Konten slide: teks kiri + gambar kanan ── */
+.fasilitas-slide-content {
+  display: flex;
+  align-items: center;
+  min-height: 420px;
+  padding: 0 5rem;
+  /* ruang untuk arrow kiri-kanan */
+  gap: 0;
+}
+
+/* Sisi teks: 45% lebar */
+.fasilitas-text-side {
+  flex: 0 0 45%;
+  max-width: 45%;
+  padding-right: 3rem;
+}
+
+/* Ikon kecil outline */
+.fasilitas-icon-box {
+  font-size: 1.4rem;
+  color: var(--midgreen);
+  margin-bottom: 1.25rem;
+  line-height: 1;
+}
+
+/* Judul slide: teal, besar */
+.fasilitas-slide-title {
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: var(--midgreen);
+  margin-bottom: 1.5rem;
+  line-height: 1.25;
+}
+
+/* Deskripsi: lebih besar & longgar */
+.fasilitas-slide-desc {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #374151;
+  margin: 0;
+}
+
+/* Sisi gambar: 55% lebar, gambar besar ke kanan */
+.fasilitas-img-side {
+  flex: 0 0 55%;
+  max-width: 55%;
+}
+
+.fasilitas-slide-img {
+  width: 100%;
+  height: 360px;
+  object-fit: cover;
+  border-radius: 18px;
+  display: block;
+  box-shadow: 0 6px 20px rgba(4, 54, 34, 0.1);
+}
+
+/* ── Dots indicator ── */
+.fasilitas-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+}
+
+.fasilitas-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(11, 93, 64, 0.22);
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.25s;
+}
+
+.fasilitas-dot.active {
+  background: var(--midgreen);
+  width: 22px;
+  border-radius: 4px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 991px) {
+  .fasilitas-slide-content {
+    padding: 0 3.5rem;
+    min-height: 340px;
+  }
+
+  .fasilitas-text-side {
+    flex: 0 0 48%;
+    max-width: 48%;
+    padding-right: 2rem;
+  }
+
+  .fasilitas-img-side {
+    flex: 0 0 52%;
+    max-width: 52%;
+  }
+
+  .fasilitas-slide-img {
+    height: 300px;
+  }
+}
+
+@media (max-width: 767px) {
+  .fasilitas-slide-content {
+    flex-direction: column;
+    padding: 0 3rem;
+    min-height: auto;
+    gap: 1.5rem;
+  }
+
+  .fasilitas-text-side,
+  .fasilitas-img-side {
+    flex: 0 0 100%;
+    max-width: 100%;
+    padding-right: 0;
+  }
+
+  .fasilitas-slide-img {
+    height: 220px;
+  }
+}
+
+
+
+
+
+/* =====================
+   Panduan Administrasi
+   ===================== */
+.section-panduan {
+  background-color: #ffffff;
+  padding: 4rem 0 4.5rem;
+}
+
+.panduan-container {
+  max-width: 1100px;
+}
+
+.panduan-row {
+  display: flex;
+  align-items: center;
+  gap: 3.5rem;
+}
+
+/* Kolom teks: ~50% */
+.panduan-text-col {
+  flex: 0 0 50%;
+  max-width: 50%;
+}
+
+.panduan-title-main {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 800;
+  color: var(--darkgreen);
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+  margin-bottom: 0;
+  text-transform: uppercase;
+}
+
+.panduan-title-sub {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 800;
+  color: var(--midgreen);
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+  margin-bottom: 1.25rem;
+  text-transform: uppercase;
+}
+
+.panduan-desc {
+  font-size: 0.92rem;
+  line-height: 1.75;
+  color: #374151;
+  margin-bottom: 1.25rem;
+}
+
+.panduan-list {
+  margin-bottom: 0.5rem;
+}
+
+.panduan-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.9rem;
+  color: #374151;
+  margin-bottom: 0.6rem;
+}
+
+.panduan-check-icon {
+  color: var(--midgreen);
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.btn-panduan {
+  display: inline-flex;
+  align-items: center;
+  background: transparent;
+  color: var(--midgreen);
+  border: 1.5px solid var(--midgreen);
+  padding: 0.55rem 1.4rem;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.25s;
+  letter-spacing: 0.2px;
+}
+
+.btn-panduan:hover {
+  background: var(--midgreen);
+  color: #ffffff;
+}
+
+/* Kolom gambar: ~50% */
+.panduan-img-col {
+  flex: 0 0 48%;
+  max-width: 48%;
+}
+
+.panduan-img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 14px;
+  display: block;
+  box-shadow: 0 8px 24px rgba(4, 54, 34, 0.1);
+}
+
+/* =====================
+   Footer
+   ===================== */
+.site-footer {
+  background-color: #043622;
+}
+
+.footer-main {
+  padding: 3rem 0 2.5rem;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: start;
+}
+
+/* Judul kolom footer */
+.footer-col-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.6rem;
+}
+
+.footer-title-underline {
+  width: 36px;
+  height: 2.5px;
+  background: #ffffff;
+  border-radius: 2px;
+  margin-bottom: 1.25rem;
+}
+
+/* Peta */
+.footer-map-wrap {
+  width: 100%;
+  height: 220px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* Kontak list */
+.footer-contact-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.footer-contact-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.footer-contact-icon {
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  color: #ffffff;
+  margin-top: 1px;
+}
+
+/* Copyright bar */
+.footer-copyright {
+  background-color: #043622;
+  text-align: center;
+  padding: 0.85rem 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+.footer-copyright p {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.65);
+  margin: 0;
+}
+
+/* =====================
+   Responsive Panduan + Footer
+   ===================== */
+@media (max-width: 991px) {
+  .panduan-row {
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .panduan-text-col,
+  .panduan-img-col {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-content {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+
+  .panduan-img {
+    height: 220px;
+  }
+}
