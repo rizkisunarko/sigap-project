@@ -1,49 +1,532 @@
-:root{
-  --bg: #000000;
-  --outer-border: #4a2e2e;
-  --card-bg: #0b0b0b;
-  --darkgreen: #0b5d40;
-  --teal: #13c898;
+/* =============================================
+   LANDING.CSS — ICU Central Specialist Hospital
+   ============================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --darkgreen: #043622;
+  --midgreen: #0b5d40;
+  --teal: #14b8a6;
+  --teal-dark: #0f8577;
+  --teal-light: #ccfbf1;
   --white: #ffffff;
-  --inter-font: 'Inter', sans-serif;
+  --off-white: #f8faf9;
+  --text-dark: #0f1a15;
+  --text-muted: #6b7280;
 }
 
-body.landing-body{
-  font-family: var(--inter-font);
-  background-image: url('/assets/img/Bg_LandingPage.png');
+/* =====================
+   Base
+   ===================== */
+body {
+  font-family: 'Plus Jakarta Sans', 'Segoe UI', sans-serif;
+}
+
+/* =====================
+   Navbar
+   ===================== */
+.nav-link-white,
+.nav-link-white:hover,
+.nav-link-white:focus,
+.nav-link-white.active {
+  color: #ffffff !important;
+  opacity: 0.9;
+  font-size: 0.9rem;
+  font-weight: 400;
+  transition: opacity 0.2s;
+}
+
+.nav-link-white:hover {
+  opacity: 1;
+}
+
+/* =====================
+   Hero Section
+   ===================== */
+.hero-section {
+  position: relative;
+  min-height: calc(100vh - 72px);
   background-size: cover;
   background-position: center;
-  background-color: var(--bg);
+  background-repeat: no-repeat;
+  overflow: hidden;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to bottom, rgba(4, 54, 34, 0.35) 0%, rgba(4, 15, 10, 0.82) 100%),
+    linear-gradient(to right, rgba(0, 0, 0, 0.88) 0%, rgba(0, 0, 0, 0.25) 60%);
+  z-index: 1;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  padding-top: 6rem;
+  padding-bottom: 6rem;
+}
+
+.hero-eyebrow {
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  color: var(--teal);
+}
+
+.hero-title {
+  font-size: clamp(2.8rem, 6vw, 4.4rem);
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.hero-subtitle {
+  font-size: clamp(2.8rem, 6vw, 4.4rem);
+  line-height: 1.05;
+  font-weight: 800;
+  color: var(--teal);
+  letter-spacing: -0.5px;
+  margin-top: 0.15rem;
+}
+
+.hero-desc {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  max-width: 560px;
+  opacity: 0.82;
+}
+
+.btn-hero {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--teal-dark);
   color: var(--white);
-}
-
-.logo{ height:48px; }
-.palette-wrap{ padding: 20px; }
-.outer-card{
-  border-radius: 30px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  box-shadow: 0 6px 0 0 rgba(0,0,0,0.6), 0 0 0 8px var(--outer-border);
-}
-.inner-card{
-  border-radius: 18px;
-  background: var(--card-bg);
-  border: 2px solid rgba(255,255,255,0.06);
-}
-.title{
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
   font-weight: 600;
-  font-size: 48px;
-  letter-spacing: 1px;
+  text-decoration: none;
+  transition: background-color 0.25s, transform 0.2s, box-shadow 0.25s;
+  box-shadow: 0 4px 16px rgba(15, 133, 119, 0.35);
 }
-.circles .circle{
-  width: 80px; height: 80px; border-radius: 50%;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
-}
-.circle.darkgreen{ background: var(--darkgreen); }
-.circle.white{ background: var(--white); }
-.circle.teal{ background: var(--teal); }
 
-@media (max-width: 576px){
-  .title{ font-size: 28px; }
-  .circles .circle{ width:60px; height:60px }
-  .outer-card{ border-radius: 20px }
+.btn-hero:hover {
+  background-color: var(--teal);
+  color: var(--white);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(20, 184, 166, 0.4);
+}
+
+/* =====================
+   Shared Section Elements
+   ===================== */
+.section-label {
+  font-size: 0.7rem;
+  letter-spacing: 2.5px;
+  color: var(--teal-dark);
+}
+
+.section-title {
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  line-height: 1.15;
+  color: var(--text-dark);
+}
+
+.section-divider {
+  width: 48px;
+  height: 3px;
+  background: var(--teal);
+  border-radius: 2px;
+}
+
+/* =====================
+   Layanan Spesialisasi
+   ===================== */
+.section-layanan {
+  background-color: var(--off-white);
+}
+
+.card-layanan-item {
+  background: var(--white);
+  border: 1px solid rgba(4, 54, 34, 0.08);
+  border-radius: 16px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-layanan-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(to right, var(--teal-dark), var(--teal));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.card-layanan-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 32px rgba(4, 54, 34, 0.1);
+  border-color: rgba(20, 184, 166, 0.25);
+}
+
+.card-layanan-item:hover::before {
+  transform: scaleX(1);
+}
+
+.layanan-icon {
+  width: 48px;
+  height: 48px;
+  background: var(--teal-light);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  color: var(--teal-dark);
+}
+
+/* New: layout for layanan section to match design */
+.section-layanan .container {
+  padding-top: 4.5rem;
+  padding-bottom: 4.5rem;
+}
+
+.section-layanan .section-label {
+  color: var(--midgreen);
+  font-weight: 700;
+}
+
+.section-layanan .section-title {
+  color: var(--midgreen);
+  font-size: 3rem;
+  line-height: 1.03;
+  margin-top: 0.35rem;
+  letter-spacing: -0.5px;
+}
+
+.card-layanan-item {
+  padding: 2rem 1.5rem;
+  box-shadow: 0 6px 18px rgba(4, 54, 34, 0.06);
+  border-radius: 12px;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.card-layanan-item .layanan-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-layanan-item h6 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.card-layanan-item p {
+  color: #4b5563;
+  font-size: 0.95rem;
+  margin-top: auto;
+}
+
+/* responsive grid: 4 cols on lg, 2 on md */
+.section-layanan .row.g-3>.col-sm-6 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 992px) {
+  .section-layanan .col-lg-5 {
+    max-width: 41.666667%;
+  }
+
+  .section-layanan .col-lg-7 {
+    max-width: 58.333333%;
+  }
+
+  .section-layanan .col-lg-7 .row>div {
+    flex: 0 0 24%;
+    max-width: 24%;
+  }
+
+  .section-layanan .row {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 991px) {
+  .section-layanan .section-title {
+    font-size: 2rem;
+  }
+}
+
+
+.layanan-card-title {
+  font-size: 0.95rem;
+  color: var(--text-dark);
+  margin-bottom: 0.5rem;
+}
+
+/* =====================
+   Fasilitas & Layanan
+   ===================== */
+.section-fasilitas {
+  background-color: var(--white);
+}
+
+.fasilitas-icon-badge {
+  width: 52px;
+  height: 52px;
+  background: var(--teal-light);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: var(--teal-dark);
+}
+
+.fasilitas-item-title {
+  font-size: 1.5rem;
+  color: var(--text-dark);
+  margin-bottom: 0.75rem;
+}
+
+.fasilitas-features li {
+  font-size: 0.9rem;
+  color: #4b5563;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.text-teal {
+  color: var(--teal-dark) !important;
+}
+
+.fasilitas-img-wrapper {
+  position: relative;
+}
+
+.fasilitas-img {
+  width: 100%;
+  height: 360px;
+  object-fit: cover;
+  box-shadow: 0 20px 48px rgba(4, 54, 34, 0.15);
+}
+
+.fasilitas-img-badge {
+  position: absolute;
+  bottom: -16px;
+  left: 24px;
+  background: var(--darkgreen);
+  color: var(--teal);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.5rem 1.1rem;
+  border-radius: 50px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  letter-spacing: 0.3px;
+}
+
+.fasilitas-item {
+  padding-bottom: 3rem;
+}
+
+/* =====================
+   Panduan Administrasi
+   ===================== */
+.section-panduan {
+  background-color: var(--darkgreen);
+}
+
+.section-panduan .section-label {
+  color: rgba(20, 184, 166, 0.75);
+}
+
+.section-panduan .section-divider {
+  background: rgba(20, 184, 166, 0.5);
+}
+
+.text-white-75 {
+  color: rgba(255, 255, 255, 0.75) !important;
+}
+
+.panduan-check {
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  background: rgba(20, 184, 166, 0.18);
+  border: 1px solid rgba(20, 184, 166, 0.4);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  color: var(--teal);
+  margin-top: 1px;
+}
+
+.btn-panduan {
+  display: inline-flex;
+  align-items: center;
+  background: transparent;
+  color: var(--teal);
+  border: 1.5px solid var(--teal);
+  padding: 0.65rem 1.6rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.25s;
+}
+
+.btn-panduan:hover {
+  background: var(--teal);
+  color: var(--darkgreen);
+  transform: translateX(3px);
+}
+
+.panduan-img-wrapper {
+  position: relative;
+}
+
+.panduan-img {
+  width: 100%;
+  height: 420px;
+  object-fit: cover;
+  box-shadow: 0 24px 56px rgba(0, 0, 0, 0.4);
+}
+
+.panduan-stat-card {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.97);
+  border-radius: 14px;
+  padding: 0.9rem 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  min-width: 170px;
+}
+
+.panduan-stat-1 {
+  bottom: 32px;
+  left: -28px;
+}
+
+.panduan-stat-2 {
+  top: 32px;
+  right: -20px;
+}
+
+.stat-icon {
+  width: 40px;
+  height: 40px;
+  background: var(--teal-light);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  color: var(--teal-dark);
+  flex-shrink: 0;
+}
+
+.stat-num {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--darkgreen);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.stat-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* =====================
+   Stats Strip
+   ===================== */
+.section-stats {
+  background: var(--midgreen);
+}
+
+.stat-big-num {
+  font-size: 2.6rem;
+  font-weight: 800;
+  color: var(--white);
+  margin-bottom: 0.25rem;
+  line-height: 1;
+}
+
+.stat-big-num span {
+  font-size: 1.4rem;
+  color: var(--teal);
+}
+
+.stat-big-label {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.65);
+  margin: 0;
+}
+
+/* =====================
+   Footer
+   ===================== */
+footer {
+  background-color: #0a1512 !important;
+}
+
+/* =====================
+   Responsive
+   ===================== */
+@media (max-width: 991px) {
+  .panduan-stat-1 {
+    left: 12px;
+  }
+
+  .panduan-stat-2 {
+    right: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-content {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+
+  .fasilitas-img,
+  .panduan-img {
+    height: 260px;
+  }
+
+  .panduan-stat-card {
+    position: relative;
+    bottom: auto;
+    left: auto;
+    top: auto;
+    right: auto;
+    display: inline-flex;
+    margin-top: 1rem;
+    margin-right: 0.5rem;
+  }
 }

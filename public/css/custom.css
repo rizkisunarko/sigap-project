@@ -1,27 +1,40 @@
-/* Variabel Warna dari Color Palette */
+/* Variabel Warna Global */
 :root {
-    --primary-icu: #06442d;      /* Hijau Tua Medis */
-    --secondary-icu: #14b8a6;    /* Hijau Toska / Teal */
-    --light-icu: #ffffff;        /* Putih */
+    --primary-icu: #0b5d40;
+    --secondary-icu: #13c898;
+    --light-icu: #ffffff;
 }
 
+/* Typography Global */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: #333333;
 }
 
-/* Helper Class */
-.bg-primary-icu { background-color: var(--primary-icu) !important; }
-.text-primary-icu { color: var(--primary-icu) !important; }
-.bg-secondary-icu { background-color: var(--secondary-icu) !important; }
-.text-secondary-icu { color: var(--secondary-icu) !important; }
+/* Helper Classes */
+.bg-primary-icu {
+    background-color: var(--primary-icu) !important;
+}
 
-/* Desain Tombol Custom */
+.text-primary-icu {
+    color: var(--primary-icu) !important;
+}
+
+.bg-secondary-icu {
+    background-color: var(--secondary-icu) !important;
+}
+
+.text-secondary-icu {
+    color: var(--secondary-icu) !important;
+}
+
+/* Tombol Global */
 .btn-icu-primary {
     background-color: var(--primary-icu);
     color: var(--light-icu);
     border: 1px solid var(--primary-icu);
 }
+
 .btn-icu-primary:hover {
     background-color: #042f1f;
     color: var(--light-icu);
@@ -32,24 +45,18 @@ body {
     color: var(--light-icu);
     border: 1px solid var(--secondary-icu);
 }
+
 .btn-icu-secondary:hover {
-    background-color: #0d9488;
+    background-color: #0dad86;
     color: var(--light-icu);
 }
 
-/* Banner Hero Layout */
-.hero-section {
-    background: linear-gradient(135deg, rgba(6, 68, 45, 0.95) 0%, rgba(11, 15, 25, 0.9) 100%), url('../assets/img/Bg_LandingPage.png');
-    background-size: cover;
-    background-position: center;
-    color: var(--light-icu);
-    padding: 100px 0;
-}
-
+/* Card Hover Effect */
 .card-layanan {
     transition: all 0.3s ease;
 }
+
 .card-layanan:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
 }
