@@ -6,7 +6,7 @@ create table data_alergi (
 
 create table akun_pengguna (
 	id_pengguna int auto_increment primary key,
-    username varbinary(255),
+    username varchar(100) unique,
     password varbinary(255)
 );
 

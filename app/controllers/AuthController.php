@@ -5,8 +5,4 @@ class AuthController extends Controller {
         // Memanggil view
         echo 'Ini halaman index dari AuthController';
     }
-
-    function autentikasiUser($username, $password) {
-        
-    }
 }
