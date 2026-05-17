@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="<?= BASEURL; ?>/css/custom.css">
     <link rel="stylesheet" href="<?= BASEURL; ?>/css/landing.css">
+    <!-- AOS CSS -->
+<link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css">
 </head>
 <body>
 
@@ -33,3 +35,4 @@
     </div>
   </div>
 </nav>
+
