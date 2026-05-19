@@ -1,6 +1,6 @@
 <?php
 class Router {
-    // Simple router: serve landing view for root, otherwise fallback text
+    // Simple router: use controllers to serve views
     public static function run() {
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         $uri = rtrim($uri, '/');
@@ -10,46 +10,41 @@ class Router {
         $isRoot = $uri === '' || $uri === '/' || $uri === "/$projectDir" || $uri === "/$projectDir/" || basename($uri) === 'public' || basename($uri) === 'index.php';
 
         if ($isRoot) {
-            $view = __DIR__ . '/../app/views/landing.php';
-            if (file_exists($view)) {
-                require $view;
-                return;
-            }
-            echo 'Landing page tidak ditemukan.';
+            require_once __DIR__ . '/../app/controllers/HomeController.php';
+            $controller = new HomeController();
+            $controller->index();
             return;
         }
+        
         if (strpos($uri, '/pendaftaran/pilih-jalur') !== false) {
-            $view = __DIR__ . '/../app/views/pendaftaran/pilih_jalur.php';
-            if (file_exists($view)) {
-                require $view;
-                return;
-            }
+            require_once __DIR__ . '/../app/controllers/PendaftaranController.php';
+            $controller = new PendaftaranController();
+            $controller->pilihJalur();
+            return;
         }
         
         if (strpos($uri, '/pendaftaran/form') !== false) {
-            $view = __DIR__ . '/../app/views/pendaftaran/form.php';
-            if (file_exists($view)) {
-                require $view;
-                return;
-            }
+            require_once __DIR__ . '/../app/controllers/PendaftaranController.php';
+            $controller = new PendaftaranController();
+            $controller->form();
+            return;
         }
+        
         if (strpos($uri, '/auth/login') !== false) {
-            $view = __DIR__ . '/../app/views/auth/login.php';
-            if (file_exists($view)) {
-                require $view;
-                return;
-            }
+            require_once __DIR__ . '/../app/controllers/AuthController.php';
+            $controller = new AuthController();
+            $controller->login();
+            return;
         }
 
         if (strpos($uri, '/keluarga/dashboard') !== false) {
-            $view = __DIR__ . '/../app/views/keluarga/dashboard.php';
-            if (file_exists($view)) {
-                require $view;
-                return;
-            }
+            require_once __DIR__ . '/../app/controllers/KeluargaController.php';
+            $controller = new KeluargaController();
+            $controller->dashboard();
+            return;
         }
 
         // default
-        echo 'Router Berjalan';
+        echo 'Router Berjalan: Halaman tidak ditemukan (404)';
     }
 }
