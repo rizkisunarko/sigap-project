@@ -1,0 +1,26 @@
+{
+  "name": "sigap-project",
+  "version": "1.0.0",
+  "description": "Sistem informasi berbasis web untuk pengelolaan data pasien ICU, pencatatan kondisi pasien oleh perawat, serta pemantauan kondisi pasien oleh keluarga secara daring.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rizkisunarko/sigap-project.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/rizkisunarko/sigap-project/issues"
+  },
+  "homepage": "https://github.com/rizkisunarko/sigap-project#readme",
+  "dependencies": {
+    "express": "^5.2.1",
+    "qrcode-terminal": "^0.12.0",
+    "whatsapp-web.js": "^1.34.7"
+  }
+}

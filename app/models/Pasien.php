@@ -34,5 +34,28 @@
             $query->bindParam(":id_pengguna", $id_pengguna);
             $query->execute();
         }
+
+        // ambil semua data alergi
+        public function ambilDataAlergi() {
+            $query = $this->db->prepare(
+                "SELECT id_alergi, nama_alergi from data_alergi"
+            );
+            $query->execute();
+            $hasil = $query->fetchAll(PDO::FETCH_ASSOC);
+            return $hasil;
+        }
+
+        // menambahkan data pada tabel alergi pasien, 
+        // bisa saja pada 1 pasien mempunyai lebih dari 1 alergi
+        public function alergiPasien($id_pasien, $id_alergi) {
+            $query = $this->db->prepare(
+                "INSERT into alergi_pasien
+                (id_alergi, id_pasien) 
+                values (:id_alergi, :id_pasien)"
+            );
+            $query->bindParam(":id_alergi", $id_alergi);
+            $query->bindParam(":id_pasien", $id_pasien);
+            $query->execute();
+        }
     }
 ?>
