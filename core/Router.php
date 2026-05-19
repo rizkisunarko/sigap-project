@@ -49,6 +49,47 @@ class Router {
             }
         }
 
+        // Hidden route for Perawat/Staff
+        if (strpos($uri, '/portal-staff/login') !== false) {
+            $view = __DIR__ . '/../app/views/portal-staff/login.php';
+            if (file_exists($view)) {
+                require $view;
+                return;
+            }
+        }
+
+        if (strpos($uri, '/perawat/dashboard') !== false) {
+            $view = __DIR__ . '/../app/views/perawat/dashboard.php';
+            if (file_exists($view)) {
+                require $view;
+                return;
+            }
+        }
+
+        if (strpos($uri, '/perawat/input_data_pasien') !== false) {
+            $view = __DIR__ . '/../app/views/perawat/input_data_pasien.php';
+            if (file_exists($view)) {
+                require $view;
+                return;
+            }
+        }
+
+        if (strpos($uri, '/perawat/tambah_pasien') !== false) {
+            $view = __DIR__ . '/../app/views/perawat/tambah_pasien.php';
+            if (file_exists($view)) {
+                require $view;
+                return;
+            }
+        }
+
+        if (strpos($uri, '/perawat/direktori_pengguna') !== false) {
+            $view = __DIR__ . '/../app/views/perawat/direktori_pengguna.php';
+            if (file_exists($view)) {
+                require $view;
+                return;
+            }
+        }
+
         // default
         echo 'Router Berjalan';
     }
