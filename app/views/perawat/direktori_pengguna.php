@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sesi Aktif Perawat - Data Pasien Aktif</title>
+    <title>Direktori Pengguna - Hospital</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
@@ -13,32 +13,31 @@
         .sidebar a:hover, .sidebar a.active { background-color: rgba(255,255,255,0.1); color: #fff; }
         .sidebar-bottom { background-color: #20c997; padding: 16px 24px; color: #fff; }
         
-        .header-info { padding: 25px 40px 15px; border-bottom: 1px solid #eaeaea; }
-        .header-title-top { font-size: 1.05rem; color: #111; font-weight: 700; margin-bottom: 2px; text-transform: uppercase; }
-        .header-subtitle { font-size: 0.75rem; font-weight: 600; color: #777; text-transform: uppercase; }
+        .header-info { padding: 25px 40px 15px; border-bottom: 2px solid #f1f1f1; }
+        .header-title-top { font-size: 1.25rem; color: #111; font-weight: 800; margin-bottom: 2px; text-transform: uppercase; }
+        .header-subtitle { font-size: 0.85rem; font-weight: 600; color: #777; }
         
         .content-area { padding: 30px 40px; }
-        .section-title { font-size: 1.25rem; font-weight: 800; color: #111; text-transform: uppercase; margin: 0; }
         
-        .search-box { position: relative; width: 280px; }
-        .search-box input { border-radius: 20px; padding: 8px 15px 8px 35px; border: 1px solid #ddd; font-size: 0.8rem; width: 100%; color: #555; }
+        .search-box { position: relative; width: 300px; margin-bottom: 20px; }
+        .search-box input { border-radius: 6px; padding: 8px 15px 8px 35px; border: 1px solid #ddd; font-size: 0.85rem; width: 100%; color: #555; }
         .search-box input:focus { border-color: #20c997; box-shadow: 0 0 0 0.2rem rgba(32, 201, 151, 0.25); outline: none; }
         .search-box input::placeholder { color: #aaa; }
         .search-box i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #aaa; font-size: 0.85rem; }
         
-        .table-container { border: 1px solid #52cba1; border-radius: 8px; overflow: hidden; margin-top: 25px; }
+        .table-container { border: 1px solid #52cba1; border-radius: 8px; overflow: hidden; }
         .table-custom { margin-bottom: 0; }
-        .table-custom th { background-color: #fafafa; font-weight: 700; color: #555; border-bottom: 1px solid #eaeaea; font-size: 0.7rem; padding: 14px 20px; }
-        .table-custom td { font-size: 0.8rem; vertical-align: middle; padding: 14px 20px; border-bottom: 1px solid #eaeaea; color: #111; font-weight: 700; }
+        .table-custom th { background-color: #f9f9f9; font-weight: 700; color: #444; border-bottom: 1px solid #eaeaea; font-size: 0.7rem; padding: 16px; text-align: center; }
+        .table-custom th.text-start { text-align: left; }
+        .table-custom td { font-size: 0.75rem; vertical-align: middle; padding: 16px; border-bottom: 1px solid #eaeaea; color: #111; font-weight: 700; text-align: center; }
+        .table-custom td.text-start { text-align: left; font-weight: 800; }
         .table-custom tr:last-child td { border-bottom: none; }
         
-        .text-kritis { color: #dc3545; font-weight: 800; font-size: 0.75rem; text-transform: uppercase; }
-        .action-icons { display: flex; justify-content: center; gap: 16px; align-items: center; border-bottom: none !important; }
-        .action-icons a { text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
-        .action-icons i { font-size: 1.2rem; cursor: pointer; color: #111; margin: 0; transition: color 0.2s; }
-        .action-icons a:hover i { color: #555; }
+        .action-icons { display: flex; justify-content: center; gap: 12px; }
+        .action-icons i { font-size: 1.1rem; cursor: pointer; color: #555; }
+        .action-icons i:hover { color: #111; }
         .action-icons i.text-danger { color: #dc3545; }
-        .action-icons a:hover i.text-danger { color: #a71d2a; }
+        .action-icons i.text-danger:hover { color: #b02a37; }
     </style>
 </head>
 <body>
@@ -51,9 +50,9 @@
         </div>
         <div class="flex-grow-1">
             <a href="<?= BASEURL; ?>/perawat/dashboard">Dashboard</a>
-            <a href="<?= BASEURL; ?>/perawat/input_data_pasien" class="active">Lihat Pasien Aktif</a>
+            <a href="<?= BASEURL; ?>/perawat/input_data_pasien">Lihat Pasien Aktif</a>
             <a href="<?= BASEURL; ?>/perawat/tambah_pasien">Tambah Pasien</a>
-            <a href="<?= BASEURL; ?>/perawat/direktori_pengguna">Direktori Pengguna</a>
+            <a href="<?= BASEURL; ?>/perawat/direktori_pengguna" class="active">Direktori Pengguna</a>
         </div>
         <div class="sidebar-bottom d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center gap-2">
@@ -72,42 +71,41 @@
         
         <!-- Header Info -->
         <div class="header-info">
-            <div class="header-title-top">SESI AKTIF PERAWAT</div>
-            <div class="header-subtitle">UNIT PERAWATAN INSENTIF</div>
+            <div class="header-title-top">DASHBOARD AKUN</div>
+            <div class="header-subtitle">Kumpulan Data Pasien</div>
         </div>
 
         <!-- Content Area -->
         <div class="content-area">
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="section-title">DATA PASIEN AKTIF</div>
-                <div class="search-box">
-                    <i class="bi bi-search"></i>
-                    <input type="text" placeholder="Cari MRN atau Nama...">
-                </div>
+            <div class="search-box">
+                <i class="bi bi-search"></i>
+                <input type="text" placeholder="Cari Nama...">
             </div>
 
             <div class="table-container bg-white">
                 <table class="table table-custom">
                     <thead>
                         <tr>
-                            <th style="width: 15%;">NO.BED</th>
-                            <th style="width: 25%;">NAMA LENGKAP</th>
-                            <th style="width: 25%;">MRN (REKAM MEDIS)</th>
-                            <th style="width: 15%;">STATUS KLINIS</th>
-                            <th style="width: 20%;">AKSI</th>
+                            <th style="width: 15%;">MRN</th>
+                            <th class="text-start" style="width: 25%;">NAMA LENGKAP</th>
+                            <th style="width: 15%;">JENIS KELAMIN</th>
+                            <th style="width: 15%;">ASAL</th>
+                            <th style="width: 15%;">NO.HP KELUARGA</th>
+                            <th style="width: 15%;">AKSI</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php for($i=0; $i<10; $i++): ?>
+                        <?php for($i=0; $i<9; $i++): ?>
                         <tr>
-                            <td class="ps-4">BED 01</td>
-                            <td>AHMAD SUCIPTO</td>
                             <td>ICU-2024-001</td>
-                            <td class="text-kritis">KRITIS</td>
-                            <td class="action-icons">
-                                <a href="<?= BASEURL; ?>/perawat/detail_pasien"><i class="bi bi-eye"></i></a>
-                                <a href="<?= BASEURL; ?>/perawat/edit_pasien"><i class="bi bi-pencil-square"></i></a>
-                                <a href="<?= BASEURL; ?>/perawat/pengaturan"><i class="bi bi-gear-fill"></i></a>
+                            <td class="text-start">AHMAD SUCIPTO</td>
+                            <td>L</td>
+                            <td>JOMBANG</td>
+                            <td>082156345634</td>
+                            <td class="action-icons d-flex justify-content-center border-0" style="padding-top: 20px;">
+                                <a href="<?= BASEURL; ?>/perawat/detail_pasien" class="text-dark"><i class="bi bi-eye"></i></a>
+                                <a href="<?= BASEURL; ?>/perawat/edit_pasien" class="text-dark"><i class="bi bi-pencil-square"></i></a>
+                                <a href="<?= BASEURL; ?>/perawat/pengaturan" class="text-dark"><i class="bi bi-gear-fill"></i></a>
                                 <a href="<?= BASEURL; ?>/perawat/keluar_pasien"><i class="bi bi-box-arrow-right text-danger"></i></a>
                             </td>
                         </tr>
