@@ -6,9 +6,9 @@
         // daftar akun 
         public function daftarAkun($email, $password, &$msg) {
             $query = $this->db->prepare(
-                "SELECT email from akun_pengguna where email = :email"
+                "SELECT username from akun_pengguna where username = :username"
             );
-            $query->bindParam(":email", $email);
+            $query->bindParam(":username", $username);
             $query->execute();
             $hasil = $query->fetch(PDO::FETCH_ASSOC);
 
@@ -16,15 +16,15 @@
                 $data_password = password_hash($password, PASSWORD_BCRYPT);
     
                 $query = $this->db->prepare(
-                    "INSERT into akun_pengguna (email, password) 
-                    values (:email, :password)"
+                    "INSERT into akun_pengguna (username, password) 
+                    values (:username, :password)"
                 );
-                $query->bindParam(":email", $email);
+                $query->bindParam(":username", $username);
                 $query->bindParam(":password", $data_password);
                 $query->execute();
                 $msg =  "Berhasil";
             } else {
-                $msg = "Email anda sudah terdaftar";
+                $msg = "Username anda sudah terdaftar";
             }
         }
     }
