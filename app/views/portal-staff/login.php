@@ -3,96 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Perawat - Hospital</title>
+    <title>Portal Staff - Hospital</title>
     <link rel="stylesheet" href="<?= BASEURL; ?>/css/bootstrap.min.css">
     <style>
         body {
-            background-color: #f8f9fa;
+            background-color: #ffffff; /* Pure white background like screenshot */
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
         .navbar-custom {
-            background-color: #0b4a33;
+            background-color: #043622; /* Dark teal/green color */
             color: white;
-            padding: 15px 30px;
+            padding: 0 40px;
+            height: 72px;
+            display: flex;
+            align-items: center;
         }
         .navbar-custom .navbar-brand {
             color: white;
-            font-size: 24px;
+            font-size: 28px;
             font-weight: bold;
             letter-spacing: 2px;
             font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
         }
         .login-container {
-            min-height: calc(100vh - 70px);
+            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 48px 20px;
+            background-color: #ffffff;
         }
         .login-card {
             background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 1px solid rgba(4, 54, 34, 0.15); /* Light border matching theme */
+            border-radius: 24px; /* More rounded corners like screenshot */
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.05); /* Premium soft shadow */
             width: 100%;
-            max-width: 600px;
-            padding: 0;
+            max-width: 820px;
+            margin: 0 auto;
+            overflow: hidden;
         }
         .login-header {
             text-align: center;
-            padding: 20px;
-            border-bottom: 1px solid #0b4a33;
+            padding: 24px 20px;
+            border-bottom: 1.5px solid rgba(4, 54, 34, 0.15); /* Sleek dividing line */
         }
         .login-header h2 {
-            color: #0b4a33;
+            color: #043622;
             margin: 0;
             font-family: 'Courier New', Courier, monospace;
-            font-weight: bold;
+            font-weight: 700;
+            font-size: 38px;
+            letter-spacing: 0.5px;
         }
         .login-body {
-            padding: 40px 50px 30px;
+            padding: 48px 120px 56px; /* Generous side padding to match screenshot gutters */
         }
+        
+        /* Adjust for smaller screens to stay fully responsive */
+        @media (max-width: 768px) {
+            .login-body {
+                padding: 32px 40px 40px;
+            }
+        }
+        
         .form-group label {
-            color: #0b4a33;
-            font-weight: 500;
-            margin-bottom: 8px;
-            font-size: 14px;
+            color: #043622; /* Dark green label matching header */
+            font-weight: 600; /* Semi-bold */
+            margin-bottom: 10px;
+            font-size: 15px;
+            display: inline-block;
         }
         .form-control-custom {
-            border: 1px solid #48c7a3;
-            border-radius: 20px;
-            padding: 10px 20px;
+            border: 1.5px solid #13c898; /* Thin light-green border from screenshot */
+            border-radius: 999px; /* Pill-shaped */
+            padding: 12px 26px;
             width: 100%;
             outline: none;
-            transition: all 0.3s;
+            transition: all 0.2s ease-in-out;
+            font-size: 16px;
+            color: #123; 
+            background-color: #fff;
         }
         .form-control-custom:focus {
-            border-color: #0b4a33;
-            box-shadow: 0 0 5px rgba(11, 74, 51, 0.3);
+            border-color: #043622;
+            box-shadow: 0 0 0 3px rgba(4, 54, 34, 0.1); /* Subtle premium focus ring */
         }
         .btn-custom {
-            background-color: #0b4a33;
+            background-color: #043622; /* Dark green button */
             color: white;
-            border-radius: 20px;
-            padding: 10px 40px;
+            border-radius: 999px; /* Pill-shaped button */
+            padding: 10px 48px;
             border: none;
-            font-weight: bold;
-            margin-top: 20px;
-            font-family: 'Courier New', Courier, monospace;
+            font-weight: 700;
+            margin-top: 15px;
+            font-size: 16px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-shadow: 0 6px 18px rgba(4, 54, 34, 0.15);
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
         }
         .btn-custom:hover {
-            background-color: #083826;
+            background-color: #0b5b3b;
             color: white;
+            transform: scale(1.02); /* Modern micro-interaction scale */
+            box-shadow: 0 8px 22px rgba(4, 54, 34, 0.25);
+        }
+        .btn-custom:active {
+            transform: scale(0.98);
         }
     </style>
 </head>
 <body>
 
     <!-- Header -->
-    <nav class="navbar-custom d-flex align-items-center">
-        <div class="d-flex align-items-center">
-            <!-- Icon -->
+    <nav class="navbar-custom">
+        <a href="<?= BASEURL; ?>" class="navbar-brand">
             <img src="<?= BASEURL; ?>/assets/img/logo.png" width="34" height="34" alt="Logo" class="d-inline-block align-text-top me-2">
-            <span class="navbar-brand mb-0 h1">HOSPITAL</span>
-        </div>
+            <span>HOSPITAL</span>
+        </a>
     </nav>
 
     <!-- Main Content -->
@@ -105,15 +142,15 @@
                 <form action="<?= BASEURL; ?>/perawat/dashboard" method="GET">
                     <div class="form-group mb-4">
                         <label for="namaLengkap">Nama Lengkap :</label>
-                        <input type="text" id="namaLengkap" name="namaLengkap" class="form-control-custom" required>
+                        <input type="text" id="namaLengkap" name="namaLengkap" class="form-control-custom" autocomplete="off" required>
                     </div>
                     <div class="form-group mb-4">
                         <label for="divisi">Divisi :</label>
-                        <input type="text" id="divisi" name="divisi" class="form-control-custom" required>
+                        <input type="text" id="divisi" name="divisi" class="form-control-custom" autocomplete="off" required>
                     </div>
                     <div class="form-group mb-4">
                         <label for="shift">Shift :</label>
-                        <input type="text" id="shift" name="shift" class="form-control-custom" required>
+                        <input type="text" id="shift" name="shift" class="form-control-custom" autocomplete="off" required>
                     </div>
                     <div class="text-center">
                         <button type="submit" class="btn btn-custom">Masuk</button>

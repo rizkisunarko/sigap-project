@@ -30,6 +30,14 @@ class Router {
             return;
         }
         
+        // Handle form submission (signature upload)
+        if (strpos($uri, '/pendaftaran/submit') !== false) {
+            require_once __DIR__ . '/../app/controllers/PendaftaranController.php';
+            $controller = new PendaftaranController();
+            $controller->submit();
+            return;
+        }
+        
         if (strpos($uri, '/auth/login') !== false) {
             require_once __DIR__ . '/../app/controllers/AuthController.php';
             $controller = new AuthController();
