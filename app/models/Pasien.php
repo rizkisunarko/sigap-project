@@ -123,5 +123,33 @@
             $query->bindParam(":id_pasien", $id_pasien);
             $query->execute();
         }
+
+        // untuk tampilan kumpulan data pasien
+        public function tampilSemuaDataPasien() {
+            $query = $this->db->prepare(
+                "SELECT rk.id_rekam_medis, ddp.nama_lengkap, ddp.jenis_kelamin, ddp.asal, ddpr.no_hp
+                from rekam_medis rk
+                join data_diri_pasien ddp on ddp.id_pasien = rk.id_pasien
+                left join data_diri_pengantar ddpr on ddpr.id_pasien = ddp.id_pasien;"
+            );
+            $query->execute();
+            $hasil = $query->fetchAll(PDO::FETCH_ASSOC);
+            return $hasil;
+        }
+
+        // riwayat perkembangan pasien
+        public function riwayatPerkembanganPasien($id_rekam_medis) {
+            $query = $this->db->prepare(
+                "SELECT op.detak_jantung, op.oksigen, op.suhu_tubuh, op.tekanan_darah, op.waktu_catat, op.kondisi, dp.nama_lengkap
+                from observasi_pasien op
+                join data_perawat dp on dp.id_perawat = op.id_perawat
+                where op.id_rekam_medis = :id_rekam_medis
+                order by op.waktu_catat;"
+            );
+            $query->bindParam(":id_rekam_medis", $id_rekam_medis);
+            $query->execute();
+            $hasil = $query->fetchAll(PDO::FETCH_ASSOC);
+            return $hasil;
+        }
     }
 ?>

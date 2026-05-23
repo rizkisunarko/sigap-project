@@ -6,7 +6,7 @@ create table data_alergi (
 
 create table akun_pengguna (
 	id_pengguna int auto_increment primary key,
-    username varchar(100) unique,
+    username varchar(255),
     password varbinary(255)
 );
 
@@ -18,29 +18,29 @@ create table status_bed (
 
 create table data_perawat (
 	id_perawat int auto_increment primary key,
-    nama_lengkap varchar(100)
+    nama_lengkap varchar(100),
+    id_divisi int,
+    foreign key (id_divisi) references divisi_perawat(id_divisi)
 );
 
 create table divisi_perawat (
 	id_divisi int auto_increment primary key,
     nama_divisi varchar(100),
-    id_perawat int,
-    foreign key (id_perawat) references data_perawat(id_perawat)
+    id_shift int,
+    foreign key (id_shift) references tugas_shift(id_shift)
 );
 
 create table tugas_shift (
 	id_shift int auto_increment primary key,
     nomor_shift int(1),
-    id_divisi int,
-    foreign key (id_divisi) references divisi_perawat(id_divisi)
+    id_detail_s int,
+    foreign key (id_detail_s) references detail_tugas_shift(id_detail_s)
 );
 
 create table detail_tugas_shift (
 	id_detail_s int auto_increment primary key,
     tugas_shift varchar(100),
-    tenggat time,
-    id_shift int,
-    foreign key (id_shift) references tugas_shift(id_shift)
+    tenggat time
 );
 
 create table data_diri_pasien (
@@ -69,7 +69,7 @@ create table alergi_pasien (
     foreign key(id_alergi) references data_alergi(id_alergi)
 );
 
-create table data_diri_pegantar (
+create table data_diri_pengantar (
 	id_pengantar int auto_increment primary key,
     nama_lengkap varchar(255),
     status_wali varchar(50),
@@ -126,3 +126,10 @@ create table observasi_pasien (
     foreign key (id_perawat) references data_perawat(id_perawat)
 );
 
+create table log_tugas_shift (
+	id_log int auto_increment primary key,
+    status_dilakukan enum('sudah', 'belum'),
+    tgl_dan_waktu datetime,
+    id_detail_s int,
+    foreign key (id_detail_s) references detail_tugas_shift(id_detail_s)
+);

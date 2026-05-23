@@ -56,7 +56,8 @@
 </footer>
 
 <script src="<?= BASEURL; ?>/js/jquery.min.js"></script>
-<script src="<?= BASEURL; ?>/js/bootstrap.bundle.min.js"></script>
+<!-- Use Bootstrap JS from CDN because local bootstrap.bundle is empty/missing -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="<?= BASEURL; ?>/js/custom.js"></script>
 
 <!-- Smooth scroll + navbar active -->
