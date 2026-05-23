@@ -1,9 +1,20 @@
 <?php 
-    
     require_once "../../core/Model.php";
 
     class RekamMedis extends Model {
         
+        // ambil rekam medis
+        public function ambilRekamMedis($id_rekam_medis) {
+            $query = $this->db->prepare(
+                "SELECT id_pasien, tanggal_masuk, tanggal_keluar, urgensi
+                from rekam_medis where id_rekam_medis = :id_rekam_medis"
+            );       
+            $query->bindParam(":id_rekam_medis", $id_rekam_medis);
+            $query->execute();
+            $hasil = $query->fetch(PDO::FETCH_ASSOC);
+            return $hasil;  
+        }
+
         // memasukkan data pada tabel rekam medis pasien
         public function IsiRekamMedis(
             $id_pasien, $tangal_masuk, $tanggal_keluar, $urgensi

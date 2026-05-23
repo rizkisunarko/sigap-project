@@ -2,6 +2,6 @@
 return [
     'host' => 'localhost',
     'db_name' => 'sistem_icu',
-    'user' => '',
-    'password' => ''
+    'user' => 'root',
+    'password' => 'root'
 ];
