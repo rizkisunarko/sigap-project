@@ -109,7 +109,6 @@ create table bed (
 create table observasi_pasien (
 	id_observasi int auto_increment primary key,
     detak_jantung varchar(50),
-    oksigen varchar(50),
     suhu_tubuh varchar(50),
     tekanan_darah varchar(50),
     detail_kondisi text,
@@ -124,6 +123,16 @@ create table observasi_pasien (
     foreign key (id_rekam_medis) references rekam_medis(id_rekam_medis),
     foreign key (id_bed) references bed(id_bed),
     foreign key (id_perawat) references data_perawat(id_perawat)
+);
+
+create table hasil_lab (
+	id_hasil_lab int auto_increment primary key,
+    ph_darah varchar(50),
+    hb varchar(50),
+    gula_darah varchar(50),
+    tgl_isi datetime,
+    id_observasi int,
+    foreign key (id_observasi) references observasi_pasien(id_observasi)
 );
 
 create table log_tugas_shift (

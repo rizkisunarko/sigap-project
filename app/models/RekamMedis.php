@@ -35,6 +35,7 @@
             $query->bindParam(":tanggal_masuk", $tanggal_masuk);
             $query->bindParam(":tanggal_keluar", $tanggal_keluar);
             $query->bindParam(":urgensi", $urgensi);
+            $query->execute();
         }
 
         // edit data rekam medis
@@ -55,6 +56,7 @@
             $query->bindParam(":tanggal_keluar", $tanggal_keluar);
             $query->bindParam(":urgensi", $urgensi);
             $query->bindParam(":id_rekam_medis", $id_rekam_medis);
+            $query->execute();
         }
 
         // hapus record rekam medis
@@ -63,6 +65,7 @@
                 "DELETE from rekam_medis where id_rekam_medis = :id_rekam_medis"
             );
             $query->bindParam(":id_rekam_medis", $id_rekam_medis);
+            $query->execute();
         }
     }
 ?>
