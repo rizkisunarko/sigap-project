@@ -1,3 +1,37 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_staff'])) {
+    $_SESSION['user']['nama'] = $_POST['namaLengkap'];
+    $_SESSION['user']['role'] = $_POST['divisi'];
+    $_SESSION['user']['shift'] = $_POST['shift'];
+    
+    // Redirect untuk menghindari form resubmission (PRG Pattern)
+    $clean_url = strtok($_SERVER["REQUEST_URI"], '?');
+    header("Location: " . $clean_url);
+    exit;
+}
+
+// Tangkap data dari dummy login halaman portal-staff (jika ada disubmit melalui metode GET)
+if (isset($_GET['namaLengkap'])) {
+    $_SESSION['user']['nama'] = $_GET['namaLengkap'];
+    $_SESSION['user']['role'] = $_GET['divisi'];
+    $_SESSION['user']['shift'] = $_GET['shift'];
+    
+    // Hilangkan parameter GET di URL agar tidak nimpa data saat form POST (EDIT)
+    $clean_url = strtok($_SERVER["REQUEST_URI"], '?');
+    header("Location: " . $clean_url);
+    exit;
+}
+
+// Mendapatkan data user dari session atau menggunakan default untuk tampilan frontend
+$userName = !empty($_SESSION['user']['nama']) ? $_SESSION['user']['nama'] : 'FIRMANSYAH';
+$userRole = !empty($_SESSION['user']['role']) ? $_SESSION['user']['role'] : 'FRONT OFFICER';
+$userShift = !empty($_SESSION['user']['shift']) ? $_SESSION['user']['shift'] : 'Shift 2';
+$userInitial = strtoupper(substr($userName, 0, 1));
+?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -23,6 +57,7 @@
         .value-huge { font-size: 3.2rem; font-weight: 800; line-height: 1; letter-spacing: -1px; }
         .text-urgensi { font-weight: 700; color: #333; }
         .text-rusak { color: #000; }
+        .task-checked { text-decoration: line-through; color: #888 !important; }
         
         .progress-bar-custom { height: 10px; background-color: #eaeaea; border-radius: 5px; overflow: hidden; }
         .progress-bar-fill { height: 100%; background-color: #20c997; }
@@ -44,13 +79,13 @@
         </div>
         <div class="sidebar-bottom d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center gap-2">
-                <div class="rounded-circle bg-dark text-white d-flex justify-content-center align-items-center" style="width: 32px; height: 32px; font-weight: bold; font-size: 0.9rem;">F</div>
+                <div class="rounded-circle bg-dark text-white d-flex justify-content-center align-items-center" style="width: 32px; height: 32px; font-weight: bold; font-size: 0.9rem;"><?= htmlspecialchars($userInitial) ?></div>
                 <div style="line-height: 1.2;">
-                    <div class="fw-bold" style="font-size: 0.75rem;">FIRMANSYAH</div>
-                    <div style="font-size: 0.65rem;">FRONT OFFICER</div>
+                    <div class="fw-bold text-uppercase" style="font-size: 0.75rem; max-width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="<?= htmlspecialchars($userName) ?>"><?= htmlspecialchars($userName) ?></div>
+                    <div class="text-uppercase" style="font-size: 0.65rem; max-width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="<?= htmlspecialchars($userRole) ?>"><?= htmlspecialchars($userRole) ?></div>
                 </div>
             </div>
-            <i class="bi bi-gear-fill fs-6" style="cursor: pointer; color: black;"></i>
+            <i class="bi bi-gear-fill fs-6" style="cursor: pointer; color: black;" data-bs-toggle="modal" data-bs-target="#staffAccountModal"></i>
         </div>
     </div>
 
@@ -184,26 +219,26 @@
             </div>
 
             <div class="task-card">
-                <div style="width: 50%; font-size: 0.8rem; font-weight: 600;">MEMERIKSA KONDISI PASIEN DI AWAL SHIFT</div>
+                <div class="task-text" style="width: 50%; font-size: 0.8rem; font-weight: 600; transition: all 0.3s;">MEMERIKSA KONDISI PASIEN DI AWAL SHIFT</div>
                 <div style="width: 30%; text-align: center; font-size: 0.8rem; font-weight: 600;">10.00 WIB</div>
                 <div style="width: 20%; display: flex; justify-content: center;">
-                    <div style="width: 18px; height: 18px; border: 1px solid #111; border-radius: 4px;"></div>
+                    <input type="checkbox" class="task-checkbox" style="width: 18px; height: 18px; cursor: pointer; border-radius: 4px;">
                 </div>
             </div>
 
             <div class="task-card">
-                <div style="width: 50%; font-size: 0.8rem; font-weight: 600;">Cek AGD Bed 01</div>
+                <div class="task-text" style="width: 50%; font-size: 0.8rem; font-weight: 600; transition: all 0.3s;">Cek AGD Bed 01</div>
                 <div style="width: 30%; text-align: center; font-size: 0.8rem; font-weight: 600;">12.00 WIB</div>
                 <div style="width: 20%; display: flex; justify-content: center;">
-                    <div style="width: 18px; height: 18px; border: 1px solid #111; border-radius: 4px;"></div>
+                    <input type="checkbox" class="task-checkbox" style="width: 18px; height: 18px; cursor: pointer; border-radius: 4px;">
                 </div>
             </div>
 
             <div class="task-card mb-0">
-                <div style="width: 50%; font-size: 0.8rem; font-weight: 600;">Miring Kanan All Bed</div>
+                <div class="task-text" style="width: 50%; font-size: 0.8rem; font-weight: 600; transition: all 0.3s;">Miring Kanan All Bed</div>
                 <div style="width: 30%; text-align: center; font-size: 0.8rem; font-weight: 600;">13.00 WIB</div>
                 <div style="width: 20%; display: flex; justify-content: center;">
-                    <div style="width: 18px; height: 18px; border: 1px solid #111; border-radius: 4px;"></div>
+                    <input type="checkbox" class="task-checkbox" style="width: 18px; height: 18px; cursor: pointer; border-radius: 4px;">
                 </div>
             </div>
 
@@ -211,6 +246,104 @@
 
     </div>
 </div>
+
+<!-- Modal Staff Account -->
+<div class="modal fade" id="staffAccountModal" tabindex="-1" aria-labelledby="staffAccountModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+        <div class="modal-content px-4 py-3" style="border-radius: 12px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+            <div class="modal-header border-0 pb-1 px-0 d-flex justify-content-between align-items-center">
+                <h5 class="modal-title m-0" id="staffAccountModalLabel" style="color: #043622; font-weight: 800; font-size: 1.1rem;">STAFF ACCOUNT</h5>
+                <span data-bs-dismiss="modal" aria-label="Close" style="cursor: pointer; font-size: 1.25rem; font-weight: 800; color: #111;">X</span>
+            </div>
+            <hr style="border-top: 1.5px solid #111; opacity: 1; margin: 0 0 35px 0;">
+            
+            <div class="modal-body p-0">
+                <form id="staffUpdateForm" method="POST" action="">
+                    <input type="hidden" name="update_staff" value="1">
+                    <div class="row mb-3 align-items-center">
+                        <label class="col-4 col-form-label text-end pe-2" style="color: #043622; font-weight: 500; font-size: 0.85rem;">Nama Lengkap :</label>
+                        <div class="col-8 ps-2">
+                            <input type="text" name="namaLengkap" class="form-control" value="<?= htmlspecialchars($userName) ?>" readonly style="border-radius: 50px; border: 1px solid #111; padding: 4px 15px; font-weight: 500; font-size: 0.85rem;">
+                        </div>
+                    </div>
+                    <div class="row mb-3 align-items-center">
+                        <label class="col-4 col-form-label text-end pe-2" style="color: #043622; font-weight: 500; font-size: 0.85rem;">Divisi :</label>
+                        <div class="col-8 ps-2">
+                            <select name="divisi" class="form-select text-dark" disabled style="border-radius: 50px; border: 1px solid #111; padding: 4px 15px; font-weight: 500; font-size: 0.85rem; background-color: #fff; cursor: not-allowed; background-image: none;">
+                                <option value="Rekam Medis" <?= ($userRole == 'Rekam Medis') ? 'selected' : '' ?>>Rekam Medis</option>
+                                <option value="Front Officer" <?= ($userRole == 'Front Officer') ? 'selected' : '' ?>>Front Officer</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row align-items-center mb-4">
+                        <label class="col-4 col-form-label text-end pe-2" style="color: #043622; font-weight: 500; font-size: 0.85rem;">Shift :</label>
+                        <div class="col-8 ps-2">
+                            <?php $currentShift = $_SESSION['user']['shift'] ?? 'Shift 2'; ?>
+                            <select name="shift" class="form-select text-dark" disabled style="border-radius: 50px; border: 1px solid #111; padding: 4px 15px; font-weight: 500; font-size: 0.85rem; background-color: #fff; cursor: not-allowed; background-image: none;">
+                                <option value="Shift 1" <?= ($currentShift == 'Shift 1') ? 'selected' : '' ?>>Shift 1</option>
+                                <option value="Shift 2" <?= ($currentShift == 'Shift 2') ? 'selected' : '' ?>>Shift 2</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-column gap-3 align-items-center mt-5 mb-2">
+                        <button type="button" id="btnEditSave" class="btn" style="background-color: #20c997; color: white; border: 1px solid #111; font-weight: 700; width: 65%; border-radius: 8px; padding: 8px; font-size: 0.85rem; letter-spacing: 0.5px;">EDIT</button>
+                        <a href="<?= BASEURL; ?>/portal-staff/login" class="btn" style="background-color: #dc3545; color: white; border: 1px solid #111; font-weight: 700; width: 65%; border-radius: 8px; padding: 8px; font-size: 0.85rem; text-decoration: none; text-align: center; letter-spacing: 0.5px;">LOGOUT</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const btnEditSave = document.getElementById('btnEditSave');
+        const updateForm = document.getElementById('staffUpdateForm');
+        const inputs = updateForm.querySelectorAll('input[type="text"], select');
+
+        btnEditSave.addEventListener('click', function() {
+            if (btnEditSave.innerText.trim() === 'EDIT') {
+                // Berubah ke mode edit
+                inputs.forEach(input => {
+                    input.removeAttribute('readonly');
+                    input.removeAttribute('disabled');
+                    input.style.borderColor = '#13c898';
+                    input.style.boxShadow = '0 0 5px rgba(19, 200, 152, 0.5)';
+                    input.style.backgroundColor = '#fdfdfd';
+                });
+                
+                // Kembalikan ikon panah dan kursor untuk dropdown
+                const selects = updateForm.querySelectorAll('select');
+                selects.forEach(sel => {
+                    sel.style.backgroundImage = '';
+                    sel.style.cursor = 'pointer';
+                });
+
+                inputs[0].focus();
+                btnEditSave.innerText = 'SAVE';
+            } else {
+                // Submit data
+                updateForm.submit();
+            }
+        });
+
+        // Handle Shift Task Checkboxes
+        const taskCheckboxes = document.querySelectorAll('.task-checkbox');
+        taskCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const taskCard = this.closest('.task-card');
+                const taskText = taskCard.querySelector('.task-text');
+                if (this.checked) {
+                    taskText.classList.add('task-checked');
+                } else {
+                    taskText.classList.remove('task-checked');
+                }
+            });
+        });
+    });
+</script>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

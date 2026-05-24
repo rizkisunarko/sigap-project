@@ -1,3 +1,24 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_staff'])) {
+    $_SESSION['user']['nama'] = $_POST['namaLengkap'];
+    $_SESSION['user']['role'] = $_POST['divisi'];
+    $_SESSION['user']['shift'] = $_POST['shift'];
+    
+    // Redirect untuk menghindari form resubmission (PRG Pattern)
+    $clean_url = strtok($_SERVER["REQUEST_URI"], '?');
+    header("Location: " . $clean_url);
+    exit;
+}
+
+// Mendapatkan data user dari session atau menggunakan default untuk tampilan frontend
+$userName = !empty($_SESSION['user']['nama']) ? $_SESSION['user']['nama'] : 'FIRMANSYAH';
+$userRole = !empty($_SESSION['user']['role']) ? $_SESSION['user']['role'] : 'FRONT OFFICER';
+$userInitial = strtoupper(substr($userName, 0, 1));
+?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -73,13 +94,13 @@
         </div>
         <div class="sidebar-bottom d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center gap-2">
-                <div class="rounded-circle bg-dark text-white d-flex justify-content-center align-items-center" style="width: 32px; height: 32px; font-weight: bold; font-size: 0.9rem;">F</div>
+                <div class="rounded-circle bg-dark text-white d-flex justify-content-center align-items-center" style="width: 32px; height: 32px; font-weight: bold; font-size: 0.9rem;"><?= htmlspecialchars($userInitial) ?></div>
                 <div style="line-height: 1.2;">
-                    <div class="fw-bold" style="font-size: 0.75rem;">FIRMANSYAH</div>
-                    <div style="font-size: 0.65rem;">FRONT OFFICER</div>
+                    <div class="fw-bold text-uppercase" style="font-size: 0.75rem; max-width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="<?= htmlspecialchars($userName) ?>"><?= htmlspecialchars($userName) ?></div>
+                    <div class="text-uppercase" style="font-size: 0.65rem; max-width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="<?= htmlspecialchars($userRole) ?>"><?= htmlspecialchars($userRole) ?></div>
                 </div>
             </div>
-            <i class="bi bi-gear-fill fs-6" style="cursor: pointer; color: black;"></i>
+            <i class="bi bi-gear-fill fs-6" style="cursor: pointer; color: black;" data-bs-toggle="modal" data-bs-target="#staffAccountModal"></i>
         </div>
     </div>
 
@@ -295,10 +316,20 @@
 
         // Save canvas to base64 before form submit
         form.addEventListener('submit', function(e) {
+            e.preventDefault(); // Mencegah reload halaman untuk memunculkan modal
             if (hasDrawn) {
                 ttdInput.value = canvas.toDataURL('image/png');
+                
+                // Tampilkan Modal Success
+                const modalEl = document.getElementById('successDaftarModal');
+                if (modalEl) {
+                    const modal = new bootstrap.Modal(modalEl);
+                    modal.show();
+                }
+                
+                // Jika integrasi backend:
+                // fetch(form.action, { method: 'POST', body: new FormData(form) }).then(...)
             } else {
-                e.preventDefault();
                 alert("Mohon isi tanda tangan wali terlebih dahulu.");
             }
         });
@@ -306,5 +337,104 @@
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Modal Staff Account -->
+<div class="modal fade" id="staffAccountModal" tabindex="-1" aria-labelledby="staffAccountModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+        <div class="modal-content px-4 py-3" style="border-radius: 12px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+            <div class="modal-header border-0 pb-1 px-0 d-flex justify-content-between align-items-center">
+                <h5 class="modal-title m-0" id="staffAccountModalLabel" style="color: #043622; font-weight: 800; font-size: 1.1rem;">STAFF ACCOUNT</h5>
+                <span data-bs-dismiss="modal" aria-label="Close" style="cursor: pointer; font-size: 1.25rem; font-weight: 800; color: #111;">X</span>
+            </div>
+            <hr style="border-top: 1.5px solid #111; opacity: 1; margin: 0 0 35px 0;">
+            
+            <div class="modal-body p-0">
+                <form id="staffUpdateForm" method="POST" action="">
+                    <input type="hidden" name="update_staff" value="1">
+                    <div class="row mb-3 align-items-center">
+                        <label class="col-4 col-form-label text-end pe-2" style="color: #043622; font-weight: 500; font-size: 0.85rem;">Nama Lengkap :</label>
+                        <div class="col-8 ps-2">
+                            <input type="text" name="namaLengkap" class="form-control" value="<?= htmlspecialchars($userName) ?>" readonly style="border-radius: 50px; border: 1px solid #111; padding: 4px 15px; font-weight: 500; font-size: 0.85rem;">
+                        </div>
+                    </div>
+                    <div class="row mb-3 align-items-center">
+                        <label class="col-4 col-form-label text-end pe-2" style="color: #043622; font-weight: 500; font-size: 0.85rem;">Divisi :</label>
+                        <div class="col-8 ps-2">
+                            <select name="divisi" class="form-select text-dark" disabled style="border-radius: 50px; border: 1px solid #111; padding: 4px 15px; font-weight: 500; font-size: 0.85rem; background-color: #fff; cursor: not-allowed; background-image: none;">
+                                <option value="Rekam Medis" <?= ($userRole == 'Rekam Medis') ? 'selected' : '' ?>>Rekam Medis</option>
+                                <option value="Front Officer" <?= ($userRole == 'Front Officer') ? 'selected' : '' ?>>Front Officer</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row align-items-center mb-4">
+                        <label class="col-4 col-form-label text-end pe-2" style="color: #043622; font-weight: 500; font-size: 0.85rem;">Shift :</label>
+                        <div class="col-8 ps-2">
+                            <?php $currentShift = $_SESSION['user']['shift'] ?? 'Shift 2'; ?>
+                            <select name="shift" class="form-select text-dark" disabled style="border-radius: 50px; border: 1px solid #111; padding: 4px 15px; font-weight: 500; font-size: 0.85rem; background-color: #fff; cursor: not-allowed; background-image: none;">
+                                <option value="Shift 1" <?= ($currentShift == 'Shift 1') ? 'selected' : '' ?>>Shift 1</option>
+                                <option value="Shift 2" <?= ($currentShift == 'Shift 2') ? 'selected' : '' ?>>Shift 2</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-column gap-3 align-items-center mt-5 mb-2">
+                        <button type="button" id="btnEditSave" class="btn" style="background-color: #20c997; color: white; border: 1px solid #111; font-weight: 700; width: 65%; border-radius: 8px; padding: 8px; font-size: 0.85rem; letter-spacing: 0.5px;">EDIT</button>
+                        <a href="<?= BASEURL; ?>/portal-staff/login" class="btn" style="background-color: #dc3545; color: white; border: 1px solid #111; font-weight: 700; width: 65%; border-radius: 8px; padding: 8px; font-size: 0.85rem; text-decoration: none; text-align: center; letter-spacing: 0.5px;">LOGOUT</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const btnEditSave = document.getElementById('btnEditSave');
+        const updateForm = document.getElementById('staffUpdateForm');
+        const inputs = updateForm.querySelectorAll('input[type="text"], select');
+
+        btnEditSave.addEventListener('click', function() {
+            if (btnEditSave.innerText.trim() === 'EDIT') {
+                // Berubah ke mode edit
+                inputs.forEach(input => {
+                    input.removeAttribute('readonly');
+                    input.removeAttribute('disabled');
+                    input.style.borderColor = '#13c898';
+                    input.style.boxShadow = '0 0 5px rgba(19, 200, 152, 0.5)';
+                    input.style.backgroundColor = '#fdfdfd';
+                });
+                
+                // Kembalikan ikon panah dan kursor untuk dropdown
+                const selects = updateForm.querySelectorAll('select');
+                selects.forEach(sel => {
+                    sel.style.backgroundImage = '';
+                    sel.style.cursor = 'pointer';
+                });
+
+                inputs[0].focus();
+                btnEditSave.innerText = 'SAVE';
+            } else {
+                // Submit data
+                updateForm.submit();
+            }
+        });
+    });
+</script>
+
+<!-- Modal Success Daftar -->
+<div class="modal fade" id="successDaftarModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+        <div class="modal-content" style="border-radius: 12px; border: none; padding: 30px 20px;">
+            <div class="modal-body text-center">
+                <i class="bi bi-check-circle" style="font-size: 6rem; color: #20c997;"></i>
+                <h5 class="mt-4 mb-4" style="color: #111; font-weight: 700; font-size: 1.25rem;">DAFTAR BERHASIL</h5>
+                <div class="mt-4">
+                    <a href="<?= BASEURL; ?>/perawat/dashboard" class="btn" style="background-color: #20c997; color: #111; border: none; font-weight: 600; width: 140px; border-radius: 8px; padding: 8px 0; text-decoration: none;">KEMBALI</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
