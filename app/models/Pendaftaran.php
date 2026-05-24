@@ -2,6 +2,31 @@
     require_once "../../core/Model.php";
 
     class PendaftaranModel extends Model {
+
+        // verifikasi login keluarga
+        public function verifikasiLoginKeluarga($username, $password) {
+            $query = $this->db->prepare(
+                "SELECT id_pengguna, username, password
+                FROM akun_pengguna
+                WHERE username = :username
+                LIMIT 1"
+            );
+            $query->bindParam(":username", $username);
+            $query->execute();
+
+            $hasil = $query->fetch(PDO::FETCH_ASSOC);
+
+            if (empty($hasil)) {
+                return false;
+            }
+
+            if (!password_verify($password, $hasil['password'])) {
+                return false;
+            }
+
+            unset($hasil['password']);
+            return $hasil;
+        }
         
         // daftar akun 
         public function daftarAkun($email, $password, &$msg) {
