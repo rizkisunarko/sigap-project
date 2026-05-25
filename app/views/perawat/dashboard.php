@@ -93,8 +93,8 @@ $userInitial = strtoupper(substr($userName, 0, 1));
     <div class="flex-grow-1 p-5 overflow-auto" style="height: 100vh; background-color: #ffffff;">
         <!-- Header -->
         <div class="mb-4">
-            <h1 class="header-title">Shift 2 Front Officer & Rekam Medis</h1>
-            <p class="mb-0" style="font-size: 0.85rem; color: #444;">Sabtu, 11 Mei 2026</p>
+            <h1 class="header-title">Shift <?= htmlspecialchars($userShift) ?> <?= htmlspecialchars($userRole) ?></h1>
+            <p class="mb-0" style="font-size: 0.85rem; color: #444;"><?= date('l, d M Y') ?></p>
         </div>
 
         <!-- Stat Cards -->
@@ -102,14 +102,14 @@ $userInitial = strtoupper(substr($userName, 0, 1));
             <div class="col-md-4">
                 <div class="card stat-card h-100 p-4">
                     <div class="text-uppercase mb-2" style="font-size: 0.7rem; font-weight: 700; color: #111;">TOTAL PASIEN AKTIF</div>
-                    <div class="value-huge mb-4">05</div>
-                    <div class="mt-auto" style="font-size: 0.65rem; font-weight: 700; color: #555;">KAPASITAS : 12 BED</div>
+                    <div class="value-huge mb-4"><?= str_pad($data['pasien_aktif'], 2, '0', STR_PAD_LEFT) ?></div>
+                    <div class="mt-auto" style="font-size: 0.65rem; font-weight: 700; color: #555;">KAPASITAS : <?= htmlspecialchars($data['kapasitas']) ?> BED</div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card stat-card h-100 p-4">
                     <div class="text-uppercase mb-2" style="font-size: 0.7rem; font-weight: 700; color: #111;">KONDISI PASIEN KRITIS</div>
-                    <div class="value-huge text-danger mb-4">02</div>
+                    <div class="value-huge text-danger mb-4"><?= str_pad($data['pasien_kritis'], 2, '0', STR_PAD_LEFT) ?></div>
                     <div class="mt-auto" style="font-size: 0.65rem; font-weight: 700; color: #555;">LIHAT PASIEN &rarr;</div>
                 </div>
             </div>
@@ -138,41 +138,19 @@ $userInitial = strtoupper(substr($userName, 0, 1));
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td class="ps-4">BED 08</td>
-                        <td><span class="desk">Proses dekontaminasi ozon. Estimasi selesai 45 menit.</span></td>
-                        <td class="pe-4">STERILISASI</td>
-                    </tr>
-                    <tr>
-                        <td class="ps-4">BED 07</td>
-                        <td><span class="desk">Siap digunakan. Oksigen sentral dan monitor aktif.</span></td>
-                        <td class="pe-4">TERSEDIA</td>
-                    </tr>
-                    <tr>
-                        <td class="ps-4">BED 08</td>
-                        <td><span class="desk">Perbaikan fungsi pengereman dan hidrolik sisi kanan.</span></td>
-                        <td class="pe-4">MAINTENANCE</td>
-                    </tr>
-                    <tr>
-                        <td class="ps-4">BED 09</td>
-                        <td><span class="desk">Menunggu konfirmasi pemulangan pasien (Discharge).</span></td>
-                        <td class="pe-4">DIORDER</td>
-                    </tr>
-                    <tr>
-                        <td class="ps-4">BED 10</td>
-                        <td><span class="desk">Penggantian linen dan pembersihan rutin area bed.</span></td>
-                        <td class="pe-4">TERSEDIA</td>
-                    </tr>
-                    <tr>
-                        <td class="ps-4">BED 11</td>
-                        <td><span class="desk">Siap digunakan. Oksigen sentral dan monitor aktif.</span></td>
-                        <td class="pe-4">TERSEDIA</td>
-                    </tr>
-                    <tr>
-                        <td class="ps-4 border-bottom-0">BED 12</td>
-                        <td class="border-bottom-0"><span class="desk">Kerusakan pada sistem sensor monitor vital sign.</span></td>
-                        <td class="border-bottom-0 pe-4 text-rusak">RUSAK</td>
-                    </tr>
+                    <?php if (!empty($data['beds'])): ?>
+                        <?php foreach ($data['beds'] as $bed): ?>
+                            <tr>
+                                <td class="ps-4"><?= htmlspecialchars($bed['nomor_bed']) ?></td>
+                                <td><span class="desk"><?= htmlspecialchars($bed['detail_status']) ?></span></td>
+                                <td class="pe-4"><?= strtoupper($bed['status_bed']) ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td class="ps-4" colspan="3">Tidak ada data bed.</td>
+                        </tr>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
@@ -189,21 +167,19 @@ $userInitial = strtoupper(substr($userName, 0, 1));
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td class="ps-4">001</td>
-                        <td>DARMAYANA</td>
-                        <td class="pe-4 text-urgensi">TINGKAT 1</td>
-                    </tr>
-                    <tr>
-                        <td class="ps-4">002</td>
-                        <td>SUTIEH</td>
-                        <td class="pe-4 text-urgensi">TINGKAT 2</td>
-                    </tr>
-                    <tr>
-                        <td class="ps-4 border-bottom-0">003</td>
-                        <td class="border-bottom-0">MATTOHER</td>
-                        <td class="pe-4 border-bottom-0 text-urgensi">TINGKAT 2</td>
-                    </tr>
+                    <?php if (!empty($data['queue'])): ?>
+                        <?php $idx = 1; foreach ($data['queue'] as $q): ?>
+                            <tr>
+                                <td class="ps-4"><?= str_pad($idx++, 3, '0', STR_PAD_LEFT) ?></td>
+                                <td><?= htmlspecialchars($q['nama_lengkap']) ?></td>
+                                <td class="pe-4 text-urgensi"><?= strtoupper($q['urgensi']) ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td class="ps-4" colspan="3">Tidak ada antrean hari ini.</td>
+                        </tr>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
@@ -218,29 +194,17 @@ $userInitial = strtoupper(substr($userName, 0, 1));
                 <div style="width: 20%; text-align: center;">STATUS</div>
             </div>
 
-            <div class="task-card">
-                <div class="task-text" style="width: 50%; font-size: 0.8rem; font-weight: 600; transition: all 0.3s;">MEMERIKSA KONDISI PASIEN DI AWAL SHIFT</div>
-                <div style="width: 30%; text-align: center; font-size: 0.8rem; font-weight: 600;">10.00 WIB</div>
-                <div style="width: 20%; display: flex; justify-content: center;">
-                    <input type="checkbox" class="task-checkbox" style="width: 18px; height: 18px; cursor: pointer; border-radius: 4px;">
-                </div>
-            </div>
-
-            <div class="task-card">
-                <div class="task-text" style="width: 50%; font-size: 0.8rem; font-weight: 600; transition: all 0.3s;">Cek AGD Bed 01</div>
-                <div style="width: 30%; text-align: center; font-size: 0.8rem; font-weight: 600;">12.00 WIB</div>
-                <div style="width: 20%; display: flex; justify-content: center;">
-                    <input type="checkbox" class="task-checkbox" style="width: 18px; height: 18px; cursor: pointer; border-radius: 4px;">
-                </div>
-            </div>
-
-            <div class="task-card mb-0">
-                <div class="task-text" style="width: 50%; font-size: 0.8rem; font-weight: 600; transition: all 0.3s;">Miring Kanan All Bed</div>
-                <div style="width: 30%; text-align: center; font-size: 0.8rem; font-weight: 600;">13.00 WIB</div>
-                <div style="width: 20%; display: flex; justify-content: center;">
-                    <input type="checkbox" class="task-checkbox" style="width: 18px; height: 18px; cursor: pointer; border-radius: 4px;">
-                </div>
-            </div>
+            <?php if (!empty($data['tasks'])): ?>
+                <?php foreach ($data['tasks'] as $task): ?>
+                    <div class="task-card">
+                        <div class="task-text <?= ($task['status_dilakukan'] === 'sudah') ? 'task-checked' : '' ?>" style="width: 50%; font-size: 0.8rem; font-weight: 600; transition: all 0.3s;"><?= htmlspecialchars($task['tugas_shift']) ?></div>
+                        <div style="width: 30%; text-align: center; font-size: 0.8rem; font-weight: 600;"><?= date('H.i', strtotime($task['tenggat'])) ?> WIB</div>
+                        <div style="width: 20%; display: flex; justify-content: center;">
+                            <input type="checkbox" class="task-checkbox" style="width: 18px; height: 18px; cursor: pointer; border-radius: 4px;" <?= ($task['status_dilakukan'] === 'sudah') ? 'checked' : '' ?>>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
 
         </div>
 
@@ -288,7 +252,7 @@ $userInitial = strtoupper(substr($userName, 0, 1));
 
                     <div class="d-flex flex-column gap-3 align-items-center mt-5 mb-2">
                         <button type="button" id="btnEditSave" class="btn" style="background-color: #20c997; color: white; border: 1px solid #111; font-weight: 700; width: 65%; border-radius: 8px; padding: 8px; font-size: 0.85rem; letter-spacing: 0.5px;">EDIT</button>
-                        <a href="<?= BASEURL; ?>/portal-staff/login" class="btn" style="background-color: #dc3545; color: white; border: 1px solid #111; font-weight: 700; width: 65%; border-radius: 8px; padding: 8px; font-size: 0.85rem; text-decoration: none; text-align: center; letter-spacing: 0.5px;">LOGOUT</a>
+                        <a href="<?= BASEURL; ?>/portal-staff/logout" class="btn" style="background-color: #dc3545; color: white; border: 1px solid #111; font-weight: 700; width: 65%; border-radius: 8px; padding: 8px; font-size: 0.85rem; text-decoration: none; text-align: center; letter-spacing: 0.5px;">LOGOUT</a>
                     </div>
                 </form>
             </div>

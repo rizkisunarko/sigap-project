@@ -40,7 +40,7 @@
                     <span class="step-label">LANGKAH 3:</span>
                     <h3 class="step-title">Pilih Penjamin & Verifikasi Data</h3>
                     <p class="step-desc">
-                        "Pilih jenis penjamin (BPJS, Asuransi, atau Umum). Masukkan Nomor Kartu (JKN/Polis) atau NIK Pasien. Anda juga dapat mengunggah foto kartu untuk mempercepat proses verifikasi data dan pengecekan SEP otomatis."
+                        "Pilih jenis penjamin (BPJS, Asuransi, atau Umum). Masukkan Nomor Kartu (JKN/Polis) atau NIK Pasien."
                     </p>
                 </div>
             </div>

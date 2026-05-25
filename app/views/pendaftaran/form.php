@@ -6,7 +6,7 @@
         <h2 class="form-main-title">Daftar Akun</h2>
         <div class="form-title-divider"></div>
 
-        <form action="/pendaftaran/submit" method="POST">
+        <form action="<?= BASEURL; ?>/pendaftaran/submit" method="POST">
             
             <!-- AKUN PENGGUNA -->
             <div class="section-title">AKUN PENGGUNA</div>

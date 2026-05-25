@@ -1,5 +1,5 @@
 <?php 
-    require_once "../../core/Model.php";
+    require_once __DIR__ . "/../../core/Model.php";
 
     class KeluargaPasienModel extends Model {
 
@@ -9,7 +9,7 @@
             $no_hp, $alamat, $dokumen_ttd, $id_pasien 
         ) {
             $query = $this->db->prepare(
-                "INSERT into data_diri_pengantar
+                "INSERT into data_diri_pegantar
                 (nama_lengkap, status_wali, nik_wali,
                 no_hp, alamat, dokumen_ttd, id_pasien)
                 values (:nama_lengkap, :status_wali,
@@ -32,7 +32,7 @@
             $no_hp, $alamat, $dokumen_ttd, $id_pasien 
         ) {
             $query = $this->db->prepare(
-                "UPDATE data_diri_pengantar set
+                "UPDATE data_diri_pegantar set
                 nama_lengkap = :nama_lengkap, 
                 status_wali = :status_wali, 
                 nik_wali = :nik_wali,

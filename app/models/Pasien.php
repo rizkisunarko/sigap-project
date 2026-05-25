@@ -1,5 +1,5 @@
 <?php 
-    require_once "../../core/Model.php";
+    require_once __DIR__ . "/../../core/Model.php";
 
     class PasienModel extends Model {
 
@@ -57,7 +57,7 @@
                 golongan_darah = :golongan_darah,
                 kewarganegaraan = :kewarganegaraan, 
                 pekerjaan = :pekerjaan
-                where id_pasien = :id_pasien)"
+                where id_pasien = :id_pasien"
             );
             $query->bindParam(":nama_lengkap", $nama_lengkap);
             $query->bindParam(":nik", $nik);
@@ -130,7 +130,7 @@
                 "SELECT rk.id_rekam_medis, ddp.nama_lengkap, ddp.jenis_kelamin, ddp.asal, ddpr.no_hp
                 from rekam_medis rk
                 join data_diri_pasien ddp on ddp.id_pasien = rk.id_pasien
-                left join data_diri_pengantar ddpr on ddpr.id_pasien = ddp.id_pasien;"
+                left join data_diri_pegantar ddpr on ddpr.id_pasien = ddp.id_pasien;"
             );
             $query->execute();
             $hasil = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -140,7 +140,7 @@
         // riwayat perkembangan pasien
         public function riwayatPerkembanganPasien($id_rekam_medis) {
             $query = $this->db->prepare(
-                "SELECT op.detak_jantung, op.oksigen, op.suhu_tubuh, op.tekanan_darah, op.waktu_catat, op.kondisi, dp.nama_lengkap
+                 "SELECT op.detak_jantung, op.sp02 as oksigen, op.suhu_tubuh, op.tekanan_darah, op.waktu_catat, op.kondisi, dp.nama_lengkap
                 from observasi_pasien op
                 join data_perawat dp on dp.id_perawat = op.id_perawat
                 where op.id_rekam_medis = :id_rekam_medis

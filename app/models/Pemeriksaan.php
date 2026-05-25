@@ -1,6 +1,6 @@
 <?php 
     
-    require_once "../../core/Model.php";
+    require_once __DIR__ . "/../../core/Model.php";
 
     class PemeriksaanModel extends Model {
 
@@ -17,7 +17,7 @@
                 detail_kondisi, kondisi, waktu_catat, tindakan, 
                 sp02, id_perawat, id_rekam_medis, id_bed, diagnosa)
                 values
-                (:detak_jantung, :oksigen, :suhu_tubuh, :tekanan_darah,
+                (:detak_jantung, :suhu_tubuh, :tekanan_darah,
                 :detail_kondisi, :kondisi, :waktu_catat, :tindakan,
                 :sp02, :id_perawat, :id_rekam_medis, :id_bed, :diagnosa)"
             );

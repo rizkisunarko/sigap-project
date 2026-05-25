@@ -1,5 +1,5 @@
 <?php 
-    require_once "../../core/Model.php";
+    require_once __DIR__ . "/../../core/Model.php";
 
     class RekamMedis extends Model {
         
@@ -17,7 +17,7 @@
 
         // memasukkan data pada tabel rekam medis pasien
         public function IsiRekamMedis(
-            $id_pasien, $tangal_masuk, $tanggal_keluar, $urgensi
+            $id_pasien, $tanggal_masuk, $tanggal_keluar, $urgensi
             ) {
             $query = $this->db->prepare(
                 "INSERT into rekam_medis (

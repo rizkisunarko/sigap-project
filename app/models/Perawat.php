@@ -1,5 +1,5 @@
 <?php 
-    require_once "../../core/Model.php";
+    require_once __DIR__ . "/../../core/Model.php";
 
     class PerawatModel extends Model {
         
@@ -32,9 +32,10 @@
         // ambil shift dari divisi perawat
         public function ambilShift($divisi) {
             $query = $this->db->prepare(
-                "SELECT ts.nomor_shift, ts.id_detail_s
+                "SELECT ts.nomor_shift, dts.id_detail_s
                 from tugas_shift ts
-                join divisi_perawat dp on dp.id_shift = ts.id_shift
+                join divisi_perawat dp on dp.id_divisi = ts.id_divisi
+                join detail_tugas_shift dts on dts.id_shift = ts.id_shift
                 where dp.nama_divisi = :divisi;"
             );
             $query->bindParam(":divisi", $divisi);
