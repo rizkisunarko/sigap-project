@@ -157,11 +157,12 @@
                         <div class="fasilitas-icon-box">
                             <i class="bi bi-display"></i>
                         </div>
-                        <h3 class="fasilitas-slide-title">Sistem Monitoring Terpusat</h3>
+                        <h3 class="fasilitas-slide-title">Central Command Center</h3>
                         <p class="fasilitas-slide-desc">
-                            Pusat kendali pemantauan pasien berbasis teknologi AI yang memungkinkan
-                            tim medis memantau kondisi vital seluruh pasien ICU secara bersamaan
-                            dengan notifikasi otomatis saat terjadi perubahan kondisi kritis.
+                            Pusat observasi terpadu di mana tim 
+                            Intensivist memantau setiap denyut jantung, saturasi oksigen,
+                             dan parameter klinis lainnya dari seluruh bed secara real-time
+                            . Memungkinkan respon cepat di bawah sepuluh detik
                         </p>
                     </div>
                     <div class="fasilitas-img-side">
@@ -178,11 +179,35 @@
                         <div class="fasilitas-icon-box">
                             <i class="bi bi-lungs"></i>
                         </div>
-                        <h3 class="fasilitas-slide-title">Ventilator Generasi Terbaru</h3>
+                        <h3 class="fasilitas-slide-title">On-Site Stat Laboratory</h3>
                         <p class="fasilitas-slide-desc">
-                            Ventilator high-frequency dengan mode ventilasi adaptif berbasis AI
-                            yang secara otomatis menyesuaikan parameter pernapasan sesuai kondisi
-                            real-time pasien untuk meminimalkan risiko barotrauma.
+                            Fasilitas laboratorium patalogi klinik yang
+                            berada tepat di dalam unit ICU. Dilengkapi 
+                            dengan teknologi Point-of-Care Testing (POCT)
+                            untuk memberikan hasil analisis gas darah dan
+                            elektrolit dalam waktu singkat.
+                        </p>
+                    </div>
+                    <div class="fasilitas-img-side">
+                        <img src="https://images.unsplash.com/photo-1584515933487-779824d29309?w=700&q=80"
+                            alt="Ventilator" class="fasilitas-slide-img">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 4 -->
+            <div class="fasilitas-slide">
+                <div class="fasilitas-slide-content">
+                    <div class="fasilitas-text-side">
+                        <div class="fasilitas-icon-box">
+                            <i class="bi bi-lungs"></i>
+                        </div>
+                        <h3 class="fasilitas-slide-title">Mobile Bedside Imaging</h3>
+                        <p class="fasilitas-slide-desc">
+                            Unit radiologi portabel yang meliputi X-Ray
+                            digital dan USG Doppler yang dapat dilakukan 
+                            langsung di samping tempat tidur pasien. Mengeliminasi 
+                            risiko mobilisasi pasien kritis. 
                         </p>
                     </div>
                     <div class="fasilitas-img-side">
@@ -202,6 +227,7 @@
         <button class="fasilitas-dot active" data-index="0"></button>
         <button class="fasilitas-dot" data-index="1"></button>
         <button class="fasilitas-dot" data-index="2"></button>
+        <button class="fasilitas-dot" data-index="3"></button>
     </div>
 </section>
 
