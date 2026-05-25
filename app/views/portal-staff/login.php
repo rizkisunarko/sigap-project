@@ -154,7 +154,7 @@
                 <h2>Portal Staff</h2>
             </div>
             <div class="login-body">
-                <form action="<?= BASEURL; ?>/perawat/dashboard" method="GET">
+                <form action="<?= BASEURL; ?>/portal-staff/login" method="POST">
                     <div class="form-group mb-4">
                         <label for="namaLengkap">Nama Lengkap :</label>
                         <input type="text" id="namaLengkap" name="namaLengkap" class="form-control-custom" autocomplete="off" required>
