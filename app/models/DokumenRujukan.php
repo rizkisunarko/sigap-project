@@ -52,5 +52,36 @@
             $query->bindParam(":id_rujukan", $id_rujukan);
             $query->execute();
         }
+
+        // ambil data rujukan suatu pasien
+        public function tampilDataRujukan (
+            $id_pasien
+        ) {
+            $query = $this->db->prepare(
+                "SELECT r.id_rujukan, r.dokumen_rujukan, r.status_dokumen, r.detail_status 
+                from rujukan r
+                right join data_diri_pasien ddp on ddp.id_pasien = r.id_pasien
+                where ddp.id_pasien = :id_pasien
+                order by r.id_rujukan desc"
+                );
+            $query->bindParam(":id_pasien", $id_pasien);
+            $query->execute();
+            $hasil = $query->fetchAll(PDO::FETCH_ASSOC);
+            return $hasil;
+        }
+
+        // ambil semua data rujukan (barangkali untuk yang mneghandle data rujukan)
+        public function ambilDataRujukan () {
+            $query = $this->db->prepare(
+                "SELECT r.id_rujukan, r.dokumen_rujukan, r.status_dokumen, r.detail_status, ddp.nama_lengkap 
+                from rujukan r
+                right join data_diri_pasien ddp on ddp.id_pasien = r.id_pasien
+                order by r.id_rujukan desc"
+                );
+            $query->bindParam(":id_pasien", $id_pasien);
+            $query->execute();
+            $hasil = $query->fetchAll(PDO::FETCH_ASSOC);
+            return $hasil;
+        }
     }
 ?>

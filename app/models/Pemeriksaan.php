@@ -73,6 +73,23 @@
             $query->execute();
         }
 
+        // untuk menampilkan pada saat edit hasil observasi
+        public function ambilObservasi(
+            $id_observasi
+        ) {
+            $query = $this->db->prepare(
+                "SELECT detak_jantung, suhu_tubuh, tekanan_darah,
+                detail_kondisi, kondisi, waktu_catat, tindakan, 
+                sp02, id_perawat, id_rekam_medis, id_bed, diagnosa
+                from observasi_pasien
+                where id_observasi = :id_observasi"
+            );
+            $query->bindParam(":id_observasi", $id_observasi);
+            $query->execute();
+            $hasil = $query->fetch(PDO::FETCH_ASSOC);
+            return $hasil;
+        }
+
         // untuk hapus 1 record observasi pasien
         public function hapusObservasiPasien($id_observasi) {
             $query = $this->db->prepare(

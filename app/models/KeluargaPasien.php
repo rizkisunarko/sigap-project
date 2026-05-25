@@ -51,5 +51,26 @@
             $query->bindParam(":id_pengantar", $id_pengantar);
             $query->execute();
         }
+
+        // akses data diri pengantar (untuk merubah barangkali buth ditampilkan)
+        public function ambilDataDiriPengantar(
+            $id_pengantar
+        ) {
+            $query = $this->db->prepare(
+                "SELECT 
+                nama_lengkap, 
+                status_wali, 
+                nik_wali,
+                no_hp, 
+                alamat, 
+                dokumen_ttd
+                from data_diri_pegantar
+                where id_pengantar = :id_pengantar"
+            );
+            $query->bindParam(":id_pengantar", $id_pengantar);
+            $query->execute();
+            $hasil = $query->fetch(PDO::FETCH_ASSOC);
+            return $hasil;
+        }
     }
 ?>
