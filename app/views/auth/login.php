@@ -1,38 +1,9 @@
-<?php
-session_start();
-$error = '';
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $dbConfig = require __DIR__ . '/../../../config/database.php';
-    
-    // Pastikan user diset ke 'root' jika menggunakan XAMPP default
-    $dbUser = $dbConfig['user'] ?: 'root'; 
-    $dbPass = $dbConfig['password'];
-
-    try {
-        $pdo = new PDO("mysql:host=" . $dbConfig['host'] . ";dbname=" . $dbConfig['db_name'], $dbUser, $dbPass);
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-        $username = $_POST['username'] ?? '';
-        $password = $_POST['password'] ?? '';
-
-        $stmt = $pdo->prepare("SELECT * FROM akun_pengguna WHERE username = :username AND password = :password");
-        $stmt->execute(['username' => $username, 'password' => $password]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if ($user) {
-            $_SESSION['user_id'] = $user['id_pengguna'];
-            header("Location: " . BASEURL . "/keluarga/dashboard");
-            exit;
-        } else {
-            $error = 'Username atau Password salah atau tidak ditemukan!';
-        }
-    } catch (PDOException $e) {
-        $error = "Gagal terhubung ke database. Cek koneksi Anda!";
-    }
+<?php 
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
 }
+include __DIR__ . '/../layouts/header.php'; 
 ?>
-<?php include __DIR__ . '/../layouts/header.php'; ?>
 
 <style>
 /* CSS khusus untuk halaman Login */
@@ -70,7 +41,7 @@ body {
     height: 1px;
     background-color: #043622;
     width: 100%;
-    margin-bottom: 40px;
+    margin-bottom: 25px; /* Sedikit disesuaikan untuk ruang pesan eror */
 }
 
 .login-form-group {
@@ -141,13 +112,13 @@ body {
         <h2 class="login-title">Login</h2>
         <div class="login-divider"></div>
 
-        <?php if (!empty($error)): ?>
-            <div class="alert alert-danger mx-4" style="font-size: 0.85rem;" role="alert">
-                <?= $error; ?>
+        <?php if (isset($_SESSION['error'])): ?>
+            <div style="color: #cc0000; font-size: 9px; font-weight: bold; margin-bottom: 20px;">
+                <?= $_SESSION['error']; ?>
             </div>
-        <?php endif; ?>
+            <?php unset($_SESSION['error']); ?> <?php endif; ?>
 
-        <form action="" method="POST">
+        <form action="<?= BASEURL; ?>/auth/proses-login" method="POST">
             
             <div class="login-form-group">
                 <label class="login-label">Username:</label>
@@ -161,7 +132,6 @@ body {
 
             <button type="submit" class="btn-login">Login</button>
             
-            <!-- Link ini mengarah ke form pendaftaran yang tadi dibuat -->
             <a href="<?= BASEURL; ?>/pendaftaran/form" class="login-link">Daftar akun disini</a>
             
         </form>
@@ -174,5 +144,4 @@ body {
     }
 </script>
 
-<!-- Kita juga sertakan footer agar elemen penutup halaman lengkap (scripts, tutup body) -->
 <?php include __DIR__ . '/../layouts/footer.php'; ?>

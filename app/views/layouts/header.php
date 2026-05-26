@@ -30,7 +30,7 @@
       <ul class="navbar-nav ms-auto align-items-center">
         <li class="nav-item"><a class="nav-link text-white px-3" href="<?= BASEURL; ?>/">Beranda</a></li>   
         <li class="nav-item"><a class="nav-link text-white px-3" href="<?= BASEURL; ?>/pendaftaran/form">Portal Pendaftaran</a></li>
-        <li class="nav-item"><a class="nav-link text-white px-3" href="<?= BASEURL; ?>/#panduan">Panduan Admisi</a></li>
+        <li class="nav-item"><a class="nav-link text-white px-3" href="<?= BASEURL; ?>/pendaftaran/pilih-jalur">Panduan Admisi</a></li>
         <li class="nav-item ms-3"><a class="btn btn-icu-primary" href="<?= BASEURL; ?>/auth/login">Sign In</a></li>
       </ul>
     </div>
