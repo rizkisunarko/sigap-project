@@ -29,14 +29,16 @@
             return $hasil;
         }
 
-        // ambil shift dari divisi perawat
-        public function ambilShift($divisi) {
+        // ambil tugas shift dari divisi perawat
+        public function ambilTugasDivisi($divisi) {
             $query = $this->db->prepare(
-                "SELECT ts.nomor_shift, dts.id_detail_s
-                from tugas_shift ts
+                "SELECT
+                dts.shift_ke,
+                dts.id_detail_s
+                from detail_tugas_shift dts
+                join tugas_divisi ts on ts.id_detail_s = dts.id_detail_s
                 join divisi_perawat dp on dp.id_divisi = ts.id_divisi
-                join detail_tugas_shift dts on dts.id_shift = ts.id_shift
-                where dp.nama_divisi = :divisi;"
+                where dp.nama_divisi = :nana_divisi"
             );
             $query->bindParam(":divisi", $divisi);
             $query->execute();
@@ -63,9 +65,10 @@
             $query->execute();
             $hasil2 = $query->fetchAll(PDO::FETCH_ASSOC);
             $query = $this->db->prepare(
-                "SELECT count(id_observasi) as pasien_kritis
-                from observasi_pasien
-                where kondisi = 'kritis'"
+                "SELECT count(op.id_observasi) as pasien_kritis
+                from observasi_pasien op
+                join kondisi k on k.id_kondisi = op.id_kondisi
+                where k.nama_kondisi = 'kritis'"
             );
             $query->execute();
             $hasil3 = $query->fetch(PDO::FETCH_ASSOC);
@@ -76,9 +79,9 @@
         // ketersediaan bed
         public function ketersediaanBed() {
             $query = $this->db->prepare(
-                "SELECT b.nomor_bed, sb.detail_status, sb.status_bed
+                "SELECT b.nomor_bed, sb.detail_status, sb.nama_status status_bed
                 from bed b
-                join status_bed sb on sb.id_status = b.id_status"
+                join status_bed sb on sb.id_st_bed = b.id_st_bed"
             );
             $query->execute();
             $hasil = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -88,12 +91,13 @@
         // antrean masuk (diperoleh dari pasien yang pada hari tersebut tidak ada hasil observasinya)
         public function antreanMasuk() {
             $query = $this->db->prepare(
-                "SELECT ddp.nama_lengkap, rk.urgensi 
+                "SELECT ddp.nama_lengkap, u.nama_urgensi urgensi
                 from rekam_medis rk
                 join data_diri_pasien ddp on ddp.id_pasien = rk.id_pasien
                 left join observasi_pasien op on op.id_rekam_medis = rk.id_rekam_medis
+                left join urgensi u on u.id_urgensi = rk.id_urgensi
                 where rk.tanggal_masuk = current_date() and op.id_observasi is null
-                order by urgensi"
+                order by u.nama_urgensi"
             );
             $query->execute();
             $hasil = $query->fetchAll(PDO::FETCH_ASSOC);
@@ -101,14 +105,177 @@
         }
 
         // tugas shift
-        public function ambilTugasShift($detail_s) {
+        public function ambilTugasShift($detail_s, $id_perawat) {
             $query = $this->db->prepare(
-                "SELECT dts.tugas_shift, dts.tenggat, lts.status_dilakukan
-                from detail_tugas_shift dts
-                left join log_tugas_shift lts on lts.id_detail_s = dts.id_detail_s
-                where dts.id_detail_s = :id_detail_s;"
+                "SELECT
+                dts.tugas_shift,
+                dts.tenggat,
+                COALESCE(sl.nama_status, 'Belum Dikerjakan') AS status_dilakukan
+                from data_perawat dp
+                join divisi_perawat dv on dv.id_divisi = dp.id_divisi
+                join tugas_divisi td on td.id_divisi = dv.id_divisi
+                join detail_tugas_shift dts on dts.id_detail_s = td.id_detail_s
+                left join (
+                    select l1.*
+                    from log_tugas_shift l1
+                    join (
+                        select
+                            id_detail_s,
+                            id_perawat,
+                            MAX(tgl_dan_waktu) waktu_terbaru
+                        from log_tugas_shift
+                        where date(tgl_dan_waktu) = CURDATE()
+                        group by id_detail_s, id_perawat
+                    ) latest on latest.id_detail_s = l1.id_detail_s
+                    and latest.id_perawat = l1.id_perawat
+                    and latest.waktu_terbaru = l1.tgl_dan_waktu
+
+                ) lts on lts.id_detail_s = dts.id_detail_s
+                and lts.id_perawat = dp.id_perawat
+                left join status_log sl on sl.id_st_log = lts.id_st_log
+                where 
+                    dp.id_perawat = :id_perawat
+                    and dts.id_detail_s = :id_detail_s
+                order by dts.shift_ke, dts.tenggat"
             );
             $query->bindParam(":id_detail_s", $detail_s);
+            $query->bindParam(":id_perawat", $id_perawat);
+            $query->execute();
+            $hasil = $query->fetchAll(PDO::FETCH_ASSOC);
+            return $hasil;
+        }
+
+        // isi log shift (apabila sudah melakukan)
+        public function isiLogShift($id_detail_s, $nama_status) {
+            $query = $this->db->prepare(
+                "SELECT id_st_log
+                from status_log
+                where nama_status = :nama_status"
+            );
+            $query->bindParam(":nama_status", $nama_status);
+            $query->execute();
+            $stat = $query->fetch(PDO::FETCH_ASSOC);
+            $query = $this->db->prepare(
+                "INSERT into log_tugas_shift
+                (tgl_dan_waktu, id_detail_s, id_st_log)
+                values 
+                (now(), :id_detail_s, :id_st_log)"
+            );
+            $query->bindParam(":id_detail_s", $id_detail_s);
+            $query->bindParam(":id_st_log", $stat);
+            $query->execute();
+        }
+
+        // ambil seluruh data pasien aktif (dipindahkan kesini)
+        public function ambilSeluruhDataPasienAktif() {
+            $query = $this->db->prepare(
+                "SELECT 
+                rk.id_rekam_medis,
+                u.nama_urgensi AS urgensi,
+                ddp.id_pasien,
+                ddp.nama_lengkap,
+                ddp.nik,
+                ddp.asal,
+                ddp.tgl_lahir,
+                ddp.jenis_kelamin,
+                ddp.agama,
+                sp.nama_status AS status_perkawinan,
+                ddp.pekerjaan,
+                ddp.alamat,
+                ddp.nomor_bpjs,
+                ddp.golongan_darah,
+                ddp.kewarganegaraan,
+                ap.id_pengguna,
+                ap.username,
+                ddpr.id_pengantar,
+                ddpr.nama_lengkap AS nama_wali,
+                sw.nama_status AS status_wali,
+                ddpr.nik_wali,
+                ddpr.no_hp AS no_hp_wali,
+                ddpr.alamat AS alamat_wali,
+                (
+                    SELECT k.nama_kondisi
+                    FROM observasi_pasien op
+                    JOIN kondisi k ON k.id_kondisi = op.id_kondisi
+                    WHERE op.id_rekam_medis = rk.id_rekam_medis
+                    ORDER BY op.waktu_catat DESC
+                    LIMIT 1
+                ) AS status_klinis,
+                (
+                    SELECT b.nomor_bed
+                    FROM observasi_pasien op
+                    JOIN bed b ON b.id_bed = op.id_bed
+                    WHERE op.id_rekam_medis = rk.id_rekam_medis
+                    ORDER BY op.waktu_catat DESC
+                    LIMIT 1
+                ) AS nomor_bed
+            FROM rekam_medis rk
+            JOIN data_diri_pasien ddp ON ddp.id_pasien = rk.id_pasien
+            LEFT JOIN akun_pengguna ap ON ap.id_pengguna = ddp.id_pengguna
+            LEFT JOIN status_perkawinan sp ON sp.id_st_perkawinan = ddp.id_st_perkawinan
+            LEFT JOIN data_diri_pengantar ddpr ON ddpr.id_pasien = ddp.id_pasien
+            LEFT JOIN status_wali sw ON sw.id_st_wali = ddpr.id_st_wali
+            LEFT JOIN urgensi u ON u.id_urgensi = rk.id_urgensi
+            WHERE rk.tanggal_keluar IS NULL
+            ORDER BY rk.id_rekam_medis DESC"
+            );
+            $query->execute();
+            $hasil = $query->fetchAll(PDO::FETCH_ASSOC);
+            return $hasil;
+        }
+
+        // Direktori menampilkan seluruh pasien yang pernah terdaftar (baik aktif maupun discharged)
+        public function tampilSeluruhPasienTerdaftar() {
+            $query = $this->db->prepare(
+                "SELECT 
+                rk.id_rekam_medis,
+                u.nama_urgensi,
+                ddp.id_pasien,
+                ddp.nama_lengkap,
+                ddp.nik,
+                ddp.asal,
+                ddp.tgl_lahir,
+                ddp.jenis_kelamin,
+                ddp.agama,
+                sp.nama_status AS status_perkawinan,
+                ddp.pekerjaan,
+                ddp.alamat,
+                ddp.nomor_bpjs,
+                ddp.golongan_darah,
+                ddp.kewarganegaraan,
+                ap.id_pengguna,
+                ap.username,
+                ddpr.id_pengantar,
+                ddpr.nama_lengkap AS nama_wali,
+                sw.nama_status AS status_wali,
+                ddpr.nik_wali,
+                ddpr.no_hp AS no_hp_wali,
+                ddpr.alamat AS alamat_wali,
+                (
+                    SELECT k.nama_kondisi
+                    FROM observasi_pasien op
+                    JOIN kondisi k ON k.id_kondisi = op.id_kondisi
+                    WHERE op.id_rekam_medis = rk.id_rekam_medis
+                    ORDER BY op.waktu_catat DESC
+                    LIMIT 1
+                ) AS status_klinis,
+                (
+                    SELECT b.nomor_bed
+                    FROM observasi_pasien op
+                    JOIN bed b ON b.id_bed = op.id_bed
+                    WHERE op.id_rekam_medis = rk.id_rekam_medis
+                    ORDER BY op.waktu_catat DESC
+                    LIMIT 1
+                ) AS nomor_bed
+                FROM rekam_medis rk
+                JOIN data_diri_pasien ddp ON ddp.id_pasien = rk.id_pasien
+                LEFT JOIN akun_pengguna ap ON ap.id_pengguna = ddp.id_pengguna
+                LEFT JOIN status_perkawinan sp ON sp.id_st_perkawinan = ddp.id_st_perkawinan
+                LEFT JOIN data_diri_pengantar ddpr ON ddpr.id_pasien = ddp.id_pasien
+                LEFT JOIN status_wali sw ON sw.id_st_wali = ddpr.id_st_wali
+                LEFT JOIN urgensi u ON u.id_urgensi = rk.id_urgensi
+                ORDER BY rk.id_rekam_medis DESC;"
+            );
             $query->execute();
             $hasil = $query->fetchAll(PDO::FETCH_ASSOC);
             return $hasil;
