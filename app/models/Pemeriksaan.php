@@ -103,23 +103,10 @@
             $id_observasi
         ) {
             $query = $this->db->prepare(
-                "SELECT 
-                op.detak_jantung, 
-                op.suhu_tubuh, 
-                op.tekanan_darah,
-                op.detail_kondisi, 
-                k.nama_kondisi kondisi, 
-                op.waktu_catat, 
-                op.tindakan, 
-                op.sp02, 
-                dp.nama_lengkap nama_perawat, 
-                op.id_rekam_medis, 
-                b.nomor_bed, 
-                op.diagnosa
-                from observasi_pasien op
-                left join kondisi k on k.id_kondisi = op.id_kondisi
-                left join data_perawat dp on dp.id_perawat = op.id_perawat
-                left join bed b on b.id_bed = op.id_bed  
+                "SELECT detak_jantung, suhu_tubuh, tekanan_darah,
+                detail_kondisi, kondisi, waktu_catat, tindakan, 
+                sp02, id_perawat, id_rekam_medis, id_bed, diagnosa
+                from observasi_pasien
                 where id_observasi = :id_observasi"
             );
             $query->bindParam(":id_observasi", $id_observasi);

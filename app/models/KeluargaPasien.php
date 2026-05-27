@@ -84,15 +84,14 @@
         ) {
             $query = $this->db->prepare(
                 "SELECT 
-                ddp.nama_lengkap, 
-                sw.nama_status status_wali, 
-                ddp.nik_wali,
-                ddp.no_hp, 
-                ddp.alamat, 
-                ddp.dokumen_ttd
-                from data_diri_pengantar ddp 
-                left join status_wali sw on sw.id_st_wali = ddp.id_st_wali 
-                where ddp.id_pengantar = :id_pengantar"
+                nama_lengkap, 
+                status_wali, 
+                nik_wali,
+                no_hp, 
+                alamat, 
+                dokumen_ttd
+                from data_diri_pegantar
+                where id_pengantar = :id_pengantar"
             );
             $query->bindParam(":id_pengantar", $id_pengantar);
             $query->execute();
