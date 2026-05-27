@@ -135,43 +135,8 @@ class PerawatController extends Controller {
         $conn = $db->connect();
 
         // Ambil data detail seluruh pasien aktif
-        $stmt = $conn->prepare("
-            SELECT 
-                rk.id_rekam_medis,
-                rk.urgensi,
-                ddp.id_pasien,
-                ddp.nama_lengkap,
-                ddp.nik,
-                ddp.asal,
-                ddp.tgl_lahir,
-                ddp.jenis_kelamin,
-                ddp.agama,
-                ddp.status_perkawinan,
-                ddp.pekerjaan,
-                ddp.alamat,
-                ddp.nomor_bpjs,
-                ddp.golongan_darah,
-                ddp.kewarganegaraan,
-                ap.id_pengguna,
-                ap.username,
-                -- Ambil password plaintext/raw jika ada
-                ddpr.id_pengantar,
-                ddpr.nama_lengkap AS nama_wali,
-                ddpr.status_wali,
-                ddpr.nik_wali,
-                ddpr.no_hp AS no_hp_wali,
-                ddpr.alamat AS alamat_wali,
-                (SELECT kondisi FROM observasi_pasien WHERE id_rekam_medis = rk.id_rekam_medis ORDER BY waktu_catat DESC LIMIT 1) AS status_klinis,
-                (SELECT b.nomor_bed FROM observasi_pasien op JOIN bed b ON b.id_bed = op.id_bed WHERE op.id_rekam_medis = rk.id_rekam_medis ORDER BY op.waktu_catat DESC LIMIT 1) AS nomor_bed
-            FROM rekam_medis rk
-            JOIN data_diri_pasien ddp ON ddp.id_pasien = rk.id_pasien
-            LEFT JOIN akun_pengguna ap ON ap.id_pengguna = ddp.id_pengguna
-            LEFT JOIN data_diri_pegantar ddpr ON ddpr.id_pasien = ddp.id_pasien
-            WHERE rk.tanggal_keluar IS NULL
-            ORDER BY rk.id_rekam_medis DESC
-        ");
-        $stmt->execute();
-        $patients = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $ambilSPA = new PerawatModel();
+        $patients = $ambilSPA->ambilSeluruhDataPasienAktif();
 
         $data = ['patients' => $patients];
         $this->view('perawat/input_data_pasien', $data);
@@ -417,41 +382,8 @@ class PerawatController extends Controller {
         $conn = $db->connect();
 
         // Direktori menampilkan seluruh pasien yang pernah terdaftar (baik aktif maupun discharged)
-        $stmt = $conn->prepare("
-            SELECT 
-                rk.id_rekam_medis,
-                rk.urgensi,
-                ddp.id_pasien,
-                ddp.nama_lengkap,
-                ddp.nik,
-                ddp.asal,
-                ddp.tgl_lahir,
-                ddp.jenis_kelamin,
-                ddp.agama,
-                ddp.status_perkawinan,
-                ddp.pekerjaan,
-                ddp.alamat,
-                ddp.nomor_bpjs,
-                ddp.golongan_darah,
-                ddp.kewarganegaraan,
-                ap.id_pengguna,
-                ap.username,
-                ddpr.id_pengantar,
-                ddpr.nama_lengkap AS nama_wali,
-                ddpr.status_wali,
-                ddpr.nik_wali,
-                ddpr.no_hp AS no_hp_wali,
-                ddpr.alamat AS alamat_wali,
-                (SELECT kondisi FROM observasi_pasien WHERE id_rekam_medis = rk.id_rekam_medis ORDER BY waktu_catat DESC LIMIT 1) AS status_klinis,
-                (SELECT b.nomor_bed FROM observasi_pasien op JOIN bed b ON b.id_bed = op.id_bed WHERE op.id_rekam_medis = rk.id_rekam_medis ORDER BY op.waktu_catat DESC LIMIT 1) AS nomor_bed
-            FROM rekam_medis rk
-            JOIN data_diri_pasien ddp ON ddp.id_pasien = rk.id_pasien
-            LEFT JOIN akun_pengguna ap ON ap.id_pengguna = ddp.id_pengguna
-            LEFT JOIN data_diri_pegantar ddpr ON ddpr.id_pasien = ddp.id_pasien
-            ORDER BY rk.id_rekam_medis DESC
-        ");
-        $stmt->execute();
-        $patients = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $tampilSPT = new PerawatModel();
+        $patients = $tampilSPT->tampilSeluruhPasienTerdaftar();
 
         $data = ['patients' => $patients];
         $this->view('perawat/direktori_pengguna', $data);

@@ -4,11 +4,11 @@
     class UserModel extends Model {
 
         // reset password
-        public function gantiPasswordUser($username, $id) {
+        public function gantiPasswordUser($password, $id) {
             $query = $this->db->prepare("UPDATE akun_pengguna
                                         set password = :password
                                         where id_pengguna = :id_pengguna");
-            $query->bindParam(":username", $username);
+            $query->bindParam(":password", $password);
             $query->bindParam(":id_pengguna", $id);
             $query->execute();
         }
