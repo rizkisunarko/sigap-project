@@ -75,10 +75,12 @@ document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
 // Navbar shrink on scroll
 window.addEventListener('scroll', function() {
     var navbar = document.querySelector('.navbar');
-    if (window.scrollY > 60) {
-        navbar.style.boxShadow = '0 2px 20px rgba(0,0,0,0.35)';
-    } else {
-        navbar.style.boxShadow = 'none';
+    if (navbar) {
+        if (window.scrollY > 60) {
+            navbar.style.boxShadow = '0 2px 20px rgba(0,0,0,0.35)';
+        } else {
+            navbar.style.boxShadow = 'none';
+        }
     }
 });
 </script>

@@ -1,7 +1,18 @@
 <?php 
-    require_once "../../core/Model.php";
+    require_once __DIR__ . "/../../core/Model.php";
 
     class PasienModel extends Model {
+
+        // ambil status perkawinan
+        public function ambilStatusPerkawinan() {
+            $query = $this->db->prepare(
+                "SELECT nama_status
+                from status_perkawinan"
+            );
+            $query->execute();
+            $hasil = $query->fetchAll(PDO::FETCH_ASSOC);
+            return $hasil;
+        }
 
         //isi data diri pasien
         public function isiDataDiriPasien(
@@ -12,8 +23,15 @@
             $golongan_darah, $kewarganegaraan,
             $pekerjaan, $id_pengguna) {
             $query = $this->db->prepare(
+                "SELECT id_st_perkawinan
+                from status_perkawinan
+                where nama_status = :nama_status"
+            );
+            $query->bindParam(":nama_status". $status_perkawinan);
+            $stat = $quer->fetch(PDO::FETCH_ASSOC);
+            $query = $this->db->prepare(
                 "INSERT into data_diri_pasien (nama_lengkap, nik, asal, tgl_lahir, jenis_kelamin,
-                    agama, status_perkawinan, alamat, nomor_bpjs, golongan_darah,
+                    agama, id_st_perkawinan, alamat, nomor_bpjs, golongan_darah,
                     kewarganegaraan, pekerjaan, id_pengguna) values (
                     :nama_lengkap, :nik, :asal, :tgl_lahir, :jenis_kelamin,
                     :agama, :status_perkawinan, :alamat, :nomor_bpjs, :golongan_darah,
@@ -25,7 +43,7 @@
             $query->bindParam(":tgl_lahir", $tgl_lahir);
             $query->bindParam(":jenis_kelamin", $jenis_kelamin);
             $query->bindParam(":agama", $agama);
-            $query->bindParam(":status_perkawinan", $status_perkawinan);
+            $query->bindParam(":status_perkawinan", $stat);
             $query->bindParam(":alamat", $alamat);
             $query->bindParam(":nomor_bpjs", $nomor_bpjs);
             $query->bindParam(":golongan_darah", $golongan_darah);
@@ -44,6 +62,13 @@
             $golongan_darah, $kewarganegaraan,
             $pekerjaan, $id_pengguna) {
             $query = $this->db->prepare(
+                "SELECT id_st_perkawinan
+                from status_perkawinan
+                where nama_status = :nama_status"
+            );
+            $query->bindParam(":nama_status". $status_perkawinan);
+            $stat = $quer->fetch(PDO::FETCH_ASSOC);
+            $query = $this->db->prepare(
                 "UPDATE data_diri_pasien set
                 nama_lengkap = :nama_lengkap, 
                 nik = :nik, 
@@ -51,13 +76,13 @@
                 tgl_lahir = :tgl_lahir, 
                 jenis_kelamin = :jenis_kelamin,
                 agama = :agama, 
-                status_perkawinan = :status_perkawinan, 
+                id_st_perkawinan = :status_perkawinan, 
                 alamat = :alamat, 
                 nomor_bpjs = :nomor_bpjs, 
                 golongan_darah = :golongan_darah,
                 kewarganegaraan = :kewarganegaraan, 
                 pekerjaan = :pekerjaan
-                where id_pasien = :id_pasien)"
+                where id_pasien = :id_pasien"
             );
             $query->bindParam(":nama_lengkap", $nama_lengkap);
             $query->bindParam(":nik", $nik);
@@ -65,7 +90,7 @@
             $query->bindParam(":tgl_lahir", $tgl_lahir);
             $query->bindParam(":jenis_kelamin", $jenis_kelamin);
             $query->bindParam(":agama", $agama);
-            $query->bindParam(":status_perkawinan", $status_perkawinan);
+            $query->bindParam(":status_perkawinan", $stat);
             $query->bindParam(":alamat", $alamat);
             $query->bindParam(":nomor_bpjs", $nomor_bpjs);
             $query->bindParam(":golongan_darah", $golongan_darah);
@@ -79,19 +104,21 @@
         public function ambilDataPasien($id_pasien) {
             $query = $this->db->prepare(
                 "SELECT 
-                nama_lengkap, 
-                nik, 
-                asal, 
-                tgl_lahir, 
-                jenis_kelamin,
-                agama, 
-                status_perkawinan, 
-                alamat, 
-                nomor_bpjs, 
-                golongan_darah,
-                kewarganegaraan, 
-                pekerjaan 
-                from data_diri_pasien where id_pasien = :id_pasien"
+                ddp.nama_lengkap, 
+                ddp.nik, 
+                ddp.asal, 
+                ddp.tgl_lahir, 
+                ddp.jenis_kelamin,
+                ddp.agama, 
+                sp.nama_status status_perkawinan, 
+                ddp.alamat, 
+                ddp.nomor_bpjs, 
+                ddp.golongan_darah,
+                ddp.kewarganegaraan, 
+                ddp.pekerjaan 
+                from data_diri_pasien ddp
+                left join status_perkawinan sp on sp.id_st_perkawinan = ddp.id_st_perkawinan  
+                where id_pasien = :id_pasien"
             );
             $query->bindParam(":id_pasien", $id_pasien);
             $query->execute();
@@ -122,6 +149,35 @@
             $query->bindParam(":id_alergi", $id_alergi);
             $query->bindParam(":id_pasien", $id_pasien);
             $query->execute();
+        }
+
+        // untuk tampilan kumpulan data pasien
+        public function tampilSemuaDataPasien() {
+            $query = $this->db->prepare(
+                "SELECT rk.id_rekam_medis, ddp.nama_lengkap, ddp.jenis_kelamin, ddp.asal, ddpr.no_hp
+                from rekam_medis rk
+                join data_diri_pasien ddp on ddp.id_pasien = rk.id_pasien
+                left join data_diri_pegantar ddpr on ddpr.id_pasien = ddp.id_pasien;"
+            );
+            $query->execute();
+            $hasil = $query->fetchAll(PDO::FETCH_ASSOC);
+            return $hasil;
+        }
+
+        // riwayat perkembangan pasien
+        public function riwayatPerkembanganPasien($id_rekam_medis) {
+            $query = $this->db->prepare(
+                 "SELECT op.detak_jantung, op.sp02 as oksigen, op.suhu_tubuh, op.tekanan_darah, op.waktu_catat, k.nama_kondisi kondisi, dp.nama_lengkap
+                from observasi_pasien op
+                join data_perawat dp on dp.id_perawat = op.id_perawat
+                left join kondisi k on k.id_kondisi = op.id_kondisi
+                where op.id_rekam_medis = :id_rekam_medis
+                order by op.waktu_catat;"
+            );
+            $query->bindParam(":id_rekam_medis", $id_rekam_medis);
+            $query->execute();
+            $hasil = $query->fetchAll(PDO::FETCH_ASSOC);
+            return $hasil;
         }
     }
 ?>

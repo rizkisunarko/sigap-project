@@ -89,6 +89,8 @@ if (session_status() == PHP_SESSION_NONE) {
             display: inline-block;
         }
         .form-control-custom {
+            box-sizing: border-box; /* Agar padding tidak merusak width 100% */
+            display: block;
             border: 1.5px solid #13c898; /* Thin light-green border from screenshot */
             border-radius: 999px; /* Pill-shaped */
             padding: 12px 26px;
@@ -103,6 +105,19 @@ if (session_status() == PHP_SESSION_NONE) {
             border-color: #043622;
             box-shadow: 0 0 0 3px rgba(4, 54, 34, 0.1); /* Subtle premium focus ring */
         }
+        
+        select.form-control-custom {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23043622' stroke-linecap='round' stroke-linejoin='round' stroke-width='2.5' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 22px center;
+            background-size: 14px 10px;
+            padding-right: 48px;
+            cursor: pointer;
+        }
+
         .btn-custom {
             background-color: #043622; /* Dark green button */
             color: white;
@@ -160,20 +175,27 @@ if (session_status() == PHP_SESSION_NONE) {
                     
                     <div class="form-group mb-4">
                         <label for="divisi">Divisi :</label>
-                        <input type="text" id="divisi" name="divisi" class="form-control-custom" autocomplete="off" required>
+                        <select id="divisi" name="divisi" class="form-control-custom" required>
+                            <option value="" disabled selected>Pilih Divisi</option>
+                            <option value="Rekam Medis">Rekam Medis</option>
+                            <option value="Front Officer">Front Officer</option>
+                        </select>
                     </div>
                     
                     <div class="form-group mb-4">
                         <label for="shift">Shift :</label>
-                        <input type="text" id="shift" name="shift" class="form-control-custom" autocomplete="off" required>
+                        <select id="shift" name="shift" class="form-control-custom" required>
+                            <option value="" disabled selected>Pilih Shift</option>
+                            <option value="Shift 1">Shift 1</option>
+                            <option value="Shift 2">Shift 2</option>
+                        </select>
                     </div>
                     
-                    <div class="text-center">
-                        <button type="submit" class="btn btn-custom">Masuk</button>
+                    <div style="display: flex; justify-content: center; margin-top: 30px;">
+                        <button type="submit" class="btn-custom" style="margin-top: 0;">Masuk</button>
                     </div>
                 </form>
 
-                
             </div>
         </div>
     </div>

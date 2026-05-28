@@ -186,7 +186,6 @@ $obs_terbaru = !empty($riwayat) ? $riwayat[0] : [];
 
     <?php include __DIR__ . '/kondisi_pasien.php'; ?>
     <?php include __DIR__ . '/riwayat_tindakan.php'; ?>
-
 </div>
 
 <div class="modal fade logout-confirm-modal" id="logoutConfirmModal" tabindex="-1" aria-labelledby="logoutConfirmModalLabel" aria-hidden="true">

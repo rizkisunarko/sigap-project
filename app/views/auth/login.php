@@ -2,6 +2,15 @@
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
+
+// Pesan error dari Controller (Standar tim/devs)
+$error = isset($data['error']) ? $data['error'] : '';
+
+// Tampilkan pesan jika baru saja mendaftar
+$successMsg = '';
+if (isset($_GET['success']) && $_GET['success'] == 1) {
+    $successMsg = 'Registrasi berhasil! Silakan masuk menggunakan akun baru Anda.';
+}
 include __DIR__ . '/../layouts/header.php'; 
 ?>
 
@@ -112,13 +121,24 @@ body {
         <h2 class="login-title">Login</h2>
         <div class="login-divider"></div>
 
-        <?php if (isset($_SESSION['error'])): ?>
-            <div style="color: #cc0000; font-size: 9px; font-weight: bold; margin-bottom: 20px;">
+        <?php if (!empty($successMsg)): ?>
+            <div class="alert alert-success mx-4" style="font-size: 0.85rem;" role="alert">
+                <?= $successMsg; ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if (!empty($error)): ?>
+            <div class="alert alert-danger mx-4" style="font-size: 0.85rem;" role="alert">
+                <?= $error; ?>
+            </div>
+        <?php elseif (isset($_SESSION['error'])): ?>
+            <div class="alert alert-danger mx-4" style="font-size: 0.85rem;" role="alert">
                 <?= $_SESSION['error']; ?>
             </div>
-            <?php unset($_SESSION['error']); ?> <?php endif; ?>
+            <?php unset($_SESSION['error']); ?>
+        <?php endif; ?>
 
-        <form action="<?= BASEURL; ?>/auth/proses-login" method="POST">
+        <form action="<?= BASEURL; ?>/auth/login" method="POST">
             
             <div class="login-form-group">
                 <label class="login-label">Username:</label>

@@ -1,21 +1,37 @@
 <?php
 require_once __DIR__ . '/../../core/Controller.php';
+require_once __DIR__ . '/../models/User.php';
 
 class AuthController extends Controller {
     
-    // pipndah ke halaman login
+    public function index() {
+        $this->login();
+    }
+
+    // Pindah ke halaman login
     public function login() {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        
+        // Jika sudah login, langsung dialihkan ke dashboard keluarga (Bypass Form)
+        if (isset($_SESSION['user_id'])) {
+            header('Location: ' . BASEURL . '/keluarga/dashboard');
+            exit;
+        }
+
         $this->view('auth/login'); 
     }
 
-    public function prosesLogin() {
-        if (session_status() == PHP_SESSION_NONE) {
+    // Nama method disesuaikan dengan rute web.php milik tim
+    public function loginProcess() {
+        if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
-            // Tangkap data dari form
+            // Tangkap data dari form (Logika pengecekan milikmu)
             $username = trim($_POST['username'] ?? '');
             $password = $_POST['password'] ?? '';
 
@@ -25,28 +41,22 @@ class AuthController extends Controller {
                 exit;
             } 
             
-            
-            // MEMANGGIL MODEL (Menggunakan UserModel)
-            require_once __DIR__ . '/../models/User.php';
             $userModel = new UserModel();
-            
             $pesanModel = "";
             $dataUser = []; 
-            // Variabel kosong untuk menampung data dari Model
             
-            // Controller meminta Model untuk melakukan verifikasi
+            // Meminta Model untuk melakukan verifikasi sesuai dengan fungsi di UserModel-mu
             $userModel->verifikasiUser($username, $password, $pesanModel, $dataUser);
 
-            // jika pesan berhasil, sessi akan aktif
+            // Jika pesan berhasil, sesi akan aktif
             if ($pesanModel === "Berhasil") {
-                // Pasang memori sesi dari array $dataUser yang diisi oleh Model
                 $_SESSION['user_id'] = $dataUser['id_pengguna'];
                 $_SESSION['username'] = $dataUser['username'];
                 
                 header("Location: " . BASEURL . "/keluarga/dashboard");
                 exit;
             } else {
-                // Tangkap pesan eror (Username atau Password salah)
+                // Tangkap pesan eror dan simpan ke sesi untuk halaman login
                 $_SESSION['error'] = $pesanModel;
                 header("Location: " . BASEURL . "/auth/login");
                 exit;
@@ -57,6 +67,7 @@ class AuthController extends Controller {
         }
     }
 
+    // Menggunakan mekanisme logout milikmu yang sangat aman
     public function logout() {
         // 1. Pastikan mesin sesi berjalan agar kita bisa menghancurkannya
         if (session_status() == PHP_SESSION_NONE) {

@@ -34,7 +34,7 @@ class KeluargaController extends Controller {
         $data = [];
         $data['judul'] = 'Dashboard Keluarga - ICU Central Specialist Hospital';
 
-        // ASUMSI: Menarik data menggunakan fungsi yang akan dibuat di Model
+        // Menarik data menggunakan fungsi di Model
         $data['pasien'] = $model->getDataPasienAktif($id_pengguna_aktif);
 
         if ($data['pasien'] && !empty($data['pasien']['id_rekam_medis'])) {
@@ -137,3 +137,4 @@ class KeluargaController extends Controller {
         }
     }
 }
+?>

@@ -20,7 +20,6 @@ include __DIR__ . '/../layouts/header.php';
         <h2 class="form-main-title">Daftar Akun</h2>
         <div class="form-title-divider"></div>
 
-        <!-- Sessi jika user pindah halaman, data hilang -->
         <?php if (isset($_SESSION['error'])): ?>
             <div style="background-color: #ffe6e6; color: #cc0000; padding: 10px; border-radius: 5px; margin-bottom: 20px; font-weight: bold; text-align: center;">
                 <?= $_SESSION['error']; ?>

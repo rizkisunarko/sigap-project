@@ -78,5 +78,29 @@
                 $msg = "Berhasil diubah";
             }
         }
+
+        // verifikasi login dengan password_verify (dengan fallback teks biasa untuk data manual)
+        public function verifikasiLogin($username, $password) {
+            $query = $this->db->prepare(
+                "SELECT * from akun_pengguna where username = :username"
+            );
+            $query->bindParam(":username", $username);
+            $query->execute();
+            $user = $query->fetch(PDO::FETCH_ASSOC);
+
+            if ($user) {
+                $dbPassword = $user['password'];
+                // Jika bertipe resource/stream (karena varbinary di beberapa DB driver)
+                if (is_resource($dbPassword)) {
+                    $dbPassword = stream_get_contents($dbPassword);
+                }
+                
+                // Mendukung password_verify jika hash BCRYPT valid, atau fallback ke teks biasa
+                if (password_verify($password, $dbPassword) || $password === $dbPassword) {
+                    return $user;
+                }
+            }
+            return false;
+        }
     }
 ?>
