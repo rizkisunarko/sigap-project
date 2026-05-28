@@ -56,4 +56,21 @@ class AuthController extends Controller {
             exit;
         }
     }
+
+    public function logout() {
+        // 1. Pastikan mesin sesi berjalan agar kita bisa menghancurkannya
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        // 2. Kosongkan semua data di dalam sesi
+        $_SESSION = [];
+
+        // 3. Hancurkan sesinya secara total dari server
+        session_destroy();
+
+        // 4. Arahkan pengguna kembali ke halaman login
+        header("Location: " . BASEURL . "/auth/login");
+        exit;
+    }
 }

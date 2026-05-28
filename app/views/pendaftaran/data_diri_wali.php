@@ -79,7 +79,7 @@
                 <span style="font-size:12px;color:#666;">(Tanda tangan dengan mouse atau layar sentuh)</span>
                 <a href="#" id="clear-signature" style="font-size:12px;color:#007bff;text-decoration:underline;">Bersihkan</a>
             </div>
-            <input type="hidden" name="ttd_wali" id="ttd_wali">
+            <input type="hidden" name="ttd_wali" id="ttd_wali" value="<?= htmlspecialchars($old['ttd_wali'] ?? '') ?>">
         </div>
         <?php if (isset($errors['ttd_wali'])): ?>
             <div style="color: #cc0000; font-size: 9px; margin-top: 5px; line-height: 1.2;">

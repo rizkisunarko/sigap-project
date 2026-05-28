@@ -1,3 +1,9 @@
+<?php 
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -124,7 +130,6 @@
 </head>
 <body>
 
-    <!-- Header -->
     <nav class="navbar-custom">
         <a href="<?= BASEURL; ?>" class="navbar-brand">
             <img src="<?= BASEURL; ?>/assets/img/logo.png" width="34" height="34" alt="Logo" class="d-inline-block align-text-top me-2">
@@ -132,30 +137,43 @@
         </a>
     </nav>
 
-    <!-- Main Content -->
     <div class="login-container">
         <div class="login-card">
             <div class="login-header">
                 <h2>Portal Staff</h2>
             </div>
             <div class="login-body">
-                <form action="<?= BASEURL; ?>/perawat/dashboard" method="GET">
+            
+                <?php if(isset($_SESSION['error_staff'])): ?>
+                    <div class="alert alert-danger" style="background-color: #ffe6e6; color: #cc0000; padding: 10px; border-radius: 5px; margin-bottom: 20px; font-weight: bold; text-align: center; ">
+                        <?= $_SESSION['error_staff']; ?>
+                    </div>
+                    <?php unset($_SESSION['error_staff']); ?>
+                <?php endif; ?>
+
+                <form action="<?= BASEURL; ?>/perawat/proses-login" method="POST">
+                    
                     <div class="form-group mb-4">
                         <label for="namaLengkap">Nama Lengkap :</label>
                         <input type="text" id="namaLengkap" name="namaLengkap" class="form-control-custom" autocomplete="off" required>
                     </div>
+                    
                     <div class="form-group mb-4">
                         <label for="divisi">Divisi :</label>
                         <input type="text" id="divisi" name="divisi" class="form-control-custom" autocomplete="off" required>
                     </div>
+                    
                     <div class="form-group mb-4">
                         <label for="shift">Shift :</label>
                         <input type="text" id="shift" name="shift" class="form-control-custom" autocomplete="off" required>
                     </div>
+                    
                     <div class="text-center">
                         <button type="submit" class="btn btn-custom">Masuk</button>
                     </div>
                 </form>
+
+                
             </div>
         </div>
     </div>

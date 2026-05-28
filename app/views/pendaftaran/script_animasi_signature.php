@@ -26,6 +26,16 @@
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
 
+        const ttdInput = document.getElementById('ttd_wali');
+        if (ttdInput && ttdInput.value) {
+            const img = new Image();
+            img.onload = function() {
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                if (placeholder) placeholder.style.display = 'none'; // Sembunyikan tulisan placeholder
+            };
+            img.src = ttdInput.value;
+        }
+
         const placeholder = document.getElementById('signature-placeholder');
         const clearSignature = document.getElementById('clear-signature');
 

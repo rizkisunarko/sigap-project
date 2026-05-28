@@ -41,7 +41,6 @@ class Router {
             return;
         }
         
-        // 2. AUTHENTICATION CONTROLLER (LOGIN)
         if (strpos($uri, '/auth/login') !== false) {
             require_once __DIR__ . '/../app/controllers/AuthController.php';
             $controller = new AuthController();
@@ -57,6 +56,13 @@ class Router {
             return;
         }
 
+        if (strpos($uri, '/auth/logout') !== false) {
+            require_once __DIR__ . '/../app/controllers/AuthController.php';
+            $controller = new AuthController();
+            $controller->logout();
+            return;
+        }
+
         // 3. KELUARGA CONTROLLER (DASHBOARD PASIEN)
         if (strpos($uri, '/keluarga/dashboard') !== false) {
             require_once __DIR__ . '/../app/controllers/KeluargaController.php';
@@ -65,14 +71,20 @@ class Router {
             return;
         }
 
-        // 4. PORTAL STAFF / PERAWAT (DIRECT VIEW BYPASS)
-        // Hidden route for Perawat/Staff
-        if (strpos($uri, '/portal-staff/login') !== false) {
-            $view = __DIR__ . '/../app/views/portal-staff/login.php';
-            if (file_exists($view)) {
-                require $view;
-                return;
-            }
+        // 4. PORTAL STAFF / PERAWAT (URL RAHASIA)
+        if (strpos($uri, '/division/FOR-255') !== false) {
+            require_once __DIR__ . '/../app/controllers/PerawatController.php';
+            $controller = new PerawatController();
+            $controller->login();
+            return;
+        }
+
+        // RUTE BARU: Menangani submit login staff
+        if (strpos($uri, '/perawat/proses-login') !== false) {
+            require_once __DIR__ . '/../app/controllers/PerawatController.php';
+            $controller = new PerawatController();
+            $controller->prosesLogin();
+            return;
         }
 
         if (strpos($uri, '/perawat/dashboard') !== false) {
@@ -127,6 +139,7 @@ class Router {
 
 
         // DEFAULT: 404 NOT FOUND
-        echo 'Router Berjalan: Halaman tidak ditemukan (404)';
+        header("HTTP/1.0 404 Not Found");
+        exit;
     }
 }

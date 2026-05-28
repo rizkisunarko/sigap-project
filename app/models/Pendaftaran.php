@@ -3,10 +3,10 @@
 
     class PendaftaranModel extends Model {
         
-        // Fungsi daftar akun dikembangkan untuk mengonfirmasi seluruh rangkaian data pendaftaran
+        
         public function daftarAkun($username, $password, $data, $filename, &$msg) {
             
-            // 1. PERIKSA APAKAH USERNAME SUDAH TERDAFTAR
+            // PERIKSA USERNAME UDAH TERDAFTAR ATAU BELUM
             $query = $this->db->prepare(
                 "SELECT username from akun_pengguna where username = :username"
             );
@@ -19,13 +19,25 @@
                 return;
             }
 
-            // 2. MEMULAI TRANSAKSI UNTUK MULTI-TABLE INSERTION
+            // PERIKSA NIK PASIEN SUDAH TERDAFTAR
+            $queryNik = $this->db->prepare(
+                "SELECT nik FROM data_diri_pasien WHERE nik = :nik"
+            );
+            $queryNik->bindParam(":nik", $data['nik']);
+            $queryNik->execute();
+            $hasilNik = $queryNik->fetch(PDO::FETCH_ASSOC);
+
+            if(!empty($hasilNik)) {
+                $msg = "NIK Pasien sudah terdaftar di dalam sistem";
+                return;
+            }
+
             $this->db->beginTransaction();
 
             try {
-                // A. INSERT KE TABEL akun_pengguna
                 $data_password = password_hash($password, PASSWORD_BCRYPT);
     
+                // INSERT KE TABEL akun_pengguna
                 $queryAkun = $this->db->prepare(
                     "INSERT into akun_pengguna (username, password) values (:username, :password)"
                 );
@@ -33,11 +45,10 @@
                 $queryAkun->bindParam(":password", $data_password);
                 $queryAkun->execute();
 
-                // Ambil ID Pengguna yang baru saja tercipta
+                // Ambil ID Pengguna 
                 $id_pengguna = $this->db->lastInsertId();
 
                 // B. INSERT KE TABEL data_diri_pasien
-                // Konversi string Jenis Kelamin menjadi format ENUM (L/P) di database
                 $jk_enum = ($data['jk'] === 'Laki-laki') ? 'L' : 'P';
 
                 $queryPasien = $this->db->prepare(
@@ -67,10 +78,10 @@
                 $queryPasien->bindParam(":id_pengguna", $id_pengguna);
                 $queryPasien->execute();
 
-                // Ambil ID Pasien yang baru saja tercipta
+                // Ambil ID Pasien yang baru 
                 $id_pasien = $this->db->lastInsertId();
 
-                // C. INSERT KE TABEL data_diri_pengantar
+                // INSERT KE TABEL data_diri_pengantar
                 $queryWali = $this->db->prepare(
                     "INSERT INTO data_diri_pengantar (
                         nama_lengkap, status_wali, nik_wali, no_hp, alamat, dokumen_ttd, id_pasien
@@ -88,11 +99,11 @@
                 $queryWali->bindParam(":id_pasien", $id_pasien);
                 $queryWali->execute();
 
-                // D. LOGIKA KONDISIONAL UNTUK DATA ALERGI
+                // LOGIKA KONDISIONAL UNTUK DATA ALERGI
                 $alergi_input = trim($data['alergi'] ?? '');
                 if (!empty($alergi_input)) {
                     
-                    // Cek terlebih dahulu apakah nama alergi sudah terdaftar di master data_alergi
+                    // Cek terlebih dahulu apakah nama alergi sudah terdaftar di data_alergi
                     $queryCekAlergi = $this->db->prepare(
                         "SELECT id_alergi FROM data_alergi WHERE nama_alergi = :nama_alergi"
                     );
