@@ -98,6 +98,7 @@ create table rujukan (
     detail_status text,
     id_pasien int,
     id_st_rujukan int,
+	status_rujukan enum('0', '1'),
     foreign key (id_pasien) references data_diri_pasien(id_pasien),
     foreign key (id_st_rujukan) references status_rujukan(id_st_rujukan)
 );
