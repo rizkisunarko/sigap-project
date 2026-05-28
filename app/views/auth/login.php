@@ -1,35 +1,11 @@
 <?php
-session_start();
-$error = '';
+// Pesan error dari Controller
+$error = isset($data['error']) ? $data['error'] : '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $dbConfig = require __DIR__ . '/../../../config/database.php';
-    
-    // Pastikan user diset ke 'root' jika menggunakan XAMPP default
-    $dbUser = $dbConfig['user'] ?: 'root'; 
-    $dbPass = $dbConfig['password'];
-
-    try {
-        $pdo = new PDO("mysql:host=" . $dbConfig['host'] . ";dbname=" . $dbConfig['db_name'], $dbUser, $dbPass);
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-        $username = $_POST['username'] ?? '';
-        $password = $_POST['password'] ?? '';
-
-        $stmt = $pdo->prepare("SELECT * FROM akun_pengguna WHERE username = :username AND password = :password");
-        $stmt->execute(['username' => $username, 'password' => $password]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if ($user) {
-            $_SESSION['user_id'] = $user['id_pengguna'];
-            header("Location: " . BASEURL . "/keluarga/dashboard");
-            exit;
-        } else {
-            $error = 'Username atau Password salah atau tidak ditemukan!';
-        }
-    } catch (PDOException $e) {
-        $error = "Gagal terhubung ke database. Cek koneksi Anda!";
-    }
+// Tampilkan pesan jika baru saja mendaftar
+$successMsg = '';
+if (isset($_GET['success']) && $_GET['success'] == 1) {
+    $successMsg = 'Registrasi berhasil! Silakan masuk menggunakan akun baru Anda.';
 }
 ?>
 <?php include __DIR__ . '/../layouts/header.php'; ?>
@@ -141,13 +117,19 @@ body {
         <h2 class="login-title">Login</h2>
         <div class="login-divider"></div>
 
+        <?php if (!empty($successMsg)): ?>
+            <div class="alert alert-success mx-4" style="font-size: 0.85rem;" role="alert">
+                <?= $successMsg; ?>
+            </div>
+        <?php endif; ?>
+
         <?php if (!empty($error)): ?>
             <div class="alert alert-danger mx-4" style="font-size: 0.85rem;" role="alert">
                 <?= $error; ?>
             </div>
         <?php endif; ?>
 
-        <form action="" method="POST">
+        <form action="<?= BASEURL; ?>/auth/login" method="POST">
             
             <div class="login-form-group">
                 <label class="login-label">Username:</label>

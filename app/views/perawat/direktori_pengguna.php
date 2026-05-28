@@ -116,20 +116,57 @@ $userInitial = strtoupper(substr($userName, 0, 1));
                         </tr>
                     </thead>
                     <tbody>
-                        <?php for($i=0; $i<9; $i++): ?>
-                        <tr>
-                            <td>ICU-2024-001</td>
-                            <td class="text-start">AHMAD SUCIPTO</td>
-                            <td>L</td>
-                            <td>JOMBANG</td>
-                            <td>082156345634</td>
-                            <td class="action-icons d-flex justify-content-center border-0" style="padding-top: 20px;">
-                                <a href="#" data-bs-toggle="modal" data-bs-target="#patientDetailModal" class="text-dark btn-view-pasien" data-nama="AHMAD SUCIPTO" data-mrn="ICU-2024-001" data-jk="L" data-asal="JOMBANG" data-nohp="082156345634"><i class="bi bi-eye"></i></a>
-                                <a href="#" data-bs-toggle="modal" data-bs-target="#patientEditModal" class="text-dark btn-edit-pasien" data-username="Sulistiwo" data-password="Megantropi551" data-nik="123456789123456789" data-nama="AHMAD SUCIPTO" data-asal="JOMBANG" data-tgllahir="12/05/1999" data-jk="L" data-agama="HALAL" data-statuskawin="-" data-pekerjaan="-" data-alamat="jl.ahmad haji kec.pildun kel.Mangu Kab.Ronggowati"><i class="bi bi-pencil-square"></i></a>
-                                <a href="javascript:void(0);" class="btn-exit-pasien"><i class="bi bi-box-arrow-right text-danger"></i></a>
-                            </td>
-                        </tr>
-                        <?php endfor; ?>
+                        <?php if (!empty($data['patients'])): ?>
+                            <?php foreach ($data['patients'] as $patient): ?>
+                            <tr>
+                                <td>ICU-2026-<?= str_pad($patient['id_pasien'], 3, '0', STR_PAD_LEFT) ?></td>
+                                <td class="text-start"><?= htmlspecialchars($patient['nama_lengkap']) ?></td>
+                                <td><?= htmlspecialchars($patient['jenis_kelamin']) ?></td>
+                                <td><?= htmlspecialchars($patient['asal']) ?></td>
+                                <td><?= htmlspecialchars($patient['no_hp_wali'] ?: '-') ?></td>
+                                <td class="action-icons d-flex justify-content-center border-0" style="padding-top: 20px;">
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#patientDetailModal" 
+                                       class="text-dark btn-view-pasien" 
+                                       data-nama="<?= htmlspecialchars($patient['nama_lengkap']) ?>"
+                                       data-mrn="ICU-2026-<?= str_pad($patient['id_pasien'], 3, '0', STR_PAD_LEFT) ?>" 
+                                       data-jk="<?= htmlspecialchars($patient['jenis_kelamin']) ?>" 
+                                       data-asal="<?= htmlspecialchars($patient['asal']) ?>"
+                                       data-nik="<?= htmlspecialchars($patient['nik']) ?>"
+                                       data-nohp="<?= htmlspecialchars($patient['no_hp_wali'] ?: '-') ?>"><i class="bi bi-eye"></i></a>
+                                    
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#patientEditModal" 
+                                       class="text-dark btn-edit-pasien" 
+                                       data-idrm="<?= $patient['id_rekam_medis'] ?>"
+                                       data-username="<?= htmlspecialchars($patient['username'] ?: '') ?>"
+                                       data-password="" 
+                                       data-nik="<?= htmlspecialchars($patient['nik'] ?: '') ?>"
+                                       data-nama="<?= htmlspecialchars($patient['nama_lengkap'] ?: '') ?>" 
+                                       data-asal="<?= htmlspecialchars($patient['asal'] ?: '') ?>" 
+                                       data-tgllahir="<?= htmlspecialchars($patient['tgl_lahir'] ?: '') ?>"
+                                       data-jk="<?= htmlspecialchars($patient['jenis_kelamin'] ?: 'L') ?>" 
+                                       data-agama="<?= htmlspecialchars($patient['agama'] ?: '') ?>" 
+                                       data-statuskawin="<?= htmlspecialchars($patient['status_perkawinan'] ?: '') ?>" 
+                                       data-pekerjaan="<?= htmlspecialchars($patient['pekerjaan'] ?: '') ?>"
+                                       data-alamat="<?= htmlspecialchars($patient['alamat'] ?: '') ?>"
+                                       data-bpjs="<?= htmlspecialchars($patient['nomor_bpjs'] ?: '') ?>"
+                                       data-goldarah="<?= htmlspecialchars($patient['golongan_darah'] ?: '') ?>"
+                                       data-alergi="" 
+                                       data-kewarganegaraan="<?= htmlspecialchars($patient['kewarganegaraan'] ?: '') ?>"
+                                       data-namawali="<?= htmlspecialchars($patient['nama_wali'] ?: '') ?>"
+                                       data-statuswali="<?= htmlspecialchars($patient['status_wali'] ?: '') ?>"
+                                       data-nikwali="<?= htmlspecialchars($patient['nik_wali'] ?: '') ?>"
+                                       data-nohpwali="<?= htmlspecialchars($patient['no_hp_wali'] ?: '') ?>"
+                                       data-alamatwali="<?= htmlspecialchars($patient['alamat_wali'] ?: '') ?>"><i class="bi bi-pencil-square"></i></a>
+                                    
+                                    <a href="javascript:void(0);" class="btn-exit-pasien" data-idrm="<?= $patient['id_rekam_medis'] ?>"><i class="bi bi-box-arrow-right text-danger"></i></a>
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="6" class="text-muted py-4">Tidak ada data pasien terdaftar.</td>
+                            </tr>
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>
@@ -179,7 +216,7 @@ $userInitial = strtoupper(substr($userName, 0, 1));
 
                     <div class="d-flex flex-column gap-3 align-items-center mt-5 mb-2">
                         <button type="button" id="btnEditSave" class="btn" style="background-color: #20c997; color: white; border: 1px solid #111; font-weight: 700; width: 65%; border-radius: 8px; padding: 8px; font-size: 0.85rem; letter-spacing: 0.5px;">EDIT</button>
-                        <a href="<?= BASEURL; ?>/portal-staff/login" class="btn" style="background-color: #dc3545; color: white; border: 1px solid #111; font-weight: 700; width: 65%; border-radius: 8px; padding: 8px; font-size: 0.85rem; text-decoration: none; text-align: center; letter-spacing: 0.5px;">LOGOUT</a>
+                        <a href="<?= BASEURL; ?>/portal-staff/logout" class="btn" style="background-color: #dc3545; color: white; border: 1px solid #111; font-weight: 700; width: 65%; border-radius: 8px; padding: 8px; font-size: 0.85rem; text-decoration: none; text-align: center; letter-spacing: 0.5px;">LOGOUT</a>
                     </div>
                 </form>
             </div>
@@ -298,7 +335,8 @@ $userInitial = strtoupper(substr($userName, 0, 1));
             </div>
             <div class="modal-body px-4 pt-4 pb-5">
                 
-                <form id="editPasienForm">
+                <form id="editPasienForm" action="<?= BASEURL; ?>/perawat/update_pasien" method="POST">
+                    <input type="hidden" name="id_rekam_medis" id="editIdRM">
                     <!-- Section 1 -->
                     <div class="mb-4">
                         <h6 style="color: #666; font-weight: 600; font-size: 0.95rem; margin-bottom: 8px;">AKUN PENGGUNA</h6>
@@ -306,13 +344,13 @@ $userInitial = strtoupper(substr($userName, 0, 1));
                         <div class="row mb-2">
                             <label class="col-sm-3 col-form-label text-end" style="font-family: 'Courier New', monospace; font-weight: 600; font-size: 0.95rem; color: #111;">Username:</label>
                             <div class="col-sm-8">
-                                <input type="text" id="editUsername" class="form-control form-control-sm" style="font-family: 'Courier New', monospace; font-size: 0.9rem; border: 1px solid #555; background-color: transparent; border-radius: 0; color: #111;">
+                                <input type="text" id="editUsername" name="username" class="form-control form-control-sm" style="font-family: 'Courier New', monospace; font-size: 0.9rem; border: 1px solid #555; background-color: transparent; border-radius: 0; color: #111;">
                             </div>
                         </div>
                         <div class="row mb-2">
                             <label class="col-sm-3 col-form-label text-end" style="font-family: 'Courier New', monospace; font-weight: 600; font-size: 0.95rem; color: #111;">Password:</label>
                             <div class="col-sm-8">
-                                <input type="text" id="editPassword" class="form-control form-control-sm" style="font-family: 'Courier New', monospace; font-size: 0.9rem; border: 1px solid #555; background-color: transparent; border-radius: 0; color: #111;">
+                                <input type="text" id="editPassword" name="password" class="form-control form-control-sm" style="font-family: 'Courier New', monospace; font-size: 0.9rem; border: 1px solid #555; background-color: transparent; border-radius: 0; color: #111;">
                             </div>
                         </div>
                     </div>
@@ -324,60 +362,60 @@ $userInitial = strtoupper(substr($userName, 0, 1));
                         <div class="row mb-2">
                             <label class="col-sm-3 col-form-label text-end" style="font-family: 'Courier New', monospace; font-weight: 600; font-size: 0.95rem; color: #111;">NIK :</label>
                             <div class="col-sm-8">
-                                <input type="text" id="editNik" class="form-control form-control-sm" style="font-family: 'Courier New', monospace; font-size: 0.9rem; border: 1px solid #555; background-color: transparent; border-radius: 0; color: #111;">
+                                <input type="text" id="editNik" name="nik" class="form-control form-control-sm" style="font-family: 'Courier New', monospace; font-size: 0.9rem; border: 1px solid #555; background-color: transparent; border-radius: 0; color: #111;">
                             </div>
                         </div>
                         <div class="row mb-2">
                             <label class="col-sm-3 col-form-label text-end" style="font-family: 'Courier New', monospace; font-weight: 600; font-size: 0.95rem; color: #111;">Nama Lengkap:</label>
                             <div class="col-sm-8">
-                                <input type="text" id="editNama" class="form-control form-control-sm" style="font-family: 'Courier New', monospace; font-size: 0.9rem; border: 1px solid #555; background-color: transparent; border-radius: 0; color: #111;">
+                                <input type="text" id="editNama" name="nama_pasien" class="form-control form-control-sm" style="font-family: 'Courier New', monospace; font-size: 0.9rem; border: 1px solid #555; background-color: transparent; border-radius: 0; color: #111;">
                             </div>
                         </div>
                         <div class="row mb-2">
                             <label class="col-sm-3 col-form-label text-end" style="font-family: 'Courier New', monospace; font-weight: 600; font-size: 0.95rem; color: #111;">Asal :</label>
                             <div class="col-sm-3">
-                                <input type="text" id="editAsal" class="form-control form-control-sm" style="font-family: 'Courier New', monospace; font-size: 0.9rem; border: 1px solid #555; background-color: transparent; border-radius: 0; color: #111;">
+                                <input type="text" id="editAsal" name="asal" class="form-control form-control-sm" style="font-family: 'Courier New', monospace; font-size: 0.9rem; border: 1px solid #555; background-color: transparent; border-radius: 0; color: #111;">
                             </div>
                             <label class="col-sm-2 col-form-label text-end" style="font-family: 'Courier New', monospace; font-weight: 600; font-size: 0.95rem; color: #111;">TGL.Lahir :</label>
                             <div class="col-sm-3">
-                                <input type="text" id="editTgllahir" class="form-control form-control-sm" style="font-family: 'Courier New', monospace; font-size: 0.9rem; border: 1px solid #555; background-color: transparent; border-radius: 0; color: #111;">
+                                <input type="text" id="editTgllahir" name="tgl_lahir" class="form-control form-control-sm" style="font-family: 'Courier New', monospace; font-size: 0.9rem; border: 1px solid #555; background-color: transparent; border-radius: 0; color: #111;">
                             </div>
                         </div>
                         <div class="row mb-2 align-items-center">
                             <label class="col-sm-3 col-form-label text-end" style="font-family: 'Courier New', monospace; font-weight: 600; font-size: 0.95rem; color: #111;">Jenis Kelamin :</label>
                             <div class="col-sm-8 d-flex align-items-center" style="font-family: 'Courier New', monospace; font-size: 0.9rem; color: #555;">
                                 <div class="form-check form-check-inline mb-0">
-                                    <input class="form-check-input" type="radio" name="editJk" id="editJkL" value="L" style="border-color: #555; opacity: 1;">
-                                    <label class="form-check-label" for="editJkL" style="opacity: 1;">Laki-laki</label>
+                                    <input class="form-check-input" type="radio" name="jk" id="editJkLActive" value="L" style="border-color: #555; opacity: 1;">
+                                    <label class="form-check-label" for="editJkLActive" style="opacity: 1;">Laki-laki</label>
                                 </div>
                                 <div class="form-check form-check-inline mb-0 ms-3">
-                                    <input class="form-check-input" type="radio" name="editJk" id="editJkP" value="P" style="border-color: #555; opacity: 1;">
-                                    <label class="form-check-label" for="editJkP" style="opacity: 1;">Perempuan</label>
+                                    <input class="form-check-input" type="radio" name="jk" id="editJkPActive" value="P" style="border-color: #555; opacity: 1;">
+                                    <label class="form-check-label" for="editJkPActive" style="opacity: 1;">Perempuan</label>
                                 </div>
                             </div>
                         </div>
                         <div class="row mb-2">
                             <label class="col-sm-3 col-form-label text-end" style="font-family: 'Courier New', monospace; font-weight: 600; font-size: 0.95rem; color: #111;">Agama :</label>
                             <div class="col-sm-8">
-                                <input type="text" id="editAgama" class="form-control form-control-sm" style="font-family: 'Courier New', monospace; font-size: 0.9rem; border: 1px solid #555; background-color: transparent; border-radius: 0; color: #111;">
+                                <input type="text" id="editAgama" name="agama" class="form-control form-control-sm" style="font-family: 'Courier New', monospace; font-size: 0.9rem; border: 1px solid #555; background-color: transparent; border-radius: 0; color: #111;">
                             </div>
                         </div>
                         <div class="row mb-2">
                             <label class="col-sm-3 col-form-label text-end" style="font-family: 'Courier New', monospace; font-weight: 600; font-size: 0.95rem; color: #111;">Status Perkawinan :</label>
                             <div class="col-sm-8">
-                                <input type="text" id="editStatusKawin" class="form-control form-control-sm" style="font-family: 'Courier New', monospace; font-size: 0.9rem; border: 1px solid #555; background-color: transparent; border-radius: 0; color: #111;">
+                                <input type="text" id="editStatusKawin" name="status_perkawinan" class="form-control form-control-sm" style="font-family: 'Courier New', monospace; font-size: 0.9rem; border: 1px solid #555; background-color: transparent; border-radius: 0; color: #111;">
                             </div>
                         </div>
                         <div class="row mb-2">
                             <label class="col-sm-3 col-form-label text-end" style="font-family: 'Courier New', monospace; font-weight: 600; font-size: 0.95rem; color: #111;">Pekerjaan :</label>
                             <div class="col-sm-8">
-                                <input type="text" id="editPekerjaan" class="form-control form-control-sm" style="font-family: 'Courier New', monospace; font-size: 0.9rem; border: 1px solid #555; background-color: transparent; border-radius: 0; color: #111;">
+                                <input type="text" id="editPekerjaan" name="pekerjaan" class="form-control form-control-sm" style="font-family: 'Courier New', monospace; font-size: 0.9rem; border: 1px solid #555; background-color: transparent; border-radius: 0; color: #111;">
                             </div>
                         </div>
                         <div class="row mb-2">
                             <label class="col-sm-3 col-form-label text-end mt-1" style="font-family: 'Courier New', monospace; font-weight: 600; font-size: 0.95rem; color: #111;">Alamat :</label>
                             <div class="col-sm-8">
-                                <textarea class="form-control form-control-sm" id="editAlamat" rows="3" style="font-family: 'Courier New', monospace; font-size: 0.9rem; border: 1px solid #555; background-color: transparent; border-radius: 0; resize: none; color: #111;"></textarea>
+                                <textarea class="form-control form-control-sm" id="editAlamat" name="alamat" rows="3" style="font-family: 'Courier New', monospace; font-size: 0.9rem; border: 1px solid #555; background-color: transparent; border-radius: 0; resize: none; color: #111;"></textarea>
                             </div>
                         </div>
                     </div>
@@ -389,25 +427,25 @@ $userInitial = strtoupper(substr($userName, 0, 1));
                         <div class="row mb-2">
                             <label class="col-sm-3 col-form-label text-end" style="font-family: 'Courier New', monospace; font-weight: 600; font-size: 0.95rem; color: #111;">Nomor BPJS/Asuransi :</label>
                             <div class="col-sm-8">
-                                <input type="text" class="form-control form-control-sm" style="font-family: 'Courier New', monospace; font-size: 0.9rem; border: 1px solid #555; background-color: transparent; border-radius: 0; color: #111;">
+                                <input type="text" id="editBpjs" name="bpjs" class="form-control form-control-sm" style="font-family: 'Courier New', monospace; font-size: 0.9rem; border: 1px solid #555; background-color: transparent; border-radius: 0; color: #111;">
                             </div>
                         </div>
                         <div class="row mb-2">
                             <label class="col-sm-3 col-form-label text-end" style="font-family: 'Courier New', monospace; font-weight: 600; font-size: 0.95rem; color: #111;">Golongan Darah :</label>
                             <div class="col-sm-8">
-                                <input type="text" class="form-control form-control-sm" style="font-family: 'Courier New', monospace; font-size: 0.9rem; border: 1px solid #555; background-color: transparent; border-radius: 0; color: #111;">
+                                <input type="text" id="editGolDarah" name="gol_darah" class="form-control form-control-sm" style="font-family: 'Courier New', monospace; font-size: 0.9rem; border: 1px solid #555; background-color: transparent; border-radius: 0; color: #111;">
                             </div>
                         </div>
                         <div class="row mb-2">
                             <label class="col-sm-3 col-form-label text-end" style="font-family: 'Courier New', monospace; font-weight: 600; font-size: 0.95rem; color: #111;">Alergi :</label>
                             <div class="col-sm-8">
-                                <input type="text" class="form-control form-control-sm" style="font-family: 'Courier New', monospace; font-size: 0.9rem; border: 1px solid #555; background-color: transparent; border-radius: 0; color: #111;">
+                                <input type="text" id="editAlergi" name="alergi" class="form-control form-control-sm" style="font-family: 'Courier New', monospace; font-size: 0.9rem; border: 1px solid #555; background-color: transparent; border-radius: 0; color: #111;">
                             </div>
                         </div>
                         <div class="row mb-2">
                             <label class="col-sm-3 col-form-label text-end" style="font-family: 'Courier New', monospace; font-weight: 600; font-size: 0.95rem; color: #111;">Kewarganegaraan :</label>
                             <div class="col-sm-8">
-                                <input type="text" class="form-control form-control-sm" style="font-family: 'Courier New', monospace; font-size: 0.9rem; border: 1px solid #555; background-color: transparent; border-radius: 0; color: #111;">
+                                <input type="text" id="editKewarganegaraan" name="kewarganegaraan" class="form-control form-control-sm" style="font-family: 'Courier New', monospace; font-size: 0.9rem; border: 1px solid #555; background-color: transparent; border-radius: 0; color: #111;">
                             </div>
                         </div>
                     </div>
@@ -419,31 +457,31 @@ $userInitial = strtoupper(substr($userName, 0, 1));
                         <div class="row mb-2">
                             <label class="col-sm-3 col-form-label text-end" style="font-family: 'Courier New', monospace; font-weight: 600; font-size: 0.95rem; color: #111;">Nama Lengkap Wali :</label>
                             <div class="col-sm-8">
-                                <input type="text" class="form-control form-control-sm" style="font-family: 'Courier New', monospace; font-size: 0.9rem; border: 1px solid #555; background-color: transparent; border-radius: 0; color: #111;">
+                                <input type="text" id="editNamaWali" name="nama_wali" class="form-control form-control-sm" style="font-family: 'Courier New', monospace; font-size: 0.9rem; border: 1px solid #555; background-color: transparent; border-radius: 0; color: #111;">
                             </div>
                         </div>
                         <div class="row mb-2">
                             <label class="col-sm-3 col-form-label text-end" style="font-family: 'Courier New', monospace; font-weight: 600; font-size: 0.95rem; color: #111;">Status Wali :</label>
                             <div class="col-sm-8">
-                                <input type="text" class="form-control form-control-sm" style="font-family: 'Courier New', monospace; font-size: 0.9rem; border: 1px solid #555; background-color: transparent; border-radius: 0; color: #111;">
+                                <input type="text" id="editStatusWali" name="status_wali" class="form-control form-control-sm" style="font-family: 'Courier New', monospace; font-size: 0.9rem; border: 1px solid #555; background-color: transparent; border-radius: 0; color: #111;">
                             </div>
                         </div>
                         <div class="row mb-2">
                             <label class="col-sm-3 col-form-label text-end" style="font-family: 'Courier New', monospace; font-weight: 600; font-size: 0.95rem; color: #111;">NIK Wali :</label>
                             <div class="col-sm-8">
-                                <input type="text" class="form-control form-control-sm" style="font-family: 'Courier New', monospace; font-size: 0.9rem; border: 1px solid #555; background-color: transparent; border-radius: 0; color: #111;">
+                                <input type="text" id="editNikWali" name="nik_wali" class="form-control form-control-sm" style="font-family: 'Courier New', monospace; font-size: 0.9rem; border: 1px solid #555; background-color: transparent; border-radius: 0; color: #111;">
                             </div>
                         </div>
                         <div class="row mb-2">
                             <label class="col-sm-3 col-form-label text-end" style="font-family: 'Courier New', monospace; font-weight: 600; font-size: 0.95rem; color: #111;">No.HP/Whatsapp aktif :</label>
                             <div class="col-sm-8">
-                                <input type="text" class="form-control form-control-sm" style="font-family: 'Courier New', monospace; font-size: 0.9rem; border: 1px solid #555; background-color: transparent; border-radius: 0; color: #111;">
+                                <input type="text" id="editNoHpWali" name="nohp_wali" class="form-control form-control-sm" style="font-family: 'Courier New', monospace; font-size: 0.9rem; border: 1px solid #555; background-color: transparent; border-radius: 0; color: #111;">
                             </div>
                         </div>
                         <div class="row mb-2">
                             <label class="col-sm-3 col-form-label text-end mt-1" style="font-family: 'Courier New', monospace; font-weight: 600; font-size: 0.95rem; color: #111;">Alamat Wali :</label>
                             <div class="col-sm-8">
-                                <textarea class="form-control form-control-sm" rows="3" style="font-family: 'Courier New', monospace; font-size: 0.9rem; border: 1px solid #555; background-color: transparent; border-radius: 0; resize: none; color: #111;"></textarea>
+                                <textarea class="form-control form-control-sm" id="editAlamatWali" name="alamat_wali" rows="3" style="font-family: 'Courier New', monospace; font-size: 0.9rem; border: 1px solid #555; background-color: transparent; border-radius: 0; resize: none; color: #111;"></textarea>
                             </div>
                         </div>
                         
@@ -490,6 +528,7 @@ $userInitial = strtoupper(substr($userName, 0, 1));
         const editButtons = document.querySelectorAll('.btn-edit-pasien');
         editButtons.forEach(btn => {
             btn.addEventListener('click', function() {
+                const idrm = this.getAttribute('data-idrm');
                 const username = this.getAttribute('data-username');
                 const password = this.getAttribute('data-password');
                 const nik = this.getAttribute('data-nik');
@@ -501,7 +540,18 @@ $userInitial = strtoupper(substr($userName, 0, 1));
                 const statuskawin = this.getAttribute('data-statuskawin');
                 const pekerjaan = this.getAttribute('data-pekerjaan');
                 const alamat = this.getAttribute('data-alamat');
+                
+                const bpjs = this.getAttribute('data-bpjs');
+                const goldarah = this.getAttribute('data-goldarah');
+                const alergi = this.getAttribute('data-alergi');
+                const kewarganegaraan = this.getAttribute('data-kewarganegaraan');
+                const namawali = this.getAttribute('data-namawali');
+                const statuswali = this.getAttribute('data-statuswali');
+                const nikwali = this.getAttribute('data-nikwali');
+                const nohpwali = this.getAttribute('data-nohpwali');
+                const alamatwali = this.getAttribute('data-alamatwali');
 
+                if (document.getElementById('editIdRM')) document.getElementById('editIdRM').value = idrm || '';
                 if (document.getElementById('editUsername')) document.getElementById('editUsername').value = username || '';
                 if (document.getElementById('editPassword')) document.getElementById('editPassword').value = password || '';
                 if (document.getElementById('editNik')) document.getElementById('editNik').value = nik || '';
@@ -510,15 +560,25 @@ $userInitial = strtoupper(substr($userName, 0, 1));
                 if (document.getElementById('editTgllahir')) document.getElementById('editTgllahir').value = tgllahir || '';
                 
                 if (jk === 'L') {
-                    if (document.getElementById('editJkL')) document.getElementById('editJkL').checked = true;
+                    if (document.getElementById('editJkLActive')) document.getElementById('editJkLActive').checked = true;
                 } else if (jk === 'P') {
-                    if (document.getElementById('editJkP')) document.getElementById('editJkP').checked = true;
+                    if (document.getElementById('editJkPActive')) document.getElementById('editJkPActive').checked = true;
                 }
                 
                 if (document.getElementById('editAgama')) document.getElementById('editAgama').value = agama || '';
                 if (document.getElementById('editStatusKawin')) document.getElementById('editStatusKawin').value = statuskawin || '';
                 if (document.getElementById('editPekerjaan')) document.getElementById('editPekerjaan').value = pekerjaan || '';
                 if (document.getElementById('editAlamat')) document.getElementById('editAlamat').value = alamat || '';
+                
+                if (document.getElementById('editBpjs')) document.getElementById('editBpjs').value = bpjs || '';
+                if (document.getElementById('editGolDarah')) document.getElementById('editGolDarah').value = goldarah || '';
+                if (document.getElementById('editAlergi')) document.getElementById('editAlergi').value = alergi || '';
+                if (document.getElementById('editKewarganegaraan')) document.getElementById('editKewarganegaraan').value = kewarganegaraan || '';
+                if (document.getElementById('editNamaWali')) document.getElementById('editNamaWali').value = namawali || '';
+                if (document.getElementById('editStatusWali')) document.getElementById('editStatusWali').value = statuswali || '';
+                if (document.getElementById('editNikWali')) document.getElementById('editNikWali').value = nikwali || '';
+                if (document.getElementById('editNoHpWali')) document.getElementById('editNoHpWali').value = nohpwali || '';
+                if (document.getElementById('editAlamatWali')) document.getElementById('editAlamatWali').value = alamatwali || '';
             });
         });
 
@@ -557,6 +617,9 @@ $userInitial = strtoupper(substr($userName, 0, 1));
         btnExitPasien.forEach(btn => {
             btn.addEventListener('click', function (e) {
                 e.preventDefault();
+                const idrm = this.getAttribute('data-idrm');
+                if (document.getElementById('exitIdRekamMedis')) document.getElementById('exitIdRekamMedis').value = idrm || '';
+                
                 const modalEl = document.getElementById('confirmExitPatientModal');
                 if (modalEl) {
                     const modal = new bootstrap.Modal(modalEl);
@@ -613,10 +676,13 @@ $userInitial = strtoupper(substr($userName, 0, 1));
                     <p style="margin: 0; font-size: 0.95rem; color: #111; line-height: 1.5;">Sebelum melanjutkan,<br>Pastikan anda telah memastikan bahwa<br>pasien benar benar telah keluar</p>
                 </div>
 
-                <div class="d-flex justify-content-center gap-4">
-                    <a href="<?= BASEURL; ?>/perawat/dashboard" class="btn" style="background-color: #20c997; color: #111; border: 1px solid #111; font-weight: 600; width: 130px; border-radius: 8px; padding: 8px 0; text-decoration: none;">Ya, teruskan</a>
-                    <button type="button" class="btn" data-bs-dismiss="modal" style="background-color: #dc3545; color: #111; border: 1px solid #111; font-weight: 600; width: 130px; border-radius: 8px; padding: 8px 0;">Kembali</button>
-                </div>
+                <form action="<?= BASEURL; ?>/perawat/keluar_pasien" method="POST">
+                    <input type="hidden" name="id_rekam_medis" id="exitIdRekamMedis">
+                    <div class="d-flex justify-content-center gap-4">
+                        <button type="submit" class="btn" style="background-color: #20c997; color: #111; border: 1px solid #111; font-weight: 600; width: 130px; border-radius: 8px; padding: 8px 0;">Ya, teruskan</button>
+                        <button type="button" class="btn" data-bs-dismiss="modal" style="background-color: #dc3545; color: #111; border: 1px solid #111; font-weight: 600; width: 130px; border-radius: 8px; padding: 8px 0;">Kembali</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -630,7 +696,7 @@ $userInitial = strtoupper(substr($userName, 0, 1));
                 <i class="bi bi-shield-check" style="font-size: 6rem; color: #20c997;"></i>
                 <h5 class="mt-3 mb-4" style="color: #111; font-weight: 700; font-size: 1.1rem;">Yakin Ingin Menyimpan Perubahan?</h5>
                 <div class="d-flex justify-content-center gap-4 mt-3">
-                    <a href="<?= BASEURL; ?>/perawat/dashboard" class="btn" style="background-color: #20c997; color: #111; border: none; font-weight: 600; width: 130px; border-radius: 8px; padding: 8px 0; text-decoration: none;">Ya, Simpan</a>
+                    <button type="button" id="btnConfirmSubmitEditDir" class="btn" style="background-color: #20c997; color: #111; border: none; font-weight: 600; width: 130px; border-radius: 8px; padding: 8px 0;">Ya, Simpan</button>
                     <button type="button" id="btnTidakSimpanDir" class="btn" style="background-color: #dc3545; color: white; border: none; font-weight: 600; width: 100px; border-radius: 8px; padding: 8px 0;">Tidak</button>
                 </div>
             </div>

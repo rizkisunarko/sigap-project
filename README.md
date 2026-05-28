@@ -24,7 +24,7 @@ Sistem informasi berbasis web untuk pengelolaan data pasien ICU, pencatatan kond
 - Sinkronisasi data rekam medis pasien lama
 - Manajemen keterlambatan input data
 - Akses informasi kondisi pasien oleh keluarga secara daring
-- Pendaftaran pasien (jalur Umum, BPJS, dan IGD)
+- Pendaftaran pasien 
 - Unggah dokumen rujukan untuk pasien BPJS
 - Verifikasi nomor rekam medis pasien lama
 

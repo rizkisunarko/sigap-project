@@ -1,5 +1,5 @@
 <?php 
-    require_once "../../core/Model.php";
+    require_once __DIR__ . "/../../core/Model.php";
 
     class PendaftaranModel extends Model {
 
@@ -29,7 +29,7 @@
         }
         
         // daftar akun 
-        public function daftarAkun($email, $password, &$msg) {
+        public function daftarAkun($username, $password, &$msg) {
             $query = $this->db->prepare(
                 "SELECT username from akun_pengguna where username = :username"
             );
@@ -48,8 +48,10 @@
                 $query->bindParam(":password", $data_password);
                 $query->execute();
                 $msg =  "Berhasil";
+                return $this->db->lastInsertId();
             } else {
                 $msg = "Username anda sudah terdaftar";
+                return false;
             }
         }
     }

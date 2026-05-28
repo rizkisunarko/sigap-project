@@ -379,7 +379,7 @@ $userInitial = strtoupper(substr($userName, 0, 1));
 
                     <div class="d-flex flex-column gap-3 align-items-center mt-5 mb-2">
                         <button type="button" id="btnEditSave" class="btn" style="background-color: #20c997; color: white; border: 1px solid #111; font-weight: 700; width: 65%; border-radius: 8px; padding: 8px; font-size: 0.85rem; letter-spacing: 0.5px;">EDIT</button>
-                        <a href="<?= BASEURL; ?>/portal-staff/login" class="btn" style="background-color: #dc3545; color: white; border: 1px solid #111; font-weight: 700; width: 65%; border-radius: 8px; padding: 8px; font-size: 0.85rem; text-decoration: none; text-align: center; letter-spacing: 0.5px;">LOGOUT</a>
+                        <a href="<?= BASEURL; ?>/portal-staff/logout" class="btn" style="background-color: #dc3545; color: white; border: 1px solid #111; font-weight: 700; width: 65%; border-radius: 8px; padding: 8px; font-size: 0.85rem; text-decoration: none; text-align: center; letter-spacing: 0.5px;">LOGOUT</a>
                     </div>
                 </form>
             </div>
@@ -436,5 +436,6 @@ $userInitial = strtoupper(substr($userName, 0, 1));
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
