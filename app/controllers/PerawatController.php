@@ -1,4 +1,7 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 require_once __DIR__ . '/../../core/Controller.php';
 require_once __DIR__ . '/../models/Perawat.php';
 require_once __DIR__ . '/../models/Pasien.php';
@@ -6,22 +9,24 @@ require_once __DIR__ . '/../models/RekamMedis.php';
 require_once __DIR__ . '/../models/KeluargaPasien.php';
 
 class PerawatController extends Controller {
+
+    public function view($name, $data = []) {
+        extract($data);
+        $view_content = __DIR__ . '/../views/' . $name . '.php';
+        require_once __DIR__ . '/../views/perawat/Halutama.php';
+    }
     
-    // ==========================================================
-    // FITUR LOGIN RAHASIA (MILIKMU)
-    // ==========================================================
     public function login() {
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
 
-        // Jika perawat sudah punya Sesi, langsung arahkan ke dashboard
         if (isset($_SESSION['perawat_id']) || isset($_SESSION['user']['nama'])) {
             header('Location: ' . BASEURL . '/perawat/dashboard');
             exit;
         }
 
-        $this->view('portal-staff/login');
+        require_once __DIR__ . '/../views/portal-staff/login.php';
     }
 
     public function prosesLogin() {
@@ -34,27 +39,21 @@ class PerawatController extends Controller {
             $divisi     = trim($_POST['divisi'] ?? '');
             $shift      = trim($_POST['shift'] ?? '');
 
-            // -------------------------------------------------------------
-            // VERIFIKASI 2 LANGKAH (IDE RAHASIAMU: CEK SUFFIX "-staff")
-            // -------------------------------------------------------------
             if (!str_ends_with(strtolower($nama_input), '-staff')) {
                 $_SESSION['error_staff'] = '*Data yang anda masukkan tidak sesuai.';
-                header("Location: " . BASEURL . "/division/FOR-255");
+                header("Location: " . BASEURL . "/divisionRMFO-255");
                 exit;
             }
 
-            // Membuang "-staff" untuk dicocokkan dengan nama asli
             $nama_asli = trim(str_ireplace('-staff', '', $nama_input));
 
             $model = new PerawatModel();
             $dataPerawat = $model->prosesCheckInPerawat($nama_asli, $divisi, $shift);
 
             if ($dataPerawat) {
-                // Sesi asli milikmu
                 $_SESSION['perawat_id']   = $dataPerawat['id_perawat'];
                 $_SESSION['perawat_nama'] = $dataPerawat['nama_lengkap'];
                 
-                // Sesi tambahan untuk menyalakan fitur dashboard milik tim
                 $_SESSION['user'] = [
                     'nama' => $dataPerawat['nama_lengkap'],
                     'role' => $divisi,
@@ -65,15 +64,12 @@ class PerawatController extends Controller {
                 exit;
             } else {
                 $_SESSION['error_staff'] = '*Data yang anda masukkan tidak sesuai.';
-                header("Location: " . BASEURL . "/division/FOR-255");
+                header("Location: " . BASEURL . "/divisionRMFO-255");
                 exit;
             }
         }
     }
 
-    // ==========================================================
-    // FITUR DASHBOARD DAN MANAJEMEN (MILIK TIM/DEVS)
-    // ==========================================================
     public function portalLogin() {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -90,17 +86,25 @@ class PerawatController extends Controller {
             session_start();
         }
 
-        $nama = isset($_POST['namaLengkap']) ? trim($_POST['namaLengkap']) : 'FIRMANSYAH';
-        $divisi = isset($_POST['divisi']) ? $_POST['divisi'] : 'FRONT OFFICER';
-        $shift = isset($_POST['shift']) ? $_POST['shift'] : 'Shift 2';
+        $namaLengkap = isset($_POST['namaLengkap']) ? trim($_POST['namaLengkap']) : '';
+        $divisi = isset($_POST['divisi']) ? $_POST['divisi'] : '';
+        $shift = isset($_POST['shift']) ? $_POST['shift'] : '';
+
+        if (!str_ends_with($namaLengkap, '-staff')) {
+            $_SESSION['error_staff'] = "Nama yang anda masukkan tidak memiliki akses.";
+            header('Location: ' . BASEURL . '/divisionRMFO-255');
+            exit;
+        }
+
+        $namaBersih = substr($namaLengkap, 0, -6);
 
         $_SESSION['user'] = [
-            'nama' => $nama,
+            'nama' => $namaBersih,
             'role' => $divisi,
             'shift' => $shift
         ];
 
-        header('Location: ' . BASEURL . '/perawat/dashboard');
+        header('Location: ' . BASEURL . '/perawat/Halutama');
         exit;
     }
 
@@ -108,10 +112,20 @@ class PerawatController extends Controller {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-        unset($_SESSION['user']);
-        unset($_SESSION['perawat_id']);
-        unset($_SESSION['perawat_nama']);
-        header('Location: ' . BASEURL . '/portal-staff/login');
+
+        $_SESSION = [];
+
+        if (ini_get("session.use_cookies")) {
+            $params = session_get_cookie_params();
+            setcookie(session_name(), '', time() - 42000,
+                $params["path"], $params["domain"],
+                $params["secure"], $params["httponly"]
+            );
+        }
+
+        session_destroy();
+
+        header('Location: ' . BASEURL . '/divisionRMFO-255');
         exit;
     }
 
@@ -121,25 +135,21 @@ class PerawatController extends Controller {
         }
 
         if (!isset($_SESSION['user']['nama'])) {
-            header('Location: ' . BASEURL . '/portal-staff/login');
+            header('Location: ' . BASEURL . '/divisionRMFO-255');
             exit;
         }
 
         $perawatModel = new PerawatModel();
         
-        // 1. Ambil statistik pasien & kapasitas bed
         $rawStats = $perawatModel->pasienAktif_kapasitasBed_pasienKritis();
         $pasien_aktif = isset($rawStats[0][0]['pasien_aktif']) ? $rawStats[0][0]['pasien_aktif'] : 0;
         $kapasitas = isset($rawStats[1][0]['kapasitas']) ? $rawStats[1][0]['kapasitas'] : 12;
         $pasien_kritis = isset($rawStats[2]['pasien_kritis']) ? $rawStats[2]['pasien_kritis'] : 0;
 
-        // 2. Ketersediaan Bed
         $beds = $perawatModel->ketersediaanBed();
 
-        // 3. Antrean Masuk
         $queue = $perawatModel->antreanMasuk();
 
-        // 4. Tugas Shift (Ambil tugas dari shift saat ini)
         $tasks = [];
         $role = $_SESSION['user']['role'];
         $shiftData = $perawatModel->ambilTugasDivisi($role);
@@ -155,7 +165,6 @@ class PerawatController extends Controller {
             }
         }
 
-        // Fallback tugas jika database kosong
         if (empty($tasks)) {
             $tasks = [
                 ['tugas_shift' => 'MEMERIKSA KONDISI PASIEN DI AWAL SHIFT', 'tenggat' => '10:00:00', 'status_dilakukan' => 'belum'],
@@ -204,7 +213,6 @@ class PerawatController extends Controller {
         $db = new Database();
         $conn = $db->connect();
 
-        // Ambil data detail seluruh pasien aktif
         $ambilSPA = new PerawatModel();
         $patients = $ambilSPA->ambilSeluruhDataPasienAktif();
 
@@ -239,7 +247,6 @@ class PerawatController extends Controller {
             return;
         }
 
-        // 1. Daftarkan Akun Pengguna
         $db = new Database();
         $conn = $db->connect();
 
@@ -255,7 +262,6 @@ class PerawatController extends Controller {
         $stmtUser->execute(['username' => $username, 'password' => $hashedPassword]);
         $id_pengguna = $conn->lastInsertId();
 
-        // 2. Simpan Data Diri Pasien
         $nik = isset($_POST['nik']) ? trim($_POST['nik']) : '';
         $nama_lengkap = isset($_POST['nama_lengkap']) ? trim($_POST['nama_lengkap']) : '';
         $asal = isset($_POST['asal']) ? trim($_POST['asal']) : '';
@@ -287,7 +293,6 @@ class PerawatController extends Controller {
             return;
         }
 
-        // Alergi
         if (!empty($alergi)) {
             $stmtAlergi = $conn->prepare("SELECT id_alergi FROM data_alergi WHERE nama_alergi = :nama LIMIT 1");
             $stmtAlergi->execute(['nama' => $alergi]);
@@ -302,7 +307,6 @@ class PerawatController extends Controller {
             $pasienModel->tambahAlergiPasien($id_pasien, $id_alergi);
         }
 
-        // 3. Simpan Wali
         $nama_wali = isset($_POST['nama_wali']) ? trim($_POST['nama_wali']) : '';
         $status_wali = isset($_POST['status_wali']) ? trim($_POST['status_wali']) : '';
         $nik_wali = isset($_POST['nik_wali']) ? trim($_POST['nik_wali']) : '';
@@ -334,11 +338,9 @@ class PerawatController extends Controller {
             $alamat_wali, $filename, $id_pasien
         );
 
-        // 4. Rekam Medis
         $rekamMedisModel = new RekamMedis();
         $rekamMedisModel->IsiRekamMedis($id_pasien, date('Y-m-d'), null, 'Tingkat 2');
 
-        // Redirect back with Success Modal display triggered by session/GET
         header('Location: ' . BASEURL . '/perawat/input_data_pasien?success=1');
         exit;
     }
@@ -354,7 +356,6 @@ class PerawatController extends Controller {
         $db = new Database();
         $conn = $db->connect();
 
-        // Dapatkan data pasien terkait RM ini
         $stmtPas = $conn->prepare("SELECT id_pasien, id_pengguna FROM rekam_medis rk JOIN data_diri_pasien ddp ON ddp.id_pasien = rk.id_pasien WHERE rk.id_rekam_medis = :id_rm");
         $stmtPas->execute(['id_rm' => $id_rekam_medis]);
         $pasData = $stmtPas->fetch(PDO::FETCH_ASSOC);
@@ -363,7 +364,6 @@ class PerawatController extends Controller {
             $id_pasien = $pasData['id_pasien'];
             $id_pengguna = $pasData['id_pengguna'];
 
-            // 1. Update Akun
             $username = isset($_POST['username']) ? trim($_POST['username']) : '';
             $password = isset($_POST['password']) ? trim($_POST['password']) : '';
             if (!empty($username) && $id_pengguna) {
@@ -377,7 +377,6 @@ class PerawatController extends Controller {
                 }
             }
 
-            // 2. Update Pasien
             $nik = isset($_POST['nik']) ? trim($_POST['nik']) : '';
             $nama = isset($_POST['nama_pasien']) ? trim($_POST['nama_pasien']) : '';
             $asal = isset($_POST['asal']) ? trim($_POST['asal']) : '';
@@ -398,7 +397,6 @@ class PerawatController extends Controller {
                 $kewarganegaraan, $pekerjaan, $id_pengguna
             );
 
-            // 3. Update Wali
             $nama_wali = isset($_POST['nama_wali']) ? trim($_POST['nama_wali']) : '';
             $status_wali = isset($_POST['status_wali']) ? trim($_POST['status_wali']) : '';
             $nik_wali = isset($_POST['nik_wali']) ? trim($_POST['nik_wali']) : '';
@@ -438,6 +436,38 @@ class PerawatController extends Controller {
         exit;
     }
 
+    public function masukPasien() {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        $id_pasien = isset($_POST['id_pasien']) ? $_POST['id_pasien'] : '';
+
+        if (!empty($id_pasien)) {
+            $db = new Database();
+            $conn = $db->connect();
+            
+            $stmtCheck = $conn->prepare("SELECT id_rekam_medis FROM rekam_medis WHERE id_pasien = :id AND tanggal_keluar IS NULL LIMIT 1");
+            $stmtCheck->execute(['id' => $id_pasien]);
+            $isAktif = $stmtCheck->fetch(PDO::FETCH_ASSOC);
+
+            if ($isAktif) {
+                $_SESSION['error'] = "Gagal! Pasien ini sudah berstatus AKTIF dan masih dalam perawatan.";
+                header('Location: ' . BASEURL . '/perawat/direktori_pengguna');
+                exit;
+            }
+
+            $rekamMedisModel = new RekamMedis();
+            $rekamMedisModel->IsiRekamMedis($id_pasien, date('Y-m-d'), null, 'Tingkat 2');
+            
+            header('Location: ' . BASEURL . '/perawat/input_data_pasien?activated=1');
+            exit;
+        }
+
+        header('Location: ' . BASEURL . '/perawat/direktori_pengguna');
+        exit;
+    }
+
     public function direktoriPengguna() {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -451,11 +481,29 @@ class PerawatController extends Controller {
         $db = new Database();
         $conn = $db->connect();
 
-        // Direktori menampilkan seluruh pasien yang pernah terdaftar (baik aktif maupun discharged)
         $tampilSPT = new PerawatModel();
         $patients = $tampilSPT->tampilSeluruhPasienTerdaftar();
 
         $data = ['patients' => $patients];
         $this->view('perawat/direktori_pengguna', $data);
+    }
+
+    public function getDetailPasienAjax() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_pasien'])) {
+            $id_pasien = $_POST['id_pasien'];
+            
+            $pasienModel = new PasienModel();
+            $dataPasien = $pasienModel->ambilDataPasien($id_pasien); 
+
+            $rmModel = new RekamMedis();
+            $riwayat = $rmModel->ambilRiwayatPasien($id_pasien);
+
+            echo json_encode([
+                'status' => 'success',
+                'pasien' => $dataPasien,
+                'riwayat' => $riwayat
+            ]);
+            exit;
+        }
     }
 }

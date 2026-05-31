@@ -21,13 +21,10 @@ class toWhatsApp {
             'x-api-key: ' . $apiKey
         ]);
 
-        // Eksekusi pengiriman
         $response = curl_exec($ch);
         
-        // Tangkap kode HTTP (200 jika sukses, 500/400 jika gagal)
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-        // Kembalikan dalam bentuk array persis seperti yang diharapkan oleh RekamMedisController
         return [
             'http_code' => $httpCode,
             'response' => json_decode($response, true)

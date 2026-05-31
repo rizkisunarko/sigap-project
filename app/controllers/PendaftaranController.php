@@ -22,22 +22,33 @@
                 session_start();
             }
 
+            $sumber = $_POST['sumber_halaman'] ?? 'publik';
+
+            if ($sumber === 'dasbor_perawat') {
+                $ruteGagal  = '/perawat/tambah_pasien';
+                $ruteSukses = '/perawat/input_data_pasien'; 
+            } else {
+                $ruteGagal  = '/pendaftaran/form';
+                $ruteSukses = '/auth/login?success=1';
+            }
+
             if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-                header('Location: ' . BASEURL . '/pendaftaran/form');
+                header('Location: ' . BASEURL . $ruteGagal);
                 exit;
             }
 
             $ttd = $_POST['ttd_wali'] ?? '';
 
-            // Memanggil fungsi validasi internal yang ketat
             $hasilValidasi = $this->validasiPendaftaran($_POST, $ttd);
 
             if (!$hasilValidasi['sukses']) {
                 $_SESSION['error'] = $hasilValidasi['pesan'];
                 $_SESSION['errors'] = $hasilValidasi['data_errors'] ?? [];
                 $_SESSION['old'] = $_POST;
+
+                session_write_close();
                 
-                header('Location: ' . BASEURL . '/pendaftaran/form');
+                header('Location: ' . BASEURL . $ruteGagal);
                 exit;
             }
 
@@ -52,7 +63,8 @@
                 if ($decoded === false) {
                     $_SESSION['error'] = "Gagal mendekode tanda tangan.";
                     $_SESSION['old'] = $_POST;
-                    header('Location: ' . BASEURL . '/pendaftaran/form');
+                    
+                    header('Location: ' . BASEURL . $ruteGagal);
                     exit;
                 }
                 
@@ -60,19 +72,14 @@
                 file_put_contents($signDir . '/' . $filename, $decoded);
 
                 $modelPendaftaran = new PendaftaranModel(); 
-
                 $pesanModel = "";
-                // Fungsi ini menjalankan seluruh transaksi DB dengan aman
+                
                 $modelPendaftaran->daftarAkun($_POST['username'], $_POST['password'], $_POST, $filename, $pesanModel);
 
                 if ($pesanModel === "Berhasil") {
                     
-                    // ========================================================
-                    // TAMBAHAN DARI TIM: Memicu antrean di Dasbor Perawat
-                    // ========================================================
                     $db = new Database();
                     $conn = $db->connect();
-                    // Mencari ID Pasien yang baru saja berhasil didaftarkan
                     $stmt = $conn->prepare("SELECT id_pasien FROM data_diri_pasien WHERE nik = :nik");
                     $stmt->execute(['nik' => $_POST['nik']]);
                     $resPasien = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -80,37 +87,33 @@
                     if ($resPasien) {
                         $id_pasien = $resPasien['id_pasien'];
                         $rekamMedisModel = new RekamMedis();
-                        // Memasukkan pasien ke antrean awal
-                        $rekamMedisModel->IsiRekamMedis($id_pasien, date('Y-m-d'), null, 'Tingkat 2');
+                        $rekamMedisModel->IsiRekamMedis($id_pasien, date('Y-m-d'), null, null);
                     }
-                    // ========================================================
 
                     unset($_SESSION['old'], $_SESSION['error'], $_SESSION['errors']);
-                    // Redirect ke halaman login setelah berhasil mendaftar
-                    header('Location: ' . BASEURL . '/auth/login?success=1');
+                    
+                    header('Location: ' . BASEURL . $ruteSukses);
                     exit;
                 } 
                 
                 $_SESSION['error'] = $pesanModel;
                 $_SESSION['old'] = $_POST;
-                header('Location: ' . BASEURL . '/pendaftaran/form');
+                
+                header('Location: ' . BASEURL . $ruteGagal);
                 exit;
 
             } 
             
             $_SESSION['error'] = "Format tanda tangan tidak valid.";
             $_SESSION['old'] = $_POST;
-            header('Location: ' . BASEURL . '/pendaftaran/form');
+            
+            header('Location: ' . BASEURL . $ruteGagal);
             exit;
         }
 
-        // ========================================================
-        // LOGIKA VALIDASI PENDAFTARAN 
-        // ========================================================
         private function validasiPendaftaran($dataPost, $dataTtd) {
             $errors = [];
 
-            // 1. Validasi Username
             $username = $dataPost['username'] ?? '';
             if ($err = $this->cekWajib($username, 'Username')) {
                 $errors['username'] = $err;
@@ -120,7 +123,6 @@
                 $errors['username'] = $err;
             }
 
-            // 2. Validasi Password
             $password = $dataPost['password'] ?? '';
             if ($err = $this->cekWajib($password, 'Password')) {
                 $errors['password'] = $err;
@@ -132,7 +134,6 @@
                 $errors['password'] = $err;
             }
 
-            // 3. Validasi NIK Pasien
             $nik = $dataPost['nik'] ?? '';
             if ($err = $this->cekWajib($nik, 'NIK Pasien')) {
                 $errors['nik'] = $err;
@@ -142,7 +143,6 @@
                 $errors['nik'] = $err;
             }
 
-            // 4. Validasi Nama Pasien
             $namaPasien = $dataPost['nama_pasien'] ?? '';
             if ($err = $this->cekWajib($namaPasien, 'Nama pasien')) {
                 $errors['nama_pasien'] = $err;
@@ -152,17 +152,14 @@
                 $errors['nama_pasien'] = $err;
             }
 
-            // 5. Validasi Jenis Kelamin
             if ($err = $this->cekWajib($dataPost['jk'] ?? '', 'Jenis Kelamin')) {
                 $errors['jk'] = $err;
             }
 
-            // 6. Validasi Tanggal Lahir
             if ($err = $this->cekWajib($dataPost['tgl_lahir'] ?? '', 'Tanggal Lahir')) {
                 $errors['tgl_lahir'] = $err;
             }
 
-            // 7. Validasi Asal
             $asal = $dataPost['asal'] ?? '';
             if ($err = $this->cekWajib($asal, 'Asal daerah')) {
                 $errors['asal'] = $err;
@@ -172,7 +169,6 @@
                 $errors['asal'] = $err;
             }
 
-            // 8. Validasi Agama
             $agama = $dataPost['agama'] ?? '';
             if ($err = $this->cekWajib($agama, 'Agama')) {
                 $errors['agama'] = $err;
@@ -182,7 +178,6 @@
                 $errors['agama'] = $err;
             }
 
-            // 9. Validasi Status Perkawinan
             $statusKawin = $dataPost['status_perkawinan'] ?? '';
             $opsiStatus = ['Belum Kawin', 'Kawin', 'Cerai Hidup', 'Cerai Mati'];
             if ($err = $this->cekWajib($statusKawin, 'Status perkawinan')) {
@@ -191,7 +186,6 @@
                 $errors['status_perkawinan'] = $err;
             }
 
-            // 10. Validasi Pekerjaan
             $pekerjaan = $dataPost['pekerjaan'] ?? '';
             if ($err = $this->cekWajib($pekerjaan, 'Pekerjaan')) {
                 $errors['pekerjaan'] = $err;
@@ -201,7 +195,6 @@
                 $errors['pekerjaan'] = $err;
             }
 
-            // 11. Validasi Alamat 
             $alamat = $dataPost['alamat'] ?? '';
             if ($err = $this->cekWajib($alamat, 'Alamat')) {
                 $errors['alamat'] = $err;
@@ -211,11 +204,7 @@
                 $errors['alamat'] = '*Alamat minimal 10 karakter dan wajib mengandung huruf (tidak boleh hanya angka).';
             }
 
-            // ==========================================
-            // DATA TAMBAHAN PASIEN (KONDISIONAL)
-            // ==========================================
 
-            // BPJS
             $bpjs = $dataPost['bpjs'] ?? '';
             if (!empty(trim($bpjs))) {
                 if ($err = $this->cekMinKarakter($bpjs, 13, 'Nomor BPJS')) {
@@ -225,7 +214,6 @@
                 }
             }
 
-            // Golongan Darah
             $golDarah = strtoupper(trim($dataPost['gol_darah'] ?? ''));
             if (!empty($golDarah)) {
                 $opsiGolongan = ['A', 'B', 'AB', 'O', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
@@ -234,7 +222,6 @@
                 }
             }
 
-            // Alergi
             $alergi = $dataPost['alergi'] ?? '';
             if (!empty(trim($alergi))) {
                 if ($err = $this->cekMinKarakter($alergi, 3, 'Alergi')) {
@@ -244,7 +231,6 @@
                 }
             }
 
-            // Kewarganegaraan
             $warga = $dataPost['kewarganegaraan'] ?? '';
             if ($err = $this->cekWajib($warga, 'Kewarganegaraan')) {
                 $errors['kewarganegaraan'] = $err;
@@ -254,9 +240,6 @@
                 $errors['kewarganegaraan'] = $err;
             }
 
-            // ==========================================
-            // VALIDASI WALI
-            // ==========================================
 
             $namaWali = $dataPost['nama_wali'] ?? '';
             if ($err = $this->cekWajib($namaWali, 'Nama wali')) {
@@ -293,7 +276,6 @@
                 $errors['nohp_wali'] = $err;
             }
 
-            // 11. Validasi Alamat Wali 
             $alamatWali = $dataPost['alamat_wali'] ?? '';
             if ($err = $this->cekWajib($alamatWali, 'Alamat wali')) {
                 $errors['alamat_wali'] = $err;
@@ -311,7 +293,6 @@
                 $errors['terms'] = $err;
             }
 
-            // Pengecekan Akhir
             if (count($errors) > 0) {
                 return ['sukses' => false, 'pesan' => 'Mohon periksa kembali isian Anda.', 'data_errors' => $errors];
             } else {

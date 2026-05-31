@@ -3,10 +3,8 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// Pesan error dari Controller (Standar tim/devs)
 $error = isset($data['error']) ? $data['error'] : '';
 
-// Tampilkan pesan jika baru saja mendaftar
 $successMsg = '';
 if (isset($_GET['success']) && $_GET['success'] == 1) {
     $successMsg = 'Registrasi berhasil! Silakan masuk menggunakan akun baru Anda.';
@@ -113,6 +111,10 @@ body {
     text-decoration: underline;
     color: #0fa17a;
 }
+
+form {
+    margin-bottom: 15px;
+}
 </style>
 
 <div class="login-wrapper">
@@ -155,6 +157,7 @@ body {
             <a href="<?= BASEURL; ?>/pendaftaran/form" class="login-link">Daftar akun disini</a>
             
         </form>
+        <a href="<?= BASEURL; ?>/auth/reset" class="login-link" style="mt-2">Lupa Password?</a>
     </div>
 </div>
 

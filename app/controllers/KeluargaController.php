@@ -8,15 +8,11 @@ class KeluargaController extends Controller {
         exit;
     }
 
-    // ==========================================
-    // 1. BAGIAN ASUMSI (UNTUK KEBUTUHAN DASHBOARD)
-    // ==========================================
     public function dashboard() {
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
 
-        // Proteksi Sesi
         if (!isset($_SESSION['user_id'])) {
             header('Location: ' . BASEURL . '/auth/login');
             exit;
@@ -34,7 +30,6 @@ class KeluargaController extends Controller {
         $data = [];
         $data['judul'] = 'Dashboard Keluarga - ICU Central Specialist Hospital';
 
-        // Menarik data menggunakan fungsi di Model
         $data['pasien'] = $model->getDataPasienAktif($id_pengguna_aktif);
 
         if ($data['pasien'] && !empty($data['pasien']['id_rekam_medis'])) {
@@ -54,11 +49,7 @@ class KeluargaController extends Controller {
         $this->view('keluarga/dashboard', $data);
     }
 
-    // ==========================================
-    // 2. MENGGUNAKAN FUNGSI YANG SUDAH ADA DI MODEL
-    // ==========================================
     public function simpanPengantar() {
-        // Proteksi Sesi (Mencegah bypass URL)
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
@@ -71,7 +62,6 @@ class KeluargaController extends Controller {
             require_once __DIR__ . '/../models/KeluargaPasien.php';
             $model = new KeluargaPasienModel();
 
-            // Validasi Input: Membersihkan dan memastikan tidak ada nilai POST yang hilang
             $nama_lengkap = trim($_POST['nama_lengkap'] ?? '');
             $status_wali  = trim($_POST['status_wali'] ?? '');
             $nik_wali     = trim($_POST['nik_wali'] ?? '');
@@ -80,7 +70,6 @@ class KeluargaController extends Controller {
             $dokumen_ttd  = trim($_POST['dokumen_ttd'] ?? '');
             $id_pasien    = trim($_POST['id_pasien'] ?? '');
 
-            // Eksekusi Model
             $model->isiDataDiriPengantar(
                 $nama_lengkap, 
                 $status_wali, 
@@ -97,7 +86,6 @@ class KeluargaController extends Controller {
     }
 
     public function updatePengantar() {
-        // Proteksi Sesi (Mencegah bypass URL)
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
@@ -110,7 +98,6 @@ class KeluargaController extends Controller {
             require_once __DIR__ . '/../models/KeluargaPasien.php';
             $model = new KeluargaPasienModel();
 
-            // Validasi Input
             $id_pengantar = trim($_POST['id_pengantar'] ?? '');
             $nama_lengkap = trim($_POST['nama_lengkap'] ?? '');
             $status_wali  = trim($_POST['status_wali'] ?? '');
@@ -120,7 +107,6 @@ class KeluargaController extends Controller {
             $dokumen_ttd  = trim($_POST['dokumen_ttd'] ?? '');
             $id_pasien    = trim($_POST['id_pasien'] ?? '');
 
-            // Eksekusi Model
             $model->editDataDiriPengantar(
                 $id_pengantar,
                 $nama_lengkap, 
@@ -137,4 +123,3 @@ class KeluargaController extends Controller {
         }
     }
 }
-?>

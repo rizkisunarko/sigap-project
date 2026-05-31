@@ -166,7 +166,7 @@ if (session_status() == PHP_SESSION_NONE) {
                     <?php unset($_SESSION['error_staff']); ?>
                 <?php endif; ?>
 
-                <form action="<?= BASEURL; ?>/perawat/proses-login" method="POST">
+                <form action="<?= BASEURL; ?>/divisionRMFO-255" method="POST">
                     
                     <div class="form-group mb-4">
                         <label for="namaLengkap">Nama Lengkap :</label>

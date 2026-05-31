@@ -2,12 +2,9 @@
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
-// 1. Tangkap data lama yang sudah diketik pengguna
 $old = isset($_SESSION['old']) ? $_SESSION['old'] : []; 
-// 2. Tangkap pesan kesalahan spesifik per kolom
 $errors = isset($_SESSION['errors']) ? $_SESSION['errors'] : []; 
 
-// 3. HANCURKAN MEMORI SESI SAAT INI JUGA (Flash Session)
 unset($_SESSION['old']);
 unset($_SESSION['errors']);
 

@@ -180,3 +180,19 @@ create table log_tugas_shift (
     foreign key (id_st_log) references status_log(id_st_log),
     foreign key (id_perawat) references data_perawat(id_perawat)
 );
+
+INSERT INTO status_wali (nama_status) VALUES 
+('Orang Tua'), 
+('Suami/Istri'), 
+('Anak'), 
+('Saudara Kandung'), 
+('Keluarga Lain'), 
+('Pengantar/Lainnya');
+
+INSERT INTO status_perkawinan (nama_status) VALUES 
+('Belum Kawin'), 
+('Kawin'), 
+('Cerai Hidup'), 
+('Cerai Mati');
+
+INSERT INTO kondisi (nama_kondisi) VALUES ('stabil'), ('kritis'), ('meningkat'), ('menurun');

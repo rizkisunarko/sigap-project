@@ -3,7 +3,6 @@
 
     class KeluargaPasienModel extends Model {
 
-        // ambil status wali
         public function ambilStatusWali() {
             $query = $this->db->prepare(
                 "SELECT nama_status status_wali
@@ -14,7 +13,6 @@
             return $hasil;
         }
 
-        // isi data diri pengantar
         public function isiDataDiriPengantar(
             $nama_lengkap, $status_wali, $nik_wali,
             $no_hp, $alamat, $dokumen_ttd, $id_pasien 
@@ -37,7 +35,6 @@
                 :id_pasien)"
             );
             $query->bindParam(":nama_lengkap", $nama_lengkap);
-            // Fix bug array stat
             $id_st = $stat ? $stat['id_st_wali'] : null;
             $query->bindParam(":status_wali", $id_st);
             $query->bindParam(":nik_wali", $nik_wali);
@@ -48,7 +45,6 @@
             $query->execute();
         }
 
-        // edit data diri pengantar
         public function editDataDiriPengantar(
             $id_pengantar, $nama_lengkap, $status_wali, $nik_wali,
             $no_hp, $alamat, $dokumen_ttd, $id_pasien 
@@ -74,7 +70,6 @@
                 "
             );
             $query->bindParam(":nama_lengkap", $nama_lengkap);
-            // Fix bug array stat
             $id_st = $stat ? $stat['id_st_wali'] : null;
             $query->bindParam(":status_wali", $id_st);
             $query->bindParam(":nik_wali", $nik_wali);
@@ -85,11 +80,7 @@
             $query->execute();
         }
 
-        // =================================================================
-        // FUNGSI TAMBAHAN UNTUK DASHBOARD KELUARGA (Yang dicari Controller)
-        // =================================================================
 
-        // 1. Mengambil data utama pasien beserta ID Rekam Medis aktif
         public function getDataPasienAktif($id_pengguna) {
             $query = $this->db->prepare(
                 "SELECT dp.*, rm.id_rekam_medis, b.nomor_bed 
@@ -105,7 +96,6 @@
             return $query->fetch(PDO::FETCH_ASSOC);
         }
 
-        // 2. Mengambil riwayat perkembangan pasien (Timeline)
         public function getRiwayatObservasi($id_rekam_medis) {
             $query = $this->db->prepare(
                 "SELECT op.*, p.nama_lengkap as nama_perawat 
@@ -116,11 +106,9 @@
             );
             $query->bindParam(":id_rekam_medis", $id_rekam_medis);
             $query->execute();
-            // Menggunakan fetchAll karena riwayat tindakan pasti lebih dari satu baris
             return $query->fetchAll(PDO::FETCH_ASSOC); 
         }
 
-        // 3. Mengambil hasil lab terbaru berdasarkan observasi terakhir
         public function getHasilLabTerbaru($id_observasi) {
             $query = $this->db->prepare(
                 "SELECT * FROM hasil_lab WHERE id_observasi = :id_observasi ORDER BY tgl_isi DESC LIMIT 1"
@@ -130,11 +118,7 @@
             return $query->fetch(PDO::FETCH_ASSOC);
         }
 
-        // =================================================================
-        // FUNGSI TAMBAHAN (MILIK TIM/DEVS)
-        // =================================================================
         
-        // akses data diri pengantar (untuk merubah barangkali buth ditampilkan)
         public function ambilDataDiriPengantar($id_pengantar) {
             $query = $this->db->prepare(
                 "SELECT 
