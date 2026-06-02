@@ -1,85 +1,125 @@
 <?php
 require_once __DIR__ . '/../../core/Controller.php';
-require_once __DIR__ . '/../models/Pasien.php';
-require_once __DIR__ . '/../models/Pemeriksaan.php';
 
 class KeluargaController extends Controller {
+    
     public function index() {
-        $this->dashboard();
+        header('Location: ' . BASEURL . '/keluarga/dashboard');
+        exit;
     }
 
     public function dashboard() {
-        if (session_status() === PHP_SESSION_NONE) {
+        if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
 
-        // Verifikasi login keluarga
         if (!isset($_SESSION['user_id'])) {
             header('Location: ' . BASEURL . '/auth/login');
             exit;
         }
 
-        $id_pengguna = $_SESSION['user_id'];
-        
-        $db = new Database();
-        $conn = $db->connect();
+        header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+        header("Cache-Control: post-check=0, pre-check=0", false);
+        header("Pragma: no-cache");
 
-        // 1. Ambil data diri pasien terkait id_pengguna
-        $stmtPasien = $conn->prepare("SELECT * FROM data_diri_pasien WHERE id_pengguna = :id_pengguna LIMIT 1");
-        $stmtPasien->execute(['id_pengguna' => $id_pengguna]);
-        $patient = $stmtPasien->fetch(PDO::FETCH_ASSOC);
+        $id_pengguna_aktif = $_SESSION['user_id'];
 
-        $data = [
-            'patient' => $patient,
-            'latest_obs' => null,
-            'developments' => [],
-            'lab_results' => null
-        ];
+        require_once __DIR__ . '/../models/KeluargaPasien.php';
+        $model = new KeluargaPasienModel();
 
-        if ($patient) {
-            $id_pasien = $patient['id_pasien'];
+        $data = [];
+        $data['judul'] = 'Dashboard Keluarga - ICU Central Specialist Hospital';
 
-            // 2. Dapatkan rekam medis aktif terbaru untuk pasien ini
-            $stmtRM = $conn->prepare("SELECT * FROM rekam_medis WHERE id_pasien = :id_pasien ORDER BY tanggal_masuk DESC LIMIT 1");
-            $stmtRM->execute(['id_pasien' => $id_pasien]);
-            $activeRM = $stmtRM->fetch(PDO::FETCH_ASSOC);
+        $data['pasien'] = $model->getDataPasienAktif($id_pengguna_aktif);
 
-            if ($activeRM) {
-                $id_rekam_medis = $activeRM['id_rekam_medis'];
-                $data['rekam_medis'] = $activeRM;
-
-                // 3. Dapatkan riwayat perkembangan pasien (seluruh observasi)
-                $pasienModel = new PasienModel();
-                $developments = $pasienModel->riwayatPerkembanganPasien($id_rekam_medis);
-                $data['developments'] = $developments;
-
-                // 4. Jika ada observasi, ambil observasi terbaru sebagai status klinis saat ini
-                if (!empty($developments)) {
-                    // Yang paling akhir di list adalah observasi terbaru
-                    $latestObs = $developments[count($developments) - 1];
-                    $data['latest_obs'] = $latestObs;
-
-                    // Dapatkan ID observasi terbaru dari DB untuk menarik hasil laboratorium
-                    $stmtLatestObsId = $conn->prepare("SELECT id_observasi FROM observasi_pasien WHERE id_rekam_medis = :id_rekam_medis ORDER BY waktu_catat DESC LIMIT 1");
-                    $stmtLatestObsId->execute(['id_rekam_medis' => $id_rekam_medis]);
-                    $latestObsRow = $stmtLatestObsId->fetch(PDO::FETCH_ASSOC);
-
-                    if ($latestObsRow) {
-                        $id_observasi = $latestObsRow['id_observasi'];
-
-                        // Dapatkan hasil lab terbaru untuk observasi tersebut
-                        $stmtLab = $conn->prepare("SELECT * FROM hasil_lab WHERE id_observasi = :id_observasi ORDER BY tgl_isi DESC LIMIT 1");
-                        $stmtLab->execute(['id_observasi' => $id_observasi]);
-                        $labResult = $stmtLab->fetch(PDO::FETCH_ASSOC);
-                        if ($labResult) {
-                            $data['lab_results'] = $labResult;
-                        }
-                    }
-                }
+        if ($data['pasien'] && !empty($data['pasien']['id_rekam_medis'])) {
+            $data['riwayat'] = $model->getRiwayatObservasi($data['pasien']['id_rekam_medis']);
+            
+            if (!empty($data['riwayat'])) {
+                $id_observasi_terakhir = $data['riwayat'][0]['id_observasi'];
+                $data['lab'] = $model->getHasilLabTerbaru($id_observasi_terakhir);
+            } else {
+                $data['lab'] = null;
             }
+        } else {
+            $data['riwayat'] = [];
+            $data['lab'] = null;
         }
 
-        // Render view dashboard keluarga dengan data
         $this->view('keluarga/dashboard', $data);
+    }
+
+    public function simpanPengantar() {
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: ' . BASEURL . '/auth/login');
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            require_once __DIR__ . '/../models/KeluargaPasien.php';
+            $model = new KeluargaPasienModel();
+
+            $nama_lengkap = trim($_POST['nama_lengkap'] ?? '');
+            $status_wali  = trim($_POST['status_wali'] ?? '');
+            $nik_wali     = trim($_POST['nik_wali'] ?? '');
+            $no_hp        = trim($_POST['no_hp'] ?? '');
+            $alamat       = trim($_POST['alamat'] ?? '');
+            $dokumen_ttd  = trim($_POST['dokumen_ttd'] ?? '');
+            $id_pasien    = trim($_POST['id_pasien'] ?? '');
+
+            $model->isiDataDiriPengantar(
+                $nama_lengkap, 
+                $status_wali, 
+                $nik_wali,
+                $no_hp, 
+                $alamat, 
+                $dokumen_ttd, 
+                $id_pasien
+            );
+
+            header('Location: ' . BASEURL . '/keluarga/dashboard?success=1');
+            exit;
+        }
+    }
+
+    public function updatePengantar() {
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: ' . BASEURL . '/auth/login');
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            require_once __DIR__ . '/../models/KeluargaPasien.php';
+            $model = new KeluargaPasienModel();
+
+            $id_pengantar = trim($_POST['id_pengantar'] ?? '');
+            $nama_lengkap = trim($_POST['nama_lengkap'] ?? '');
+            $status_wali  = trim($_POST['status_wali'] ?? '');
+            $nik_wali     = trim($_POST['nik_wali'] ?? '');
+            $no_hp        = trim($_POST['no_hp'] ?? '');
+            $alamat       = trim($_POST['alamat'] ?? '');
+            $dokumen_ttd  = trim($_POST['dokumen_ttd'] ?? '');
+            $id_pasien    = trim($_POST['id_pasien'] ?? '');
+
+            $model->editDataDiriPengantar(
+                $id_pengantar,
+                $nama_lengkap, 
+                $status_wali, 
+                $nik_wali,
+                $no_hp, 
+                $alamat, 
+                $dokumen_ttd, 
+                $id_pasien
+            );
+
+            header('Location: ' . BASEURL . '/keluarga/dashboard?updated=1');
+            exit;
+        }
     }
 }

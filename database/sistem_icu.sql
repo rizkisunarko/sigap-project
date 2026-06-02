@@ -1,36 +1,36 @@
 -- Struktur tabel awal database
 create table data_alergi (
-	id_alergi int auto_increment primary key,
+    id_alergi int auto_increment primary key,
     nama_alergi varchar(100)
 );
 
 create table akun_pengguna (
-	id_pengguna int auto_increment primary key,
+    id_pengguna int auto_increment primary key,
     username varchar(255),
     password varbinary(255)
 );
 
 create table divisi_perawat (
-	id_divisi int auto_increment primary key,
+    id_divisi int auto_increment primary key,
     nama_divisi varchar(100)
 );
 
 create table data_perawat (
-	id_perawat int auto_increment primary key,
+    id_perawat int auto_increment primary key,
     nama_lengkap varchar(100),
     id_divisi int,
     foreign key (id_divisi) references divisi_perawat(id_divisi)
 );
 
 create table detail_tugas_shift (
-	id_detail_s int auto_increment primary key,
+    id_detail_s int auto_increment primary key,
     tugas_shift varchar(100),
     tenggat time,
     shift_ke int
 );
 
 create table tugas_divisi (
-	id_t_divisi int auto_increment primary key,
+    id_t_divisi int auto_increment primary key,
     id_detail_s int,
     id_divisi int,
     foreign key (id_detail_s) references detail_tugas_shift(id_detail_s),
@@ -38,12 +38,12 @@ create table tugas_divisi (
 );
 
 create table status_perkawinan (
-	id_st_perkawinan int auto_increment primary key,
+    id_st_perkawinan int auto_increment primary key,
     nama_status varchar(50)
 );
 
 create table data_diri_pasien (
-	id_pasien int auto_increment primary key,
+    id_pasien int auto_increment primary key,
     nama_lengkap varchar(255),
     nik varchar(16),
     asal varchar(255),
@@ -62,7 +62,7 @@ create table data_diri_pasien (
 );
 
 create table alergi_pasien (
-	id_ap int auto_increment primary key,
+    id_ap int auto_increment primary key,
     id_alergi int,
     id_pasien int,
     foreign key (id_pasien) references data_diri_pasien(id_pasien),
@@ -70,12 +70,12 @@ create table alergi_pasien (
 );
 
 create table status_wali (
-	id_st_wali int auto_increment primary key,
+    id_st_wali int auto_increment primary key,
     nama_status varchar(50)
 );
 
 create table data_diri_pengantar (
-	id_pengantar int auto_increment primary key,
+    id_pengantar int auto_increment primary key,
     nama_lengkap varchar(255),
     nik_wali varchar(16),
     no_hp varchar(15),
@@ -88,12 +88,12 @@ create table data_diri_pengantar (
 );
 
 create table status_rujukan (
-	id_st_rujukan int auto_increment primary key,
+    id_st_rujukan int auto_increment primary key,
     nama_status varchar(50)
 );
 
 create table rujukan (
-	id_rujukan int auto_increment primary key,
+    id_rujukan int auto_increment primary key,
     dokumen_rujukan varchar(255),
     detail_status text,
     id_pasien int,
@@ -103,12 +103,12 @@ create table rujukan (
 );
 
 create table urgensi (
-	id_urgensi int auto_increment primary key,
+    id_urgensi int auto_increment primary key,
     nama_urgensi varchar(50)
 );
 
 create table rekam_medis (
-	id_rekam_medis int auto_increment primary key, 
+    id_rekam_medis int auto_increment primary key, 
     id_pasien int,
     tanggal_masuk date,
     tanggal_keluar date,
@@ -118,25 +118,25 @@ create table rekam_medis (
 );
 
 create table status_bed (
-	id_st_bed int auto_increment primary key,
+    id_st_bed int auto_increment primary key,
     nama_status varchar(50),
     detail_status text
 );
 
 create table bed (
-	id_bed int auto_increment primary key,
+    id_bed int auto_increment primary key,
     nomor_bed varchar(50),
     id_st_bed int,
     foreign key (id_st_bed) references status_bed(id_st_bed)
 );
 
 create table kondisi (
-	id_kondisi int auto_increment primary key,
+    id_kondisi int auto_increment primary key,
     nama_kondisi varchar(50)
 );
 
 create table observasi_pasien (
-	id_observasi int auto_increment primary key,
+    id_observasi int auto_increment primary key,
     detak_jantung varchar(50),
     suhu_tubuh varchar(50),
     tekanan_darah varchar(50),
@@ -156,7 +156,7 @@ create table observasi_pasien (
 );
 
 create table hasil_lab (
-	id_hasil_lab int auto_increment primary key,
+    id_hasil_lab int auto_increment primary key,
     ph_darah varchar(50),
     hb varchar(50),
     gula_darah varchar(50),
@@ -166,12 +166,12 @@ create table hasil_lab (
 );
 
 create table status_log (
-	id_st_log int auto_increment primary key,
+    id_st_log int auto_increment primary key,
     nama_status varchar(50)
 );
 
 create table log_tugas_shift (
-	id_log int auto_increment primary key,
+    id_log int auto_increment primary key,
     tgl_dan_waktu datetime,
     id_detail_s int,
     id_st_log int,
@@ -180,3 +180,19 @@ create table log_tugas_shift (
     foreign key (id_st_log) references status_log(id_st_log),
     foreign key (id_perawat) references data_perawat(id_perawat)
 );
+
+INSERT INTO status_wali (nama_status) VALUES 
+('Orang Tua'), 
+('Suami/Istri'), 
+('Anak'), 
+('Saudara Kandung'), 
+('Keluarga Lain'), 
+('Pengantar/Lainnya');
+
+INSERT INTO status_perkawinan (nama_status) VALUES 
+('Belum Kawin'), 
+('Kawin'), 
+('Cerai Hidup'), 
+('Cerai Mati');
+
+INSERT INTO kondisi (nama_kondisi) VALUES ('stabil'), ('kritis'), ('meningkat'), ('menurun');

@@ -1,1 +1,56 @@
-<h1>Reset Password</h1>
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+$error = $_SESSION['error'] ?? '';
+unset($_SESSION['error']);
+?>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lupa Password - Sistem Manajemen Rumah Sakit</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Courier+New&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #f3f4f6; }
+        .form-font { font-family: 'Courier New', Courier, monospace; }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+
+    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+        <div class="text-center mb-8">
+            <h2 class="text-2xl font-extrabold text-[#043622] mb-2">RESET PASSWORD</h2>
+            <p class="text-gray-500 text-sm">Masukkan username Anda untuk menerima kode OTP pemulihan.</p>
+        </div>
+
+        <?php if (!empty($error)): ?>
+            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-3 mb-6 text-sm font-semibold rounded">
+                <?= htmlspecialchars($error) ?>
+            </div>
+        <?php endif; ?>
+
+        <form action="<?= BASEURL; ?>/auth/validation" method="POST">
+            <div class="mb-6">
+                <label class="block text-[#111] font-bold mb-2 form-font text-sm">Username :</label>
+                <input type="text" name="username" required 
+                       class="w-full px-4 py-3 border border-gray-400 rounded focus:outline-none focus:border-[#043622] focus:ring-1 focus:ring-[#043622] form-font"
+                       placeholder="Ketik username Anda...">
+            </div>
+
+            <button type="submit" class="w-full bg-[#20c997] hover:bg-[#1bb78a] text-[#111] font-bold py-3 px-4 rounded transition duration-200 uppercase tracking-wide">
+                Kirim Kode OTP
+            </button>
+            
+            <div class="text-center mt-6">
+                <a href="<?= BASEURL; ?>/auth/login" class="text-sm text-gray-500 hover:text-[#043622] underline form-font font-bold">
+                    Kembali ke Halaman Login
+                </a>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>

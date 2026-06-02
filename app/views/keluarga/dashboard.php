@@ -1,3 +1,12 @@
+<?php
+// Menangkap data dari Controller
+$pasien = $data['pasien'] ?? [];
+$riwayat = $data['riwayat'] ?? [];
+$lab = $data['lab'] ?? [];
+// Mengambil observasi terbaru (index 0) untuk banner utama
+$obs_terbaru = !empty($riwayat) ? $riwayat[0] : [];
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -14,7 +23,7 @@
     <style>
         body { background-color: #ffffff; font-family: 'Inter', 'Segoe UI', sans-serif; }
         .navbar-custom { background-color: #043622; }
-        
+
         .welcome-banner {
             background-color: #1b5e3a; /* Warna hijau khas dashboard */
             border-radius: 8px;
@@ -154,149 +163,31 @@
       <span class="fw-bold" style="letter-spacing:0.6px;">HOSPITAL</span>
     </a>
     <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link text-white" href="#" style="font-size: 0.9rem;" data-bs-toggle="modal" data-bs-target="#logoutConfirmModal">Log out</a>
-                </li>
+        <li class="nav-item">
+            <a class="nav-link text-white" href="#" style="font-size: 0.9rem;" data-bs-toggle="modal" data-bs-target="#logoutConfirmModal">Log out</a>
+        </li>
     </ul>
   </div>
 </nav>
 
 <div class="container">
-    <?php
-    $patientName = isset($data['patient']['nama_lengkap']) ? strtoupper($data['patient']['nama_lengkap']) : 'NY. FULANAH';
-    $patientAsal = isset($data['patient']['asal']) ? $data['patient']['asal'] : 'Sumedang';
-    $patientMRN = isset($data['patient']['id_pasien']) ? 'ICU-2026-' . str_pad($data['patient']['id_pasien'], 3, '0', STR_PAD_LEFT) : 'ICU-2026-001';
-    $patientStatus = isset($data['latest_obs']['kondisi']) ? ucfirst($data['latest_obs']['kondisi']) : 'Stabil';
-    $patientBed = isset($data['latest_obs']['nomor_bed']) ? 'Kamar: ' . $data['latest_obs']['nomor_bed'] : 'Kamar: 402-A';
-    ?>
-    <!-- Welcome Banner -->
     <div class="welcome-banner">
         <div class="welcome-title">WELCOME</div>
         <div style="margin-bottom: 5px;">
-            <span class="patient-name"><?= htmlspecialchars($patientName) ?></span>
-            <span class="badge-stabil"><?= htmlspecialchars($patientStatus) ?></span>
+            <span class="patient-name"><?= htmlspecialchars(strtoupper($pasien['nama_lengkap'] ?? 'NAMA TIDAK ADA')) ?></span>
+            <span class="badge-stabil"><?= htmlspecialchars(ucfirst($obs_terbaru['kondisi'] ?? 'Belum diobservasi')) ?></span>
         </div>
-        <div class="patient-info"><?= htmlspecialchars($patientAsal) ?></div>
-        <div class="patient-info">MRN &nbsp;&nbsp;&nbsp;&nbsp;: <?= htmlspecialchars($patientMRN) ?></div>
-        <div class="patient-info"><?= htmlspecialchars($patientBed) ?></div>
+        <div class="patient-info"><?= htmlspecialchars($pasien['asal'] ?? '-') ?></div>
+        <div class="patient-info">MRN &nbsp;&nbsp;&nbsp;&nbsp;: ICU-<?= date('Y') ?>-<?= htmlspecialchars($pasien['id_rekam_medis'] ?? '000') ?></div>
+        <div class="patient-info">Kamar : <?= htmlspecialchars($pasien['nomor_bed'] ?? 'Belum masuk bed') ?></div>
         
         <button class="btn-laporan">Lihat Laporan Medis</button>
     </div>
 
-    <!-- Status Pasien -->
-    <h3 class="section-heading">STATUS PASIEN</h3>
-    <div class="row">
-        <div class="col-md-3 col-6">
-            <div class="status-card">
-                <div class="status-icon">
-                    <!-- Icon SVG custom for heart-pulse to match exactly -->
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 0C1.46 6.7 1.33 10.28 4 13l8 8 8-8c2.67-2.72 2.54-6.3.42-8.42z"></path><polyline points="3 12 7 12 10 5 14 19 17 12 21 12"></polyline></svg>
-                </div>
-                <div class="status-title">DETAK JANTUNG</div>
-                <div class="status-value"><?= isset($data['latest_obs']['detak_jantung']) ? htmlspecialchars($data['latest_obs']['detak_jantung']) : '78' ?> <span class="status-unit">BPM</span></div>
-            </div>
-        </div>
-        <div class="col-md-3 col-6">
-            <div class="status-card">
-                <div class="status-icon">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
-                </div>
-                <div class="status-title">OKSIGEN (SPO2)</div>
-                <div class="status-value"><?= isset($data['latest_obs']['oksigen']) ? htmlspecialchars($data['latest_obs']['oksigen']) : '98' ?> <span class="status-unit">%</span></div>
-            </div>
-        </div>
-        <div class="col-md-3 col-6">
-            <div class="status-card">
-                <div class="status-icon">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path></svg>
-                </div>
-                <div class="status-title">SUHU TUBUH</div>
-                <div class="status-value"><?= isset($data['latest_obs']['suhu_tubuh']) ? htmlspecialchars($data['latest_obs']['suhu_tubuh']) : '36.8' ?> <span class="status-unit">°C</span></div>
-            </div>
-        </div>
-        <div class="col-md-3 col-6">
-            <div class="status-card">
-                <div class="status-icon">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-                </div>
-                <div class="status-title">TEKANAN DARAH</div>
-                <div class="status-value"><?= isset($data['latest_obs']['tekanan_darah']) ? htmlspecialchars($data['latest_obs']['tekanan_darah']) : '120/80' ?> <span class="status-unit">mmHg</span></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Perkembangan Pasien -->
-    <div class="perkembangan-card mt-3">
-        <h4 class="perkembangan-title">PERKEMBANGAN PASIEN</h4>
-        <div class="timeline">
-            <?php if (!empty($data['developments'])): ?>
-                <?php foreach ($data['developments'] as $obs): ?>
-                    <div class="timeline-item">
-                        <div class="timeline-content-left">
-                            <p>DETAK JANTUNG : <span><?= htmlspecialchars($obs['detak_jantung']) ?> BPM</span></p>
-                            <p>OKSIGEN (SPO2) : <span><?= htmlspecialchars($obs['oksigen']) ?> %</span></p>
-                            <p>SUHU TUBUH : <span><?= htmlspecialchars($obs['suhu_tubuh']) ?> °C</span></p>
-                            <p>TEKANAN DARAH : <span><?= htmlspecialchars($obs['tekanan_darah']) ?> mmHg</span></p>
-                        </div>
-                        <div class="timeline-content-right text-end">
-                            <p>JAM : <span><?= date('H.i', strtotime($obs['waktu_catat'])) ?> WIB</span></p>
-                            <p>STATUS PASIEN : <span class="badge-status-small"><?= strtoupper($obs['kondisi']) ?></span></p>
-                            <p>PETUGAS : <span><?= htmlspecialchars($obs['nama_lengkap']) ?></span></p>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <!-- Fallback item jika belum ada perkembangan tercatat -->
-                <div class="timeline-item">
-                    <div class="timeline-content-left">
-                        <p>DETAK JANTUNG : <span>78 BPM</span></p>
-                        <p>OKSIGEN (SPO2) : <span>98 %</span></p>
-                        <p>SUHU TUBUH : <span>36.8 °C</span></p>
-                        <p>TEKANAN DARAH : <span>120/80 mmHg</span></p>
-                    </div>
-                    <div class="timeline-content-right text-end">
-                        <p>JAM : <span>- WIB</span></p>
-                        <p>STATUS PASIEN : <span class="badge-status-small">STABIL</span></p>
-                        <p>PETUGAS : <span>-</span></p>
-                    </div>
-                </div>
-            <?php endif; ?>
-        </div>
-    </div>
-
-    <!-- Hasil Laboratorium -->
-    <div class="lab-card-wrapper">
-        <div class="lab-header">
-            <h4 class="lab-title">HASIL LABORATORIUM</h4>
-            <div class="lab-update">Update : <?= isset($data['lab_results']['tgl_isi']) ? date('H.i', strtotime($data['lab_results']['tgl_isi'])) . ' WIB' : 'Baru saja' ?></div>
-        </div>
-        <div class="row">
-            <div class="col-md-4 mb-3 mb-md-0">
-                <div class="lab-item-box">
-                    <div class="lab-item-title">PH DARAH</div>
-                    <div class="lab-item-val"><?= isset($data['lab_results']['ph_darah']) ? htmlspecialchars($data['lab_results']['ph_darah']) : '7.42' ?></div>
-                    <div class="lab-item-status">NORMAL</div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-3 mb-md-0">
-                <div class="lab-item-box">
-                    <div class="lab-item-title">HB</div>
-                    <div class="lab-item-val"><?= isset($data['lab_results']['hb']) ? htmlspecialchars($data['lab_results']['hb']) : '12.4' ?></div>
-                    <div class="lab-item-status">NORMAL</div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="lab-item-box">
-                    <div class="lab-item-title">GULA DARAH</div>
-                    <div class="lab-item-val"><?= isset($data['lab_results']['gula_darah']) ? htmlspecialchars($data['lab_results']['gula_darah']) : '110' ?></div>
-                    <div class="lab-item-status">STABIL</div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <?php include __DIR__ . '/kondisi_pasien.php'; ?>
+    <?php include __DIR__ . '/riwayat_tindakan.php'; ?>
 </div>
 
-<!-- Modal Konfirmasi Logout -->
 <div class="modal fade logout-confirm-modal" id="logoutConfirmModal" tabindex="-1" aria-labelledby="logoutConfirmModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg rounded-4">

@@ -3,7 +3,6 @@
 
     class NotifikasiModel {
 
-        // notifikasi wa
         public function kirimWA($no_hp, $msg) {
             
             if(preg_match("/^0/", $no_hp)) {
@@ -19,7 +18,6 @@
                 "message" => $msg
             ];
 
-            // kirim pesan (jalankan node index.js)
             $curl = curl_init();
 
             curl_setopt_array($curl, [

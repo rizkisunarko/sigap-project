@@ -1,14 +1,16 @@
-<?php
-// Pesan error dari Controller
+<?php 
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
 $error = isset($data['error']) ? $data['error'] : '';
 
-// Tampilkan pesan jika baru saja mendaftar
 $successMsg = '';
 if (isset($_GET['success']) && $_GET['success'] == 1) {
     $successMsg = 'Registrasi berhasil! Silakan masuk menggunakan akun baru Anda.';
 }
+include __DIR__ . '/../layouts/header.php'; 
 ?>
-<?php include __DIR__ . '/../layouts/header.php'; ?>
 
 <style>
 /* CSS khusus untuk halaman Login */
@@ -46,7 +48,7 @@ body {
     height: 1px;
     background-color: #043622;
     width: 100%;
-    margin-bottom: 40px;
+    margin-bottom: 25px; /* Sedikit disesuaikan untuk ruang pesan eror */
 }
 
 .login-form-group {
@@ -109,6 +111,10 @@ body {
     text-decoration: underline;
     color: #0fa17a;
 }
+
+form {
+    margin-bottom: 15px;
+}
 </style>
 
 <div class="login-wrapper">
@@ -127,6 +133,11 @@ body {
             <div class="alert alert-danger mx-4" style="font-size: 0.85rem;" role="alert">
                 <?= $error; ?>
             </div>
+        <?php elseif (isset($_SESSION['error'])): ?>
+            <div class="alert alert-danger mx-4" style="font-size: 0.85rem;" role="alert">
+                <?= $_SESSION['error']; ?>
+            </div>
+            <?php unset($_SESSION['error']); ?>
         <?php endif; ?>
 
         <form action="<?= BASEURL; ?>/auth/login" method="POST">
@@ -143,10 +154,10 @@ body {
 
             <button type="submit" class="btn-login">Login</button>
             
-            <!-- Link ini mengarah ke form pendaftaran yang tadi dibuat -->
             <a href="<?= BASEURL; ?>/pendaftaran/form" class="login-link">Daftar akun disini</a>
             
         </form>
+        <a href="<?= BASEURL; ?>/auth/reset" class="login-link" style="mt-2">Lupa Password?</a>
     </div>
 </div>
 
@@ -156,5 +167,4 @@ body {
     }
 </script>
 
-<!-- Kita juga sertakan footer agar elemen penutup halaman lengkap (scripts, tutup body) -->
 <?php include __DIR__ . '/../layouts/footer.php'; ?>

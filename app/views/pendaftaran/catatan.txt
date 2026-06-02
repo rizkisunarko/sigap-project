@@ -1,0 +1,13 @@
+ini catatan, jika dirasa sudah tidak diperlukan bisa di hapus
+
+Pendaftaran :
+file utamanya adalah form.php
+kemudian di pecah ke beberapa file tergantung kategori dengan tujuan supaya tidak memenuhi 1 file
+
+alur nya adalah form.php mengirim data ke pendaftarancontroller, 
+kemudian pendaftaran controller melakukan validasi dengan memanggil fungsi fungsi yang ada di 
+core/controller.php.
+
+kemudian jika tidak ada eror setelah dilakukan pengecekan validasi, maka ia akan berlanjut mengecek 
+ke models/pendaftaran.php yang mana di dalamnya ada pengecekan username, NIK pasien apakah sudah 
+pernah melakukan pendaftaran sebelumnya atau tidak, juga sekaligus melakukan insert data ke dalam database

@@ -19,22 +19,17 @@ class Router {
     }
 
     public static function run() {
-        // Load rute terdaftar dari routes/web.php
         require_once __DIR__ . '/../routes/web.php';
 
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         
-        // Dapatkan nama direktori project (misal /sigap-project) untuk mendukung running di subfolder
         $scriptName = dirname($_SERVER['SCRIPT_NAME']); // e.g. /sigap-project/public atau /sigap-project
         
-        // Bersihkan base path dari URI jika berjalan di bawah subdirectory
         $basePath = rtrim($scriptName, '/');
-        // Jika basepath berakhir dengan '/public', tapi request masuk dari root, sesuaikan
         if ($basePath !== '' && strpos($uri, $basePath) === 0) {
             $uri = substr($uri, strlen($basePath));
         }
 
-        // Jika URI diakses dari root project tanpa /public, bersihkan folder name juga jika terdeteksi
         $projectDir = basename(dirname(__DIR__));
         if (strpos($uri, '/' . $projectDir) === 0) {
             $uri = substr($uri, strlen('/' . $projectDir));
@@ -42,6 +37,11 @@ class Router {
         
         $uri = '/' . trim($uri, '/');
         $requestMethod = $_SERVER['REQUEST_METHOD'];
+
+        if ($uri === '/portal-staff/login') {
+            http_response_code(404); 
+            exit; 
+        }
 
         foreach (self::$routes as $route) {
             $routePath = '/' . trim($route['path'], '/');
@@ -51,13 +51,11 @@ class Router {
             }
         }
 
-        // Default routing fallback untuk root index
         if ($uri === '/' || $uri === '/index.php') {
             self::dispatch('HomeController@index');
             return;
         }
 
-        // Halaman Tidak Ditemukan (404)
         http_response_code(404);
         $errorView = __DIR__ . '/../app/views/errors/404.php';
         if (file_exists($errorView)) {

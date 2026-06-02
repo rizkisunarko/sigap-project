@@ -1,4 +1,4 @@
 <?php
 
 // Pastikan slash (/) di akhir atau polanya sesuai dengan struktur routingmu
-define('BASEURL', 'http://localhost/sigap-project/public');
+define('BASEURL', 'http://localhost/Code_tugas/RPL/sigap-project/public');

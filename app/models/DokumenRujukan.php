@@ -3,7 +3,6 @@
 
     class DokumenRujukanModel extends Model {
             
-        // status rujukan
         public function ambilStatusRujukan() {
             $query = $this->db->prepare(
                 "SELECT nama_status status_dokumen
@@ -14,7 +13,6 @@
             return $hasil;
         }
 
-        // isi data rujukan
         public function isiDataRujukan(
             $dokumen_rujukan, $status_dokumen,
             $detail_status, $id_pasien
@@ -41,7 +39,6 @@
             $query->execute();
         }
 
-        // edit data rujukan
         public function editDataRujukan(
             $id_rujukan, $dokumen_rujukan, $status_dokumen,
             $detail_status, $id_pasien
@@ -69,7 +66,6 @@
             $query->execute();
         }
 
-        // hapus data rujukan
         public function hapusDataRujukan(
             $id_rujukan
         ) {
@@ -80,7 +76,6 @@
             $query->execute();
         }
 
-        // ambil data rujukan suatu pasien
         public function tampilDataRujukan (
             $id_pasien
         ) {
@@ -97,15 +92,13 @@
             return $hasil;
         }
 
-        // ambil semua data rujukan (barangkali untuk yang mneghandle data rujukan)
-        public function ambilDataRujukan () {
+        public function ambilDataRujukan() {
             $query = $this->db->prepare(
                 "SELECT r.id_rujukan, r.dokumen_rujukan, r.status_dokumen, r.detail_status, ddp.nama_lengkap 
-                from rujukan r
-                right join data_diri_pasien ddp on ddp.id_pasien = r.id_pasien
-                order by r.id_rujukan desc"
-                );
-            $query->bindParam(":id_pasien", $id_pasien);
+                FROM rujukan r
+                RIGHT JOIN data_diri_pasien ddp ON ddp.id_pasien = r.id_pasien
+                ORDER BY r.id_rujukan DESC"
+            );
             $query->execute();
             $hasil = $query->fetchAll(PDO::FETCH_ASSOC);
             return $hasil;
