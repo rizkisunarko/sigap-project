@@ -4,7 +4,6 @@
 
     class PemeriksaanModel extends Model {
 
-        // ambil status kondisi
         public function ambilStatusKondisi() {
             $query = $this->db->prepare(
                 "SELECT nama_kondisi kondisi
@@ -15,7 +14,6 @@
             return $hasil;
         }
 
-        // isi data observasi pasien
         public function isiObservasiPasien(
             $detak_jantung, $suhu_tubuh,
             $tekanan_darah, $detail_kondisi, $kondisi,
@@ -54,7 +52,6 @@
             $query->execute();
         }
 
-        // edit data observasi
         public function editObservasiPasien(
             $detak_jantung, $suhu_tubuh,
             $tekanan_darah, $detail_kondisi, $kondisi,
@@ -98,7 +95,6 @@
             $query->execute();
         }
 
-        // untuk menampilkan pada saat edit hasil observasi
         public function ambilObservasi(
             $id_observasi
         ) {
@@ -115,7 +111,6 @@
             return $hasil;
         }
 
-        // untuk hapus 1 record observasi pasien
         public function hapusObservasiPasien($id_observasi) {
             $query = $this->db->prepare(
                 "DELETE from observasi_pasien
@@ -125,7 +120,6 @@
             $query->execute();
         }
 
-        // untuk isi hasil lab
         public function isiHasilLab(
             $id_observasi, 
             $ph, $hb, $gula
@@ -142,7 +136,6 @@
             $query->execute();
         }
 
-        // untuk edit hasil lab
         public function editHasilLab(
             $id_hasil_lab, 
             $ph, $hb, $gula
@@ -162,7 +155,6 @@
             $query->execute();
         }
 
-        // hapus hasil lab
         public function hapusHasilLab(
             $id_hasil_lab
             ) {
@@ -174,7 +166,6 @@
             $query->execute();
         }
 
-        // ambil informasi hasil lab (untuk edit)
         public function ambilHasilLab(
             $id_hasil_lab
             ) {

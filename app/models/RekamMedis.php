@@ -3,7 +3,6 @@
 
     class RekamMedis extends Model {
 
-        // ambil status urgensi
         public function ambilStatusUrgensi() {
             $query = $this->db->prepare(
                 "SELECT nama_urgensi
@@ -14,7 +13,6 @@
             return $hasil;
         }
 
-        // ambil rekam medis
         public function ambilRekamMedis($id_rekam_medis) {
             $query = $this->db->prepare(
                 "SELECT rk.id_pasien, rk.tanggal_masuk, rk.tanggal_keluar, u.nama_urgensi urgensi
@@ -28,7 +26,6 @@
             return $hasil;  
         }
 
-        // memasukkan data pada tabel rekam medis pasien
         public function IsiRekamMedis(
             $id_pasien, $tanggal_masuk, $tanggal_keluar, $urgensi
             ) {
@@ -40,6 +37,9 @@
             $query->bindParam(":nama_urgensi", $urgensi);
             $query->execute();
             $stat = $query->fetch(PDO::FETCH_ASSOC);
+            
+            $id_urgensi = $stat ? $stat['id_urgensi'] : null;
+
             $query = $this->db->prepare(
                 "INSERT into rekam_medis (
                 id_pasien, 
@@ -55,11 +55,16 @@
             $query->bindParam(":id_pasien", $id_pasien);
             $query->bindParam(":tanggal_masuk", $tanggal_masuk);
             $query->bindParam(":tanggal_keluar", $tanggal_keluar);
-            $query->bindParam(":urgensi", $stat);
+            
+            if ($id_urgensi === null) {
+                $query->bindValue(":urgensi", null, PDO::PARAM_NULL);
+            } else {
+                $query->bindValue(":urgensi", $id_urgensi, PDO::PARAM_INT);
+            }
+
             $query->execute();
         }
 
-        // edit data rekam medis
         public function editRekamMedis(
             $id_rekam_medis, $id_pasien, $tanggal_masuk,
             $tanggal_keluar, $urgensi
@@ -71,6 +76,10 @@
             );
             $query->bindParam(":nama_urgensi", $urgensi);
             $query->execute();
+            $stat = $query->fetch(PDO::FETCH_ASSOC);
+
+            $id_urgensi = $stat ? $stat['id_urgensi'] : null;
+
             $query = $this->db->prepare(
                 "UPDATE rekam_medis set 
                 id_pasien = :id_pasien, 
@@ -82,12 +91,17 @@
             $query->bindParam(":id_pasien", $id_pasien);
             $query->bindParam(":tanggal_masuk", $tanggal_masuk);
             $query->bindParam(":tanggal_keluar", $tanggal_keluar);
-            $query->bindParam(":urgensi", $stat);
+            
+            if ($id_urgensi === null) {
+                $query->bindValue(":urgensi", null, PDO::PARAM_NULL);
+            } else {
+                $query->bindValue(":urgensi", $id_urgensi, PDO::PARAM_INT);
+            }
+
             $query->bindParam(":id_rekam_medis", $id_rekam_medis);
             $query->execute();
         }
 
-        // hapus record rekam medis
         public function hapusRekamMedis($id_rekam_medis) {
             $query = $this->db->prepare(
                 "DELETE from rekam_medis 
@@ -96,5 +110,120 @@
             $query->bindParam(":id_rekam_medis", $id_rekam_medis);
             $query->execute();
         }
+
+        public function ambilRiwayatPasien($id_pasien) {
+            $query = $this->db->prepare(
+                "SELECT 
+                    rm.id_rekam_medis,
+                    rm.tanggal_masuk, 
+                    rm.tanggal_keluar, 
+                    (SELECT op.diagnosa FROM observasi_pasien op WHERE op.id_rekam_medis = rm.id_rekam_medis AND op.diagnosa IS NOT NULL AND op.diagnosa != '' ORDER BY op.waktu_catat DESC LIMIT 1) as diagnosa,
+                    (SELECT op.detak_jantung FROM observasi_pasien op WHERE op.id_rekam_medis = rm.id_rekam_medis ORDER BY op.waktu_catat DESC LIMIT 1) as detak_jantung,
+                    (SELECT op.sp02 FROM observasi_pasien op WHERE op.id_rekam_medis = rm.id_rekam_medis ORDER BY op.waktu_catat DESC LIMIT 1) as oksigen,
+                    (SELECT op.suhu_tubuh FROM observasi_pasien op WHERE op.id_rekam_medis = rm.id_rekam_medis ORDER BY op.waktu_catat DESC LIMIT 1) as suhu_tubuh,
+                    (SELECT op.tekanan_darah FROM observasi_pasien op WHERE op.id_rekam_medis = rm.id_rekam_medis ORDER BY op.waktu_catat DESC LIMIT 1) as tekanan_darah,
+                    (SELECT op.waktu_catat FROM observasi_pasien op WHERE op.id_rekam_medis = rm.id_rekam_medis ORDER BY op.waktu_catat DESC LIMIT 1) as waktu_catat,
+                    (SELECT op.tindakan FROM observasi_pasien op WHERE op.id_rekam_medis = rm.id_rekam_medis ORDER BY op.waktu_catat DESC LIMIT 1) as tindakan,
+                    (SELECT op.detail_kondisi FROM observasi_pasien op WHERE op.id_rekam_medis = rm.id_rekam_medis ORDER BY op.waktu_catat DESC LIMIT 1) as detail_kondisi,
+                    (SELECT k.nama_kondisi FROM observasi_pasien op JOIN kondisi k ON k.id_kondisi = op.id_kondisi WHERE op.id_rekam_medis = rm.id_rekam_medis ORDER BY op.waktu_catat DESC LIMIT 1) as status_pasien,
+                    (SELECT dp.nama_lengkap FROM observasi_pasien op JOIN data_perawat dp ON dp.id_perawat = op.id_perawat WHERE op.id_rekam_medis = rm.id_rekam_medis ORDER BY op.waktu_catat DESC LIMIT 1) as nama_perawat
+                FROM rekam_medis rm
+                WHERE rm.id_pasien = :id_pasien 
+                ORDER BY rm.tanggal_masuk DESC"
+            );
+            
+            $query->bindParam(":id_pasien", $id_pasien, PDO::PARAM_INT);
+            $query->execute();
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        public function ambilTimelineObservasi($id_rekam_medis) {
+            $query = $this->db->prepare(
+                "SELECT 
+                    op.*, 
+                    dp.nama_lengkap AS nama_perawat, 
+                    k.nama_kondisi AS status_pasien
+                FROM observasi_pasien op
+                LEFT JOIN data_perawat dp ON op.id_perawat = dp.id_perawat
+                LEFT JOIN kondisi k ON op.id_kondisi = k.id_kondisi
+                WHERE op.id_rekam_medis = :id_rm
+                ORDER BY op.waktu_catat DESC"
+            );
+            $query->bindParam(":id_rm", $id_rekam_medis, PDO::PARAM_INT);
+            $query->execute();
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        public function tambahObservasiPasien($id_pasien, $data) {
+            try {
+                $this->db->beginTransaction();
+
+                $qRM = $this->db->prepare("SELECT id_rekam_medis FROM rekam_medis WHERE id_pasien = :id_pasien ORDER BY tanggal_masuk DESC LIMIT 1");
+                $qRM->bindParam(":id_pasien", $id_pasien, PDO::PARAM_INT);
+                $qRM->execute();
+                $id_rekam_medis = $qRM->fetchColumn();
+
+                if (!$id_rekam_medis) {
+                    $this->db->rollBack();
+                    return false;
+                }
+
+                $raw_bed = $data['no_bed'];
+                $id_bed = (int) preg_replace('/[^0-9]/', '', $raw_bed);
+                
+                $qCekBed = $this->db->prepare("SELECT id_bed FROM bed WHERE id_bed = :id_bed");
+                $qCekBed->execute([':id_bed' => $id_bed]);
+                
+                if (!$qCekBed->fetchColumn()) {
+                    $qInsertBed = $this->db->prepare("INSERT INTO bed (id_bed, nomor_bed) VALUES (:id_bed, :nomor_bed)");
+                    $qInsertBed->execute([
+                        ':id_bed' => $id_bed,
+                        ':nomor_bed' => $raw_bed
+                    ]);
+                }
+
+                $qKondisi = $this->db->prepare("SELECT id_kondisi FROM kondisi WHERE LOWER(nama_kondisi) = LOWER(:nama_kondisi)");
+                $qKondisi->execute([':nama_kondisi' => $data['status_klinis']]);
+                $id_kondisi = $qKondisi->fetchColumn();
+                
+                if (!$id_kondisi) {
+                    $this->db->rollBack();
+                    return false;
+                }
+
+                $qObs = $this->db->prepare(
+                    "INSERT INTO observasi_pasien 
+                    (id_rekam_medis, id_perawat, id_bed, detak_jantung, sp02, suhu_tubuh, tekanan_darah, id_kondisi, diagnosa, detail_kondisi, tindakan, waktu_catat) 
+                    VALUES 
+                    (:id_rm, :id_perawat, :id_bed, :detak, :spo2, :suhu, :tensi, :id_kondisi, :diagnosa, :detail_kondisi, :tindakan, NOW())"
+                );
+                
+                $berhasil = $qObs->execute([
+                    ":id_rm"          => $id_rekam_medis,
+                    ":id_perawat"     => $data['id_perawat'],
+                    ":id_bed"         => $id_bed,
+                    ":detak"          => $data['detak_jantung'],
+                    ":spo2"           => $data['oksigen'],
+                    ":suhu"           => $data['suhu_tubuh'],
+                    ":tensi"          => $data['tekanan_darah'],
+                    ":id_kondisi"     => $id_kondisi,
+                    ":diagnosa"       => $data['diagnosa'],
+                    ":detail_kondisi" => $data['detail_kondisi'],
+                    ":tindakan"       => $data['tindakan']
+                ]);
+
+                if (!$berhasil) {
+                    $this->db->rollBack();
+                    return false;
+                }
+
+                $this->db->commit();
+                return true;
+
+            } catch (PDOException $e) {
+                $this->db->rollBack();
+                error_log("Gagal tambah observasi: " . $e->getMessage());
+                return false;
+            }
+        }
     }
-?>

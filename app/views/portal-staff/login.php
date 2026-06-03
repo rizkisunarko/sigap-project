@@ -1,3 +1,9 @@
+<?php 
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -139,7 +145,6 @@
 </head>
 <body>
 
-    <!-- Header -->
     <nav class="navbar-custom">
         <a href="<?= BASEURL; ?>" class="navbar-brand">
             <img src="<?= BASEURL; ?>/assets/img/logo.png" width="34" height="34" alt="Logo" class="d-inline-block align-text-top me-2">
@@ -147,18 +152,27 @@
         </a>
     </nav>
 
-    <!-- Main Content -->
     <div class="login-container">
         <div class="login-card">
             <div class="login-header">
                 <h2>Portal Staff</h2>
             </div>
             <div class="login-body">
-                <form action="<?= BASEURL; ?>/portal-staff/login" method="POST">
+            
+                <?php if(isset($_SESSION['error_staff'])): ?>
+                    <div class="alert alert-danger" style="background-color: #ffe6e6; color: #cc0000; padding: 10px; border-radius: 5px; margin-bottom: 20px; font-weight: bold; text-align: center; ">
+                        <?= $_SESSION['error_staff']; ?>
+                    </div>
+                    <?php unset($_SESSION['error_staff']); ?>
+                <?php endif; ?>
+
+                <form action="<?= BASEURL; ?>/divisionRMFO-255" method="POST">
+                    
                     <div class="form-group mb-4">
                         <label for="namaLengkap">Nama Lengkap :</label>
                         <input type="text" id="namaLengkap" name="namaLengkap" class="form-control-custom" autocomplete="off" required>
                     </div>
+                    
                     <div class="form-group mb-4">
                         <label for="divisi">Divisi :</label>
                         <select id="divisi" name="divisi" class="form-control-custom" required>
@@ -167,6 +181,7 @@
                             <option value="Front Officer">Front Officer</option>
                         </select>
                     </div>
+                    
                     <div class="form-group mb-4">
                         <label for="shift">Shift :</label>
                         <select id="shift" name="shift" class="form-control-custom" required>
@@ -175,10 +190,12 @@
                             <option value="Shift 2">Shift 2</option>
                         </select>
                     </div>
+                    
                     <div style="display: flex; justify-content: center; margin-top: 30px;">
                         <button type="submit" class="btn-custom" style="margin-top: 0;">Masuk</button>
                     </div>
                 </form>
+
             </div>
         </div>
     </div>
