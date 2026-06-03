@@ -254,4 +254,11 @@
             $query->execute([':id_pasien' => $id_pasien]);
             return $query->fetchAll(PDO::FETCH_ASSOC);
         }
+
+        public function ambilBedTersedia() {
+            $query = $this->db->prepare("SELECT nomor_bed FROM bed WHERE id_st_bed = 1 ORDER BY nomor_bed ASC");
+            $query->execute();
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        }
     }
+
