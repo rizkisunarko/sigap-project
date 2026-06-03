@@ -48,8 +48,8 @@ class RekamMedisController extends Controller {
             
             $dataPasien = $pasienModel->ambilDataPasien($_POST['id_pasien']);
             
-            $namaPasien = $dataPasien['nama_lengkap'] ?? "Pasien ICU"; 
-            $nomorKeluarga = $dataPasien['no_hp_wali'] ?? null;
+            $namaPasien = $dataPasien['nama_lengkap']; 
+            $nomorKeluarga = $dataPasien['no_hp_wali'];
 
             if (!empty($nomorKeluarga)) {
                 

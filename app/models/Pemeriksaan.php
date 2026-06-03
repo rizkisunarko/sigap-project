@@ -20,7 +20,7 @@
             $waktu_catat, $tindakan, $sp02, $id_perawat,
             $id_rekam_medis, $id_bed, $diagnosa
         ) {
-            $query = $this->db-prepare(
+            $query = $this->db->prepare(
                 "SELECT id_kondisi
                 from kondisi
                 where nama_kondsi = :nama_kondisi"
@@ -58,7 +58,7 @@
             $waktu_catat, $tindakan, $sp02, $id_observasi,
             $id_rekam_medis, $id_bed, $diagnosa
         ) {
-            $query = $this->db-prepare(
+            $query = $this->db->prepare(
                 "SELECT id_kondisi
                 from kondisi
                 where nama_kondsi = :nama_kondisi"
@@ -179,5 +179,19 @@
             $hasil = $query->fetch(PDO::FETCH_ASSOC);
             return $hasil;
         }
+
+        public function ambilObservasiTerbaru($id_rekam_medis) {
+            $query = $this->db->prepare(
+                "SELECT id_observasi 
+                FROM observasi_pasien 
+                WHERE id_rekam_medis = :id_rekam_medis 
+                ORDER BY waktu_catat DESC 
+                LIMIT 1"
+            );
+            $query->bindParam(":id_rekam_medis", $id_rekam_medis);
+            $query->execute();
+            $hasil = $query->fetch(PDO::FETCH_ASSOC);
+            
+            return $hasil ? $hasil['id_observasi'] : null;
+        }
     }
-?>

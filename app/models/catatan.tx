@@ -98,3 +98,9 @@
         }
     }
 ?>
+
+
+<?php
+header("Location: /Code_tugas/RPL/sigap-project/public");
+exit;
+?>

@@ -83,30 +83,43 @@
 
         public function getDataPasienAktif($id_pengguna) {
             $query = $this->db->prepare(
-                "SELECT dp.*, rm.id_rekam_medis, b.nomor_bed 
-                 FROM data_diri_pasien dp
-                 LEFT JOIN rekam_medis rm ON dp.id_pasien = rm.id_pasien
-                 LEFT JOIN observasi_pasien op ON rm.id_rekam_medis = op.id_rekam_medis
-                 LEFT JOIN bed b ON op.id_bed = b.id_bed
-                 WHERE dp.id_pengguna = :id_pengguna 
-                 ORDER BY rm.tanggal_masuk DESC LIMIT 1"
+                "SELECT 
+                    ddp.*, 
+                    rm.id_rekam_medis, 
+                    b.nomor_bed,
+                    pengantar.no_hp AS no_hp_wali   -- INI YANG DITAMBAHKAN
+                FROM data_diri_pasien ddp
+                LEFT JOIN rekam_medis rm ON rm.id_pasien = ddp.id_pasien AND rm.tanggal_keluar IS NULL
+                LEFT JOIN observasi_pasien op ON op.id_rekam_medis = rm.id_rekam_medis
+                LEFT JOIN bed b ON b.id_bed = op.id_bed
+                -- INI JUGA DITAMBAHKAN:
+                LEFT JOIN data_diri_pengantar pengantar ON pengantar.id_pasien = ddp.id_pasien 
+                WHERE ddp.id_pengguna = :id_pengguna
+                ORDER BY op.waktu_catat DESC LIMIT 1"
             );
-            $query->bindParam(":id_pengguna", $id_pengguna);
-            $query->execute();
+            $query->execute([':id_pengguna' => $id_pengguna]);
             return $query->fetch(PDO::FETCH_ASSOC);
         }
 
         public function getRiwayatObservasi($id_rekam_medis) {
             $query = $this->db->prepare(
-                "SELECT op.*, p.nama_lengkap as nama_perawat 
-                 FROM observasi_pasien op
-                 LEFT JOIN data_perawat p ON op.id_perawat = p.id_perawat
-                 WHERE op.id_rekam_medis = :id_rekam_medis 
-                 ORDER BY op.waktu_catat DESC"
+                "SELECT 
+                    op.id_observasi,
+                    op.detak_jantung, 
+                    op.sp02, 
+                    op.suhu_tubuh, 
+                    op.tekanan_darah, 
+                    op.waktu_catat, 
+                    k.nama_kondisi AS kondisi, 
+                    dp.nama_lengkap AS nama_perawat
+                FROM observasi_pasien op
+                LEFT JOIN kondisi k ON op.id_kondisi = k.id_kondisi
+                LEFT JOIN data_perawat dp ON op.id_perawat = dp.id_perawat
+                WHERE op.id_rekam_medis = :id_rm
+                ORDER BY op.waktu_catat DESC"
             );
-            $query->bindParam(":id_rekam_medis", $id_rekam_medis);
-            $query->execute();
-            return $query->fetchAll(PDO::FETCH_ASSOC); 
+            $query->execute([':id_rm' => $id_rekam_medis]);
+            return $query->fetchAll(PDO::FETCH_ASSOC);
         }
 
         public function getHasilLabTerbaru($id_observasi) {

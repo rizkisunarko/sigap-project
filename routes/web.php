@@ -40,6 +40,8 @@ Router::get('/perawat/direktori_pengguna', 'PerawatController@direktoriPengguna'
 Router::post('/perawat/get_detail_pasien_ajax', 'PerawatController@getDetailPasienAjax');
 Router::post('/rekammedis/update', 'RekamMedisController@update');
 Router::post('/perawat/masuk_pasien', 'PerawatController@masukPasien');
+Router::post('/perawat/HasilLab', 'PemeriksaanController@simpanHasilLab');
+Router::post('/perawat/TugasShift','PerawatController@updateTugasShift');
 
 //bot
 Router::get('/perawat/test-bot', 'BotController@tampilkanViewBot');

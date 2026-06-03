@@ -1,3 +1,4 @@
+                            
 <div class="header-info" style="padding: 25px 40px 15px; border-bottom: 1px solid #eaeaea;">
     <div class="header-title-top" style="font-size: 1.05rem; color: #111; font-weight: 700; margin-bottom: 2px; text-transform: uppercase;">
         SESI AKTIF PERAWAT
@@ -40,10 +41,23 @@
                                 <?= htmlspecialchars($patient['nama_lengkap']) ?>
                             </td>
                             <td style="font-size: 0.8rem; vertical-align: middle; padding: 14px 20px; border-bottom: 1px solid #eaeaea; color: #111; font-weight: 700;">
-                                ICU-2026-<?= str_pad($patient['id_pasien'], 3, '0', STR_PAD_LEFT) ?>
+                                ICU-<?= str_pad($patient['id_pasien'], 3, '0', STR_PAD_LEFT) ?>
                             </td>
-                            <td style="font-size: 0.75rem; vertical-align: middle; padding: 14px 20px; border-bottom: 1px solid #eaeaea; font-weight: 800; text-transform: uppercase; color: #dc3545;">
-                                <?= htmlspecialchars(strtoupper($patient['status_klinis'] ?: 'STABIL')) ?>
+                            <?php 
+                                // 1. Ambil statusnya dan jadikan huruf kecil semua agar mudah dicek
+                                $status_klinis = strtolower(trim($patient['status_klinis'] ?? ''));
+                                
+                                // 2. Tentukan warna berdasarkan kondisinya
+                                if (in_array($status_klinis, ['kritis', 'menurun'])) {
+                                    $warna_teks = '#dc3545'; // Merah (Danger)
+                                } elseif (in_array($status_klinis, ['stabil', 'meningkat'])) {
+                                    $warna_teks = '#198754'; // Hijau (Success)
+                                } else {
+                                    $warna_teks = '#6c757d'; // Abu-abu (Default jika kosong/tidak diketahui)
+                                }
+                            ?>
+                            <td style="font-size: 0.75rem; vertical-align: middle; padding: 14px 20px; border-bottom: 1px solid #eaeaea; font-weight: 800; text-transform: uppercase; color: <?= $warna_teks ?>;">
+                                <?= htmlspecialchars(strtoupper($patient['status_klinis'] ?: '-')) ?>
                             </td>
                             <td style="border-bottom: none !important; display: flex; justify-content: center; gap: 16px; align-items: center; padding: 14px 20px;">
                                 
@@ -57,6 +71,10 @@
                                 
                                 <button type="button" data-bs-toggle="modal" data-bs-target="#editRekamMedisModal-<?= $patient['id_pasien'] ?>" class="text-dark" style="background: none; border: none; padding: 0;">
                                     <i class="bi bi-gear-fill"></i>
+                                </button>
+
+                                <button type="button" class="btn-lab-pasien text-dark" data-bs-toggle="modal"  data-bs-target="#hasilLabModal-<?= $patient['id_pasien'] ?>"  data-nama="<?= htmlspecialchars($patient['nama_lengkap']) ?>"  style="background: none; border: none; padding: 0;">
+                                    <i class="bi bi-prescription2" style="font-size: 2 rem;"></i>
                                 </button>
                                 
                                 <button type="button" class="btn-exit-pasien text-dark" data-idrm="<?= $patient['id_rekam_medis'] ?>" style="background: none; border: none; padding: 0;">
@@ -101,6 +119,7 @@
                 require __DIR__ . '/pop-up/keluar_pasien.php';
                 require __DIR__ . '/pop-up/detail_lengkap_pasien.php';
                 require __DIR__ . '/pop-up/riwayat_pasien.php';
+                require __DIR__ . '/pop-up/hasil_lab.php';
                 
                 echo "<script>console.log('✅ Berhasil: Pop-up dicetak untuk Pasien ID {$patient['id_pasien']}');</script>";
             } catch (\Throwable $e) {
@@ -142,6 +161,23 @@
     <?php 
         unset($_SESSION['rm_errors']); 
         unset($_SESSION['rm_old']);
+    ?>
+<?php endif; ?>
+
+<?php if (isset($_SESSION['lab_errors']) && isset($_SESSION['lab_old']['id_pasien'])): ?>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var errorModalId = 'hasilLabModal-<?= $_SESSION['lab_old']['id_pasien'] ?>';
+            var errorModalEl = document.getElementById(errorModalId);
+            if (errorModalEl) {
+                var modal = new bootstrap.Modal(errorModalEl);
+                modal.show();
+            }
+        });
+    </script>
+    <?php 
+        unset($_SESSION['lab_errors']); 
+        unset($_SESSION['lab_old']);
     ?>
 <?php endif; ?>
 

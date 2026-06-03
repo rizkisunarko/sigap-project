@@ -263,5 +263,69 @@
                     });
                 });
             }
+
+        const labButtons = document.querySelectorAll('.btn-lab-pasien');
+        labButtons.forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault(); 
+                const idPasien = this.getAttribute('data-idpasien');
+
+                // 1. Tangkap pop-up yang sedang terbuka (Misalnya sedang di pop-up Detail)
+                const modalPertamaEl = document.getElementById('patientDetailModal-' + idPasien);
+                
+                // Cek apakah tombol ini memang diklik dari dalam modal pertama
+                if (modalPertamaEl) {
+                    const modalPertama = bootstrap.Modal.getInstance(modalPertamaEl);
+                    if (modalPertama) {
+                        modalPertama.hide();
+                    }
+
+                    // Tunggu modal pertama selesai tertutup, baru buka modal Lab
+                    modalPertamaEl.addEventListener('hidden.bs.modal', function handler() {
+                        const modalLabEl = document.getElementById('hasilLabModal-' + idPasien);
+                        if (modalLabEl) {
+                            new bootstrap.Modal(modalLabEl).show();
+                        } else {
+                            console.error("Pop-up hasilLabModal-" + idPasien + " tidak ditemukan!");
+                        }
+                        modalPertamaEl.removeEventListener('hidden.bs.modal', handler);
+                    });
+                } else {
+                    // Jika diklik langsung dari tabel utama (tanpa ada modal yang terbuka)
+                    const modalLabEl = document.getElementById('hasilLabModal-' + idPasien);
+                    if (modalLabEl) {
+                        new bootstrap.Modal(modalLabEl).show();
+                    }
+                }
+            });
+        });
+
+        // Membersihkan pesan error dan input merah setiap kali pop-up ditutup
+        // Membersihkan pesan error dan input merah setiap kali pop-up ditutup
+        const allModals = document.querySelectorAll('.modal');
+        allModals.forEach(modal => {
+            modal.addEventListener('hidden.bs.modal', function () {
+                
+                // 1. Hilangkan garis merah dan hapus value pada kotak yang error
+                this.querySelectorAll('.is-invalid').forEach(el => {
+                    el.classList.remove('is-invalid');
+                    el.value = ''; // Paksa hapus teks yang salah
+                });
+                
+                // 2. Kosongkan teks pesan error-nya
+                this.querySelectorAll('.text-danger, .invalid-feedback').forEach(el => {
+                    if(el.tagName === 'DIV') el.innerHTML = '';
+                });
+
+                // 3. KHUSUS form input baru seperti Hasil Lab: Wajib kosongkan semua kotak!
+                // Kita cek dari ID modalnya agar tidak merusak modal Edit Pasien
+                if (this.id.includes('hasilLabModal')) {
+                    this.querySelectorAll('input:not([type="hidden"])').forEach(input => {
+                        input.value = ''; // Kosongkan semua input kecuali yang hidden
+                    });
+                }
+                
+            });
+        });
     });
 </script>

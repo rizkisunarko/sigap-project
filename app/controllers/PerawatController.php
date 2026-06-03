@@ -81,32 +81,6 @@ class PerawatController extends Controller {
         $this->view('portal-staff/login');
     }
 
-    public function portalLoginProcess() {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
-        $namaLengkap = isset($_POST['namaLengkap']) ? trim($_POST['namaLengkap']) : '';
-        $divisi = isset($_POST['divisi']) ? $_POST['divisi'] : '';
-        $shift = isset($_POST['shift']) ? $_POST['shift'] : '';
-
-        if (!str_ends_with($namaLengkap, '-staff')) {
-            $_SESSION['error_staff'] = "Nama yang anda masukkan tidak memiliki akses.";
-            header('Location: ' . BASEURL . '/divisionRMFO-255');
-            exit;
-        }
-
-        $namaBersih = substr($namaLengkap, 0, -6);
-
-        $_SESSION['user'] = [
-            'nama' => $namaBersih,
-            'role' => $divisi,
-            'shift' => $shift
-        ];
-
-        header('Location: ' . BASEURL . '/perawat/Halutama');
-        exit;
-    }
 
     public function portalLogout() {
         if (session_status() === PHP_SESSION_NONE) {
@@ -141,38 +115,29 @@ class PerawatController extends Controller {
 
         $perawatModel = new PerawatModel();
         
+        // 1. Ambil Statistik Dashboard
         $rawStats = $perawatModel->pasienAktif_kapasitasBed_pasienKritis();
+        
         $pasien_aktif = isset($rawStats[0][0]['pasien_aktif']) ? $rawStats[0][0]['pasien_aktif'] : 0;
-        $kapasitas = isset($rawStats[1][0]['kapasitas']) ? $rawStats[1][0]['kapasitas'] : 12;
+        $kapasitas = isset($rawStats[1][0]['kapasitas']) ? $rawStats[1][0]['kapasitas'] : 40;
+        
+        // Catatan: rawStats[2] sekarang adalah fetch() tunggal, bukan fetchAll(), 
+        // jadi kita bisa langsung mengakses ['pasien_kritis'] tanpa index [0]
         $pasien_kritis = isset($rawStats[2]['pasien_kritis']) ? $rawStats[2]['pasien_kritis'] : 0;
 
+        // 2. Ambil Ketersediaan Bed & Antrean Masuk
         $beds = $perawatModel->ketersediaanBed();
-
         $queue = $perawatModel->antreanMasuk();
 
-        $tasks = [];
+        // 3. Ambil Daftar Tugas Berdasarkan Divisi dan Shift Perawat Saat Ini
         $role = $_SESSION['user']['role'];
-        $shiftData = $perawatModel->ambilTugasDivisi($role);
-        if ($shiftData) {
-            foreach ($shiftData as $shiftItem) {
-                if (isset($shiftItem['id_detail_s'])) {
-                    $id_perawat = $_SESSION['perawat_id'] ?? 1; // Default fallback
-                    $shiftTasks = $perawatModel->ambilTugasShift($shiftItem['id_detail_s'], $id_perawat);
-                    if ($shiftTasks) {
-                        $tasks = array_merge($tasks, $shiftTasks);
-                    }
-                }
-            }
-        }
+        $shift_aktif = $_SESSION['user']['shift'];
+        $id_perawat = $_SESSION['perawat_id'] ?? 0;
+        
+        // Cukup panggil satu fungsi ini, semua logika relasi sudah diurus oleh Database (Model)
+        $tasks = $perawatModel->ambilTugasShift($role, $shift_aktif, $id_perawat);
 
-        if (empty($tasks)) {
-            $tasks = [
-                ['tugas_shift' => 'MEMERIKSA KONDISI PASIEN DI AWAL SHIFT', 'tenggat' => '10:00:00', 'status_dilakukan' => 'belum'],
-                ['tugas_shift' => 'Cek AGD Bed 01', 'tenggat' => '12:00:00', 'status_dilakukan' => 'belum'],
-                ['tugas_shift' => 'Miring Kanan All Bed', 'tenggat' => '13:00:00', 'status_dilakukan' => 'belum']
-            ];
-        }
-
+        // 4. Kirim Data ke View
         $data = [
             'pasien_aktif' => $pasien_aktif,
             'kapasitas' => $kapasitas,
@@ -503,6 +468,35 @@ class PerawatController extends Controller {
                 'pasien' => $dataPasien,
                 'riwayat' => $riwayat
             ]);
+            exit;
+        }
+    }
+
+        public function updateTugasShift() {
+        // TAMBAHKAN INI AGAR SESI TERBACA
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        // Sekarang $_SESSION['perawat_id'] akan terbaca dengan aman
+        if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id_tugas'], $_POST['status'])) {
+            $id_tugas = $_POST['id_tugas'];
+            $status = $_POST['status'];
+            
+            // Sekarang variabel ini tidak akan memicu warning lagi
+            $id_perawat = $_SESSION['perawat_id'] ?? null;
+
+            if (!$id_perawat) {
+                header('Content-Type: application/json');
+                echo json_encode(['sukses' => false, 'pesan' => 'Sesi tidak ditemukan']);
+                exit;
+            }
+
+            $perawatModel = new PerawatModel();
+            $sukses = $perawatModel->perbaruiStatusLogTugas($id_tugas, $id_perawat, $status);
+
+            header('Content-Type: application/json');
+            echo json_encode(['sukses' => $sukses]);
             exit;
         }
     }

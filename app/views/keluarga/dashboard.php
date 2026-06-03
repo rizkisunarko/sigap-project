@@ -178,10 +178,11 @@ $obs_terbaru = !empty($riwayat) ? $riwayat[0] : [];
             <span class="badge-stabil"><?= htmlspecialchars(ucfirst($obs_terbaru['kondisi'] ?? 'Belum diobservasi')) ?></span>
         </div>
         <div class="patient-info"><?= htmlspecialchars($pasien['asal'] ?? '-') ?></div>
-        <div class="patient-info">MRN &nbsp;&nbsp;&nbsp;&nbsp;: ICU-<?= date('Y') ?>-<?= htmlspecialchars($pasien['id_rekam_medis'] ?? '000') ?></div>
+        <div class="patient-info">MRN &nbsp;&nbsp;&nbsp;&nbsp;: ICU-<?= str_pad($pasien['id_pasien'] ?? 0, 3, '0', STR_PAD_LEFT) ?></div>
         <div class="patient-info">Kamar : <?= htmlspecialchars($pasien['nomor_bed'] ?? 'Belum masuk bed') ?></div>
+        <div class="patient-info">Kategori : <?= (!empty($pasien['nomor_bpjs']) && trim($pasien['nomor_bpjs']) !== '') ? 'BPJS' : 'UMUM' ?></div>
         
-        <button class="btn-laporan">Lihat Laporan Medis</button>
+        <button type="button" class="btn-laporan" data-bs-toggle="modal" data-bs-target="#patientDetailModal-<?= $pasien['id_pasien'] ?>">Lihat Rekam Medis</button>
     </div>
 
     <?php include __DIR__ . '/kondisi_pasien.php'; ?>
@@ -207,5 +208,28 @@ $obs_terbaru = !empty($riwayat) ? $riwayat[0] : [];
         </div>
     </div>
 </div>
+
+<?php 
+    if (!empty($pasien)) {
+        $patient = $pasien; 
+        
+        // 1. Panggil Model
+        require_once __DIR__ . '/../../models/RekamMedis.php';
+        $rmModel = new RekamMedis();
+        
+        // 2. Ambil Riwayat Kunjungan di sini (agar bisa dipakai di kedua pop-up)
+        $riwayatKunjungan = $rmModel->ambilRiwayatPasien($patient['id_pasien']);
+        if (!is_array($riwayatKunjungan)) {
+            $riwayatKunjungan = [];
+        }
+        $totalKunjungan = count($riwayatKunjungan);
+        
+        // 3. Baru include file-file pop-up nya
+        include __DIR__ . '/pop-up/detail_pasien.php'; 
+        include __DIR__ . '/pop-up/riwayat_pasien.php'; 
+    }
+?>
+
+
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>

@@ -41,7 +41,7 @@
             $query->bindParam(":tgl_lahir", $tgl_lahir);
             $query->bindParam(":jenis_kelamin", $jenis_kelamin);
             $query->bindParam(":agama", $agama);
-            $query->bindParam(":status_perkawinan", $stat);
+            $query->bindParam(":status_perkawinan", $stat['id_st_perkawinan']);
             $query->bindParam(":alamat", $alamat);
             $query->bindParam(":nomor_bpjs", $nomor_bpjs);
             $query->bindParam(":golongan_darah", $golongan_darah);
@@ -87,7 +87,7 @@
             $query->bindParam(":tgl_lahir", $tgl_lahir);
             $query->bindParam(":jenis_kelamin", $jenis_kelamin);
             $query->bindParam(":agama", $agama);
-            $query->bindParam(":status_perkawinan", $stat);
+            $query->bindParam(":status_perkawinan", $stat['id_st_perkawinan']);
             $query->bindParam(":alamat", $alamat);
             $query->bindParam(":nomor_bpjs", $nomor_bpjs);
             $query->bindParam(":golongan_darah", $golongan_darah);
@@ -254,5 +254,25 @@
                 $this->db->rollBack();
                 return false;
             }
+        }
+
+        // tampil hasil lab 
+        public function tampilHasilLabTerbaru($id_pasien) {
+            $query = $this->db->prepare(
+                "SELECT hl.ph_darah, hl.hb, hl.gula_darah, hl.tgl_isi
+                from hasil_lab hl
+                join observasi_pasien op on op.id_observasi = hl.id_observasi
+                join rekam_medis rk on rk.id_rekam_medis = op.id_rekam_medis
+                where rk.id_pasien = :id_pasien
+                order by tgl_isi desc
+                limit 1"
+            );
+            $query->bindParam(":id_pasien", $id_pasien);
+            $query->execute();
+            $hasil = $query->fetch(PDO::FETCH_ASSOC);
+            $selisih = strtotime(date('Y-m-d H:i:s')) - strtotime($hasil['tgl_isi']);
+            $jam = floor($selisih / 3600);
+            $hasil['tgl_isi'] = $jam.' jam yang lalu';
+            return $hasil;
         }
     }

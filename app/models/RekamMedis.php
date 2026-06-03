@@ -158,6 +158,7 @@
             try {
                 $this->db->beginTransaction();
 
+                // 1. Ambil ID Rekam Medis
                 $qRM = $this->db->prepare("SELECT id_rekam_medis FROM rekam_medis WHERE id_pasien = :id_pasien ORDER BY tanggal_masuk DESC LIMIT 1");
                 $qRM->bindParam(":id_pasien", $id_pasien, PDO::PARAM_INT);
                 $qRM->execute();
@@ -168,20 +169,24 @@
                     return false;
                 }
 
-                $raw_bed = $data['no_bed'];
-                $id_bed = (int) preg_replace('/[^0-9]/', '', $raw_bed);
+                // 2. Cocokkan Data Kasur (Karena sudah divalidasi sebelumnya, langsung tembak ke database)
+                $nomor_bed_valid = $data['no_bed'];
                 
-                $qCekBed = $this->db->prepare("SELECT id_bed FROM bed WHERE id_bed = :id_bed");
-                $qCekBed->execute([':id_bed' => $id_bed]);
+                $qCekBed = $this->db->prepare("SELECT id_bed FROM bed WHERE nomor_bed = :nomor_bed");
+                $qCekBed->execute([':nomor_bed' => $nomor_bed_valid]);
+                $id_bed_valid = $qCekBed->fetchColumn();
                 
-                if (!$qCekBed->fetchColumn()) {
-                    $qInsertBed = $this->db->prepare("INSERT INTO bed (id_bed, nomor_bed) VALUES (:id_bed, :nomor_bed)");
-                    $qInsertBed->execute([
-                        ':id_bed' => $id_bed,
-                        ':nomor_bed' => $raw_bed
-                    ]);
+                // Jaga-jaga jika entah bagaimana nomor kasur tidak ada di tabel master
+                if (!$id_bed_valid) {
+                    $this->db->rollBack();
+                    return false; 
                 }
 
+                // 3. Ubah status kasur menjadi "Terpakai" (ID 2 di tabel status_bed)
+                $qUpdateBed = $this->db->prepare("UPDATE bed SET id_st_bed = 2 WHERE id_bed = :id_bed");
+                $qUpdateBed->execute([':id_bed' => $id_bed_valid]);
+
+                // 4. Cari ID Kondisi
                 $qKondisi = $this->db->prepare("SELECT id_kondisi FROM kondisi WHERE LOWER(nama_kondisi) = LOWER(:nama_kondisi)");
                 $qKondisi->execute([':nama_kondisi' => $data['status_klinis']]);
                 $id_kondisi = $qKondisi->fetchColumn();
@@ -191,6 +196,7 @@
                     return false;
                 }
 
+                // 5. Masukkan data ke tabel observasi_pasien
                 $qObs = $this->db->prepare(
                     "INSERT INTO observasi_pasien 
                     (id_rekam_medis, id_perawat, id_bed, detak_jantung, sp02, suhu_tubuh, tekanan_darah, id_kondisi, diagnosa, detail_kondisi, tindakan, waktu_catat) 
@@ -201,7 +207,7 @@
                 $berhasil = $qObs->execute([
                     ":id_rm"          => $id_rekam_medis,
                     ":id_perawat"     => $data['id_perawat'],
-                    ":id_bed"         => $id_bed,
+                    ":id_bed"         => $id_bed_valid, 
                     ":detak"          => $data['detak_jantung'],
                     ":spo2"           => $data['oksigen'],
                     ":suhu"           => $data['suhu_tubuh'],
@@ -225,5 +231,27 @@
                 error_log("Gagal tambah observasi: " . $e->getMessage());
                 return false;
             }
+        }
+
+        public function obsAktif($id_pasien) {
+            $query = $this->db->prepare(
+                "SELECT 
+                    op.detak_jantung, 
+                    op.sp02, 
+                    op.suhu_tubuh, 
+                    op.tekanan_darah, 
+                    op.waktu_catat, 
+                    k.nama_kondisi AS kondisi, 
+                    dp.nama_lengkap AS nama_perawat
+                FROM rekam_medis rm
+                JOIN observasi_pasien op ON op.id_rekam_medis = rm.id_rekam_medis
+                LEFT JOIN kondisi k ON k.id_kondisi = op.id_kondisi
+                LEFT JOIN data_perawat dp ON dp.id_perawat = op.id_perawat
+                WHERE rm.id_pasien = :id_pasien 
+                AND rm.tanggal_keluar IS NULL
+                ORDER BY op.waktu_catat DESC"
+            );
+            $query->execute([':id_pasien' => $id_pasien]);
+            return $query->fetchAll(PDO::FETCH_ASSOC);
         }
     }

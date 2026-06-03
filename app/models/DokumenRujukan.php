@@ -33,7 +33,7 @@
                 :detail_status, :id_pasien)"
             );
             $query->bindParam(":dokumen_rujukan", $dokumen_rujukan);
-            $query->bindParam(":id_st_rujukan", $stat);
+            $query->bindParam(":id_st_rujukan", $stat['id_st_rujukan']);
             $query->bindParam(":detail_status", $detail_status);
             $query->bindParam(":id_pasien", $id_pasien);
             $query->execute();
@@ -59,7 +59,7 @@
                 where id_rujukan = :id_rujukan"
             );
             $query->bindParam(":dokumen_rujukan", $dokumen_rujukan);
-            $query->bindParam(":status_dokumen", $stat);
+            $query->bindParam(":status_dokumen", $stat['id_st_rujukan']);
             $query->bindParam(":detail_status", $detail_status);
             $query->bindParam(":id_pasien", $id_pasien);
             $query->bindParam(":id_rujukan", $id_rujukan);
