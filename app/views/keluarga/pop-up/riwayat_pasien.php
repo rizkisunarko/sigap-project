@@ -1,12 +1,5 @@
-<?php
-    $riwayatKunjunganModal = [];
-    if (isset($rmModel) && isset($patient['id_pasien'])) {
-        $riwayatKunjunganModal = $rmModel->ambilRiwayatPasien($patient['id_pasien']);
-    }
-?>
-
-<?php if (is_array($riwayatKunjunganModal) && count($riwayatKunjunganModal) > 0): ?>
-    <?php foreach ($riwayatKunjunganModal as $riw): ?>
+<?php if (isset($riwayatKunjungan) && count($riwayatKunjungan) > 0): ?>
+    <?php foreach ($riwayatKunjungan as $riw): ?>
     
     <div class="modal fade" id="riwayatPasienModal-<?= $riw['id_rekam_medis'] ?>" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" style="max-width: 700px;">
@@ -17,9 +10,7 @@
                 </div>
                 
                 <div class="modal-body px-4 py-2">
-
                     <div class="position-relative ps-5 mt-3 mb-4" style="padding-left: 2.5rem !important;">
-                        
                         <div class="position-absolute bg-[#20c997]" style="left: 14px; top: 20px; bottom: 20px; width: 4px; border-radius: 2px; background-color: #20c997;"></div>
 
                         <?php
@@ -33,12 +24,10 @@
                             <?php foreach ($timelineObservasi as $obs): ?>
                             
                             <div class="position-relative mb-4">
-                                
                                 <div class="position-absolute rounded-circle bg-[#20c997]" style="left: -2rem; top: 1.5rem; width: 16px; height: 16px; background-color: #20c997; border: 2px solid #fff; box-shadow: 0 0 0 1px #20c997;"></div>
                                 
                                 <div class="border rounded-4 bg-white" style="border-color: #20c997 !important; padding: 20px 25px;">
                                     <div class="row">
-                                        
                                         <div class="col-6">
                                             <div class="text-secondary mb-2" style="font-size: 0.8rem; font-weight: 500;">
                                                 DETAK JANTUNG : <?= htmlspecialchars($obs['detak_jantung'] ?? '-') ?> BPM
@@ -56,9 +45,7 @@
                                         
                                         <div class="col-6">
                                             <div class="text-secondary mb-2" style="font-size: 0.8rem; font-weight: 500;">
-                                                <?php 
-                                                    $jam = isset($obs['waktu_catat']) ? date('H:i', strtotime($obs['waktu_catat'])) : '00:00';
-                                                ?>
+                                                <?php $jam = isset($obs['waktu_catat']) ? date('H:i', strtotime($obs['waktu_catat'])) : '00:00'; ?>
                                                 JAM : <?= $jam ?> WIB
                                             </div>
                                             <div class="text-secondary mb-2 d-flex align-items-center" style="font-size: 0.8rem; font-weight: 500;">
@@ -84,7 +71,6 @@
                                                 PETUGAS : <?= htmlspecialchars($obs['nama_perawat'] ?? '-') ?>
                                             </div>
                                         </div>
-
                                     </div>
                                 </div>
                             </div>
@@ -97,7 +83,7 @@
                     </div>
 
                     <div class="d-flex justify-content-center mt-5 mb-3">
-                        <button type="button" class="btn" data-bs-dismiss="modal" style="background-color: #dc3545; color: white; border: none; font-weight: 700; width: 140px; border-radius: 8px; padding: 8px 0; font-size: 0.95rem; letter-spacing: 0.5px;">KEMBALI</button>
+                        <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#patientDetailModal-<?= $patient['id_pasien'] ?>" style="background-color: #dc3545; color: white; border: none; font-weight: 700; width: 140px; border-radius: 8px; padding: 8px 0; font-size: 0.95rem; letter-spacing: 0.5px;">KEMBALI</button>
                     </div>
 
                 </div>

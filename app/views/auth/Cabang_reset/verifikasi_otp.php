@@ -70,8 +70,9 @@ unset($_SESSION['error']);
                 Kirim ulang kode dalam <span id="waktu" class="text-red-600">00:00</span>
             </div>
             
-            <form action="<?= BASEURL; ?>/auth/prosesKirimOtp" method="POST" id="resendForm" class="hidden">
-                <input type="hidden" name="username" value="<?= htmlspecialchars($_SESSION['reset_akun']['username']) ?>">
+            <form action="<?= BASEURL; ?>/auth/validation" method="POST" id="resendForm" class="hidden">
+                <input type="hidden" name="username" value="<?= htmlspecialchars($_SESSION['reset_akun']['username'] ?? '') ?>">
+                
                 <button type="submit" class="text-[#043622] font-bold underline hover:text-[#20c997] transition-colors">
                     Kirim Ulang Kode OTP
                 </button>

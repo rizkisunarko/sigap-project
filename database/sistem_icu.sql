@@ -119,8 +119,7 @@ create table rekam_medis (
 
 create table status_bed (
     id_st_bed int auto_increment primary key,
-    nama_status varchar(50),
-    detail_status text
+    nama_status varchar(50)
 );
 
 create table bed (
@@ -196,3 +195,39 @@ INSERT INTO status_perkawinan (nama_status) VALUES
 ('Cerai Mati');
 
 INSERT INTO kondisi (nama_kondisi) VALUES ('stabil'), ('kritis'), ('meningkat'), ('menurun');
+INSERT INTO divisi_perawat (nama_divisi) VALUES ('Rekam Medis'), ('Front Officer');
+
+
+INSERT INTO detail_tugas_shift (tugas_shift, tenggat, shift_ke) VALUES 
+('Memeriksa kelengkapan lembar observasi harian dan grafik tanda vital pasien', '14:00:00', 1),
+('Mengumpulkan berkas persetujuan tindakan medis yang sudah ditandatangani keluarga', '16:00:00', 1),
+('Menginput data penataan alat dan obat kritis pasien ICU ke dalam SIMRS', '18:00:00', 1),
+('Melakukan scan dokumen rekam medis pasien kritis untuk backup digital', '22:00:00', 2),
+('Mengecek ulang kesesuaian laporan diagnosa dokter dengan form tindakan ICU', '02:00:00', 2),
+('Membuat laporan sensus harian mengenai jumlah pasien masuk, keluar, dan mortalitas', '06:00:00', 2),
+('Mengurus dokumen masuk pasien baru ICU dan cek validasi BPJS atau asuransi', '14:00:00', 1),
+('Mengupdate data ketersediaan bed ICU di sistem dan papan informasi', '16:00:00', 1),
+('Menghubungi keluarga pasien untuk penyelesaian administrasi dan deposit awal', '18:00:00', 1),
+('Menjaga meja depan ICU untuk mengarahkan keluarga pasien yang datang berkunjung', '22:00:00', 2),
+('Merekap total biaya sementara pasien ICU untuk laporan harian', '02:00:00', 2),
+('Standby pendaftaran admin jika ada pasien rujukan darurat masuk ICU tengah malam', '06:00:00', 2);
+
+INSERT INTO tugas_divisi (id_detail_s, id_divisi) VALUES 
+(1, 1), (2, 1), (3, 1), (4, 1), (5, 1), (6, 1),
+(7, 2), (8, 2), (9, 2), (10, 2), (11, 2), (12, 2);
+
+INSERT INTO status_bed (nama_status) VALUES 
+('Tersedia'), 
+('Terpakai');
+
+INSERT INTO bed (nomor_bed, id_st_bed) VALUES 
+('BED 01', 1), ('BED 02', 1), ('BED 03', 1), ('BED 04', 1), ('BED 05', 1),
+('BED 06', 1), ('BED 07', 1), ('BED 08', 1), ('BED 09', 1), ('BED 10', 1),
+('BED 11', 1), ('BED 12', 1), ('BED 13', 1), ('BED 14', 1), ('BED 15', 1),
+('BED 16', 1), ('BED 17', 1), ('BED 18', 1), ('BED 19', 1), ('BED 20', 1),
+('BED 21', 1), ('BED 22', 1), ('BED 23', 1), ('BED 24', 1), ('BED 25', 1),
+('BED 26', 1), ('BED 27', 1), ('BED 28', 1), ('BED 29', 1), ('BED 30', 1),
+('BED 31', 1), ('BED 32', 1), ('BED 33', 1), ('BED 34', 1), ('BED 35', 1),
+('BED 36', 1), ('BED 37', 1), ('BED 38', 1), ('BED 39', 1), ('BED 40', 1);
+
+INSERT INTO status_log (nama_status) VALUES ('Selesai'), ('Belum Selesai');
