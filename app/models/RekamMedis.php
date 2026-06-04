@@ -158,7 +158,7 @@
             try {
                 $this->db->beginTransaction();
 
-                // 1. Ambil ID Rekam Medis
+
                 $qRM = $this->db->prepare("SELECT id_rekam_medis FROM rekam_medis WHERE id_pasien = :id_pasien ORDER BY tanggal_masuk DESC LIMIT 1");
                 $qRM->bindParam(":id_pasien", $id_pasien, PDO::PARAM_INT);
                 $qRM->execute();
@@ -169,24 +169,24 @@
                     return false;
                 }
 
-                // 2. Cocokkan Data Kasur (Karena sudah divalidasi sebelumnya, langsung tembak ke database)
+
                 $nomor_bed_valid = $data['no_bed'];
                 
                 $qCekBed = $this->db->prepare("SELECT id_bed FROM bed WHERE nomor_bed = :nomor_bed");
                 $qCekBed->execute([':nomor_bed' => $nomor_bed_valid]);
                 $id_bed_valid = $qCekBed->fetchColumn();
                 
-                // Jaga-jaga jika entah bagaimana nomor kasur tidak ada di tabel master
+
                 if (!$id_bed_valid) {
                     $this->db->rollBack();
                     return false; 
                 }
 
-                // 3. Ubah status kasur menjadi "Terpakai" (ID 2 di tabel status_bed)
+
                 $qUpdateBed = $this->db->prepare("UPDATE bed SET id_st_bed = 2 WHERE id_bed = :id_bed");
                 $qUpdateBed->execute([':id_bed' => $id_bed_valid]);
 
-                // 4. Cari ID Kondisi
+
                 $qKondisi = $this->db->prepare("SELECT id_kondisi FROM kondisi WHERE LOWER(nama_kondisi) = LOWER(:nama_kondisi)");
                 $qKondisi->execute([':nama_kondisi' => $data['status_klinis']]);
                 $id_kondisi = $qKondisi->fetchColumn();
@@ -196,7 +196,7 @@
                     return false;
                 }
 
-                // 5. Masukkan data ke tabel observasi_pasien
+
                 $qObs = $this->db->prepare(
                     "INSERT INTO observasi_pasien 
                     (id_rekam_medis, id_perawat, id_bed, detak_jantung, sp02, suhu_tubuh, tekanan_darah, id_kondisi, diagnosa, detail_kondisi, tindakan, waktu_catat) 
@@ -253,5 +253,42 @@
             );
             $query->execute([':id_pasien' => $id_pasien]);
             return $query->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+
+        public function cekStatusBed($nomor_bed, $id_pasien_sekarang) {
+
+            $query = $this->db->prepare("
+                SELECT 
+                    b.id_st_bed, 
+                    rm.id_pasien 
+                FROM bed b
+                LEFT JOIN observasi_pasien op ON b.id_bed = op.id_bed
+                LEFT JOIN rekam_medis rm ON op.id_rekam_medis = rm.id_rekam_medis 
+                    AND rm.tanggal_keluar IS NULL
+                WHERE b.nomor_bed = :nomor_bed
+                ORDER BY op.waktu_catat DESC 
+                LIMIT 1
+            ");
+            $query->execute([':nomor_bed' => $nomor_bed]);
+            $dataBed = $query->fetch(PDO::FETCH_ASSOC);
+
+
+            if (!$dataBed) {
+                return false; 
+            }
+
+
+            if ($dataBed['id_st_bed'] == 1) {
+                return true;
+            }
+
+
+            if ($dataBed['id_st_bed'] == 2 && $dataBed['id_pasien'] == $id_pasien_sekarang) {
+                return true;
+            }
+
+
+            return false;
         }
     }

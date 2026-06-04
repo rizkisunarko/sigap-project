@@ -87,34 +87,13 @@ create table data_diri_pengantar (
     foreign key (id_st_wali) references status_wali(id_st_wali)
 );
 
-create table status_rujukan (
-    id_st_rujukan int auto_increment primary key,
-    nama_status varchar(50)
-);
-
-create table rujukan (
-    id_rujukan int auto_increment primary key,
-    dokumen_rujukan varchar(255),
-    detail_status text,
-    id_pasien int,
-    id_st_rujukan int,
-    foreign key (id_pasien) references data_diri_pasien(id_pasien),
-    foreign key (id_st_rujukan) references status_rujukan(id_st_rujukan)
-);
-
-create table urgensi (
-    id_urgensi int auto_increment primary key,
-    nama_urgensi varchar(50)
-);
-
 create table rekam_medis (
     id_rekam_medis int auto_increment primary key, 
     id_pasien int,
     tanggal_masuk date,
     tanggal_keluar date,
     id_urgensi int,
-    foreign key (id_pasien) references data_diri_pasien(id_pasien),
-    foreign key (id_urgensi) references urgensi(id_urgensi)
+    foreign key (id_pasien) references data_diri_pasien(id_pasien)
 );
 
 create table status_bed (
@@ -221,13 +200,14 @@ INSERT INTO status_bed (nama_status) VALUES
 ('Terpakai');
 
 INSERT INTO bed (nomor_bed, id_st_bed) VALUES 
-('BED 01', 1), ('BED 02', 1), ('BED 03', 1), ('BED 04', 1), ('BED 05', 1),
-('BED 06', 1), ('BED 07', 1), ('BED 08', 1), ('BED 09', 1), ('BED 10', 1),
-('BED 11', 1), ('BED 12', 1), ('BED 13', 1), ('BED 14', 1), ('BED 15', 1),
-('BED 16', 1), ('BED 17', 1), ('BED 18', 1), ('BED 19', 1), ('BED 20', 1),
-('BED 21', 1), ('BED 22', 1), ('BED 23', 1), ('BED 24', 1), ('BED 25', 1),
-('BED 26', 1), ('BED 27', 1), ('BED 28', 1), ('BED 29', 1), ('BED 30', 1),
-('BED 31', 1), ('BED 32', 1), ('BED 33', 1), ('BED 34', 1), ('BED 35', 1),
-('BED 36', 1), ('BED 37', 1), ('BED 38', 1), ('BED 39', 1), ('BED 40', 1);
+('BED 01 -- ICU Isolasi Tekanan Negatif', 1), ('BED 02 -- ICU Isolasi Tekanan Negatif', 1), ('BED 03 -- ICU Isolasi Tekanan Negatif', 1), ('BED 04 -- ICU Isolasi Tekanan Negatif', 1), ('BED 05 -- ICU Isolasi Tekanan Negatif', 1),
+('BED 06 -- ICU Isolasi Tekanan Positif', 1), ('BED 07 -- ICU Isolasi Tekanan Positif', 1), ('BED 08 -- ICU Isolasi Tekanan Positif', 1), ('BED 09 -- ICU Isolasi Tekanan Positif', 1), ('BED 10 -- ICU Isolasi Tekanan Positif', 1),
+('BED 11 -- ICU Isolasi Tekanan Positif', 1), ('BED 12 -- ICU Isolasi Tekanan Positif', 1), ('BED 13 -- ICU Isolasi Tekanan Positif', 1), ('BED 14 -- ICU Isolasi Tekanan Positif', 1), ('BED 15 -- ICU Isolasi Tekanan Positif', 1),
+('BED 16 -- ICU Utama', 1), ('BED 17 -- ICU Utama', 1), ('BED 18 -- ICU Utama', 1), ('BED 19 -- ICU Utama', 1), ('BED 20 -- ICU Utama', 1),
+('BED 21 -- ICU Utama', 1), ('BED 22 -- ICU Utama', 1), ('BED 23 -- ICU Utama', 1), ('BED 24 -- ICU Utama', 1), ('BED 25 -- ICU Utama', 1),
+('BED 26 -- HCU', 1), ('BED 27 -- HCU', 1), ('BED 28 -- HCU', 1), ('BED 29 -- HCU', 1), ('BED 30 -- HCU', 1),
+('BED 31 -- HCU', 1), ('BED 32 -- HCU', 1), ('BED 33 -- HCU', 1), ('BED 34 -- HCU', 1), ('BED 35 -- HCU', 1),
+('BED 36 -- HCU', 1), ('BED 37 -- HCU', 1), ('BED 38 -- HCU', 1), ('BED 39 -- HCU', 1), ('BED 40 -- HCU', 1);
+
 
 INSERT INTO status_log (nama_status) VALUES ('Selesai'), ('Belum Selesai');

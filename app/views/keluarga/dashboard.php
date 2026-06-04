@@ -1,9 +1,9 @@
 <?php
-// Menangkap data dari Controller
+
 $pasien = $data['pasien'] ?? [];
 $riwayat = $data['riwayat'] ?? [];
 $lab = $data['lab'] ?? [];
-// Mengambil observasi terbaru (index 0) untuk banner utama
+
 $obs_terbaru = !empty($riwayat) ? $riwayat[0] : [];
 ?>
 
@@ -175,7 +175,22 @@ $obs_terbaru = !empty($riwayat) ? $riwayat[0] : [];
         <div class="welcome-title">WELCOME</div>
         <div style="margin-bottom: 5px;">
             <span class="patient-name"><?= htmlspecialchars(strtoupper($pasien['nama_lengkap'] ?? 'NAMA TIDAK ADA')) ?></span>
-            <span class="badge-stabil"><?= htmlspecialchars(ucfirst($obs_terbaru['kondisi'] ?? 'Belum diobservasi')) ?></span>
+            <?php 
+
+                $status_banner = strtolower(trim($obs_terbaru['kondisi'] ?? ''));
+                
+
+                if (in_array($status_banner, ['kritis', 'menurun'])) {
+                    $warna_bg = '#dc3545';
+                } elseif (in_array($status_banner, ['stabil', 'meningkat'])) {
+                    $warna_bg = '#13c898';
+                } else {
+                    $warna_bg = '#6c757d';
+                }
+            ?>
+            <span class="badge-stabil text-white" style="background-color: <?= $warna_bg ?>;">
+                <?= htmlspecialchars(ucfirst($obs_terbaru['kondisi'] ?? 'Belum diobservasi')) ?>
+            </span>
         </div>
         <div class="patient-info"><?= htmlspecialchars($pasien['asal'] ?? '-') ?></div>
         <div class="patient-info">MRN &nbsp;&nbsp;&nbsp;&nbsp;: ICU-<?= str_pad($pasien['id_pasien'] ?? 0, 3, '0', STR_PAD_LEFT) ?></div>
@@ -213,18 +228,18 @@ $obs_terbaru = !empty($riwayat) ? $riwayat[0] : [];
     if (!empty($pasien)) {
         $patient = $pasien; 
         
-        // 1. Panggil Model
+
         require_once __DIR__ . '/../../models/RekamMedis.php';
         $rmModel = new RekamMedis();
         
-        // 2. Ambil Riwayat Kunjungan di sini (agar bisa dipakai di kedua pop-up)
+
         $riwayatKunjungan = $rmModel->ambilRiwayatPasien($patient['id_pasien']);
         if (!is_array($riwayatKunjungan)) {
             $riwayatKunjungan = [];
         }
         $totalKunjungan = count($riwayatKunjungan);
         
-        // 3. Baru include file-file pop-up nya
+
         include __DIR__ . '/pop-up/detail_pasien.php'; 
         include __DIR__ . '/pop-up/riwayat_pasien.php'; 
     }

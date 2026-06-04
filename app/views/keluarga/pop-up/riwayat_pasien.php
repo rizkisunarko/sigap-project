@@ -51,16 +51,16 @@
                                             <div class="text-secondary mb-2 d-flex align-items-center" style="font-size: 0.8rem; font-weight: 500;">
                                                 <span class="me-2">STATUS PASIEN :</span>
                                                 <?php 
-                                                    // 1. Ambil statusnya dari $obs dan jadikan huruf kecil semua
+
                                                     $status_badge = strtolower(trim($obs['status_pasien'] ?? ''));
                                                     
-                                                    // 2. Tentukan warna background berdasarkan kondisinya
+
                                                     if (in_array($status_badge, ['kritis', 'menurun'])) {
-                                                        $warna_bg = '#dc3545'; // Merah (Bahaya)
+                                                        $warna_bg = '#dc3545';
                                                     } elseif (in_array($status_badge, ['stabil', 'meningkat'])) {
-                                                        $warna_bg = '#20c997'; // Hijau (Sesuai warna tema pop-up aslimu)
+                                                        $warna_bg = '#20c997';
                                                     } else {
-                                                        $warna_bg = '#6c757d'; // Abu-abu (Default jika kosong/tidak diketahui)
+                                                        $warna_bg = '#6c757d';
                                                     }
                                                 ?>
                                                 <span class="badge rounded-pill text-white" style="background-color: <?= $warna_bg ?>; padding: 4px 12px; font-weight: 600; text-transform: uppercase;">

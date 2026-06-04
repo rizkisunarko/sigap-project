@@ -92,12 +92,12 @@ class RekamMedisController extends Controller {
     private function validasiRekamMedis($dataPost) {
         $errors = [];
 
+        $id_pasien = $dataPost['id_pasien'] ?? ''; 
+
         $bed = $dataPost['no_bed'] ?? '';
         
         if ($err = $this->cekWajib($bed, 'Nomor Bed')) {
             $errors['no_bed'] = $err;
-        } elseif (!preg_match('/^BED\s(0[1-9]|[1-3][0-9]|40)$/', $bed)) {
-            $errors['no_bed'] = '*Format salah! Gunakan "BED 01" s/d "BED 40';
         }
 
         $detak = $dataPost['detak_jantung'] ?? '';

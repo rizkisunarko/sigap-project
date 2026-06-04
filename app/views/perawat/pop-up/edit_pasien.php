@@ -13,6 +13,7 @@
     $val = function($key_form, $key_db) use ($old, $detailEdit) {
         return isset($old[$key_form]) ? htmlspecialchars($old[$key_form]) : htmlspecialchars($detailEdit[$key_db] ?? '');
     };
+
 ?>
 
 <div class="modal fade" id="patientEditModal-<?= $patient['id_pasien'] ?>" tabindex="-1" aria-hidden="true">

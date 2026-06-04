@@ -22,6 +22,7 @@
             </div>
             <div class="modal-body px-4 py-4">
                 
+                
                 <form id="editRekamMedisForm-<?= $patient['id_pasien'] ?>" action="<?= BASEURL; ?>/rekammedis/update" method="POST">
                     
                     <input type="hidden" name="id_pasien" value="<?= $patient['id_pasien'] ?>">
@@ -29,13 +30,36 @@
                     <div class="row mb-3 align-items-center">
                         <label class="col-4 col-form-label text-end pe-2" style="color: #043622; font-weight: 500; font-size: 0.85rem;">NO.BED :</label>
                         <div class="col-8">
-                            <input type="text"  name="no_bed"  value="<?= htmlspecialchars($rmOld['no_bed'] ?? $patient['nomor_bed'] ?? '') ?>"  class="form-control form-control-sm" style="border-radius: 20px; border: 1px solid #111; padding: 6px 15px; font-weight: 500; font-size: 0.85rem; color: #111; background-color: transparent;"  placeholder="Contoh: BED 05" required pattern="^BED\s(0[1-9]|[1-9][0-9]+)$" title="Format harus BED diikuti spasi dan angka (contoh: BED 01, BED 10)">
-
-                            <?php if (isset($rmErrors['no_bed'])): ?>
-                                <div class="text-danger mt-1" style="font-size: 0.75rem; line-height: 1.2;">
-                                    <?= $rmErrors['no_bed']; ?>
-                                </div>
-                            <?php endif; ?>
+                            <select name="no_bed" class="form-control form-control-sm" style="border-radius: 20px; border: 1px solid #111; padding: 6px 15px; font-weight: 500; font-size: 0.85rem; color: #111; background-color: transparent;" required>
+                                
+                                <?php 
+                                    // 1. Tentukan nomor bed mana yang sedang dipakai (prioritas dari error/old form, lalu database)
+                                    $bedAktif = htmlspecialchars($rmOld['no_bed'] ?? $patient['nomor_bed'] ?? '');
+                                ?>
+                                
+                                <option value="" disabled <?= empty($bedAktif) ? 'selected' : ''; ?>>-- Pilih Bed --</option>
+                                
+                                <?php 
+                                    // 2. Looping daftar bed dari Controller
+                                    if (!empty($data['daftar_semua_bed'])):
+                                        foreach ($data['daftar_semua_bed'] as $b): 
+                                            $statusBed = strtoupper($b['status_bed'] ?? '');
+                                            
+                                            // TAMPILKAN JIKA: Bed tersebut TERSEDIA, ATAU bed tersebut adalah milik pasien ini
+                                            if ($statusBed === 'TERSEDIA' || $b['nomor_bed'] === $bedAktif):
+                                                
+                                                // Tandai otomatis jika itu bed milik pasien ini
+                                                $isSelected = ($b['nomor_bed'] === $bedAktif) ? 'selected' : '';
+                                ?>
+                                                <option value="<?= htmlspecialchars($b['nomor_bed']) ?>" <?= $isSelected ?>>
+                                                    <?= htmlspecialchars($b['nomor_bed']) ?>
+                                                </option>
+                                <?php 
+                                            endif;
+                                        endforeach; 
+                                    endif; 
+                                ?>
+                            </select>
                         </div>
                     </div>
 
