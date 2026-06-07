@@ -4,20 +4,13 @@
     class RekamMedis extends Model {
 
         public function ambilStatusUrgensi() {
-            $query = $this->db->prepare(
-                "SELECT nama_urgensi
-                from urgensi"
-            );
-            $query->execute();
-            $hasil = $query->fetchAll(PDO::FETCH_ASSOC);
-            return $hasil;
+            return [];
         }
 
         public function ambilRekamMedis($id_rekam_medis) {
             $query = $this->db->prepare(
-                "SELECT rk.id_pasien, rk.tanggal_masuk, rk.tanggal_keluar, u.nama_urgensi urgensi
+                "SELECT rk.id_pasien, rk.tanggal_masuk, rk.tanggal_keluar, NULL as urgensi
                 from rekam_medis rk
-                left join urgensi u on u.id_urgensi = rk.id_urgensi  
                 where id_rekam_medis = :id_rekam_medis"
             );       
             $query->bindParam(":id_rekam_medis", $id_rekam_medis);
@@ -27,19 +20,8 @@
         }
 
         public function IsiRekamMedis(
-            $id_pasien, $tanggal_masuk, $tanggal_keluar, $urgensi
+            $id_pasien, $tanggal_masuk, $tanggal_keluar, $urgensi = null
             ) {
-            $query = $this->db->prepare(
-                "SELECT id_urgensi
-                from urgensi
-                where nama_urgensi = :nama_urgensi"
-            );
-            $query->bindParam(":nama_urgensi", $urgensi);
-            $query->execute();
-            $stat = $query->fetch(PDO::FETCH_ASSOC);
-            
-            $id_urgensi = $stat ? $stat['id_urgensi'] : null;
-
             $query = $this->db->prepare(
                 "INSERT into rekam_medis (
                 id_pasien, 
@@ -50,54 +32,29 @@
                 :id_pasien, 
                 :tanggal_masuk,
                 :tanggal_keluar, 
-                :urgensi)"
+                NULL)"
             );
             $query->bindParam(":id_pasien", $id_pasien);
             $query->bindParam(":tanggal_masuk", $tanggal_masuk);
             $query->bindParam(":tanggal_keluar", $tanggal_keluar);
-            
-            if ($id_urgensi === null) {
-                $query->bindValue(":urgensi", null, PDO::PARAM_NULL);
-            } else {
-                $query->bindValue(":urgensi", $id_urgensi, PDO::PARAM_INT);
-            }
-
             $query->execute();
         }
 
         public function editRekamMedis(
             $id_rekam_medis, $id_pasien, $tanggal_masuk,
-            $tanggal_keluar, $urgensi
+            $tanggal_keluar, $urgensi = null
         ) {
-            $query = $this->db->prepare(
-                "SELECT id_urgensi
-                from urgensi
-                where nama_urgensi = :nama_urgensi"
-            );
-            $query->bindParam(":nama_urgensi", $urgensi);
-            $query->execute();
-            $stat = $query->fetch(PDO::FETCH_ASSOC);
-
-            $id_urgensi = $stat ? $stat['id_urgensi'] : null;
-
             $query = $this->db->prepare(
                 "UPDATE rekam_medis set 
                 id_pasien = :id_pasien, 
                 tanggal_masuk = :tanggal_masuk,
                 tanggal_keluar = :tanggal_keluar, 
-                id_urgensi = :urgensi
+                id_urgensi = NULL
                 where id_rekam_medis = :id_rekam_medis"
             );
             $query->bindParam(":id_pasien", $id_pasien);
             $query->bindParam(":tanggal_masuk", $tanggal_masuk);
             $query->bindParam(":tanggal_keluar", $tanggal_keluar);
-            
-            if ($id_urgensi === null) {
-                $query->bindValue(":urgensi", null, PDO::PARAM_NULL);
-            } else {
-                $query->bindValue(":urgensi", $id_urgensi, PDO::PARAM_INT);
-            }
-
             $query->bindParam(":id_rekam_medis", $id_rekam_medis);
             $query->execute();
         }

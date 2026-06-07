@@ -119,10 +119,9 @@
             $query = $this->db->prepare(
                 "SELECT 
                     ddp.nama_lengkap, 
-                    u.nama_urgensi AS urgensi
+                    NULL AS urgensi
                 FROM rekam_medis rk
                 JOIN data_diri_pasien ddp ON ddp.id_pasien = rk.id_pasien
-                LEFT JOIN urgensi u ON u.id_urgensi = rk.id_urgensi
                 WHERE rk.tanggal_keluar IS NULL 
                 AND NOT EXISTS (
                     SELECT 1 
@@ -130,7 +129,7 @@
                     WHERE op.id_rekam_medis = rk.id_rekam_medis 
                     AND op.id_bed IS NOT NULL
                 )
-                ORDER BY u.nama_urgensi ASC"
+                ORDER BY rk.id_rekam_medis ASC"
             );
             $query->execute();
             return $query->fetchAll(PDO::FETCH_ASSOC);
@@ -201,7 +200,7 @@
             $query = $this->db->prepare(
                 "SELECT 
                 rk.id_rekam_medis,
-                u.nama_urgensi AS urgensi,
+                NULL AS urgensi,
                 ddp.id_pasien,
                 ddp.nama_lengkap,
                 ddp.nik,
@@ -245,7 +244,6 @@
             LEFT JOIN status_perkawinan sp ON sp.id_st_perkawinan = ddp.id_st_perkawinan
             LEFT JOIN data_diri_pengantar ddpr ON ddpr.id_pasien = ddp.id_pasien
             LEFT JOIN status_wali sw ON sw.id_st_wali = ddpr.id_st_wali
-            LEFT JOIN urgensi u ON u.id_urgensi = rk.id_urgensi
             WHERE rk.tanggal_keluar IS NULL
             ORDER BY rk.id_rekam_medis DESC"
             );
@@ -257,7 +255,7 @@
             $query = $this->db->prepare(
                 "SELECT 
                 rk.id_rekam_medis,
-                u.nama_urgensi,
+                NULL AS nama_urgensi,
                 ddp.id_pasien,
                 ddp.nama_lengkap,
                 ddp.nik,
@@ -301,7 +299,6 @@
                 LEFT JOIN status_perkawinan sp ON sp.id_st_perkawinan = ddp.id_st_perkawinan
                 LEFT JOIN data_diri_pengantar ddpr ON ddpr.id_pasien = ddp.id_pasien
                 LEFT JOIN status_wali sw ON sw.id_st_wali = ddpr.id_st_wali
-                LEFT JOIN urgensi u ON u.id_urgensi = rk.id_urgensi
                 ORDER BY rk.id_rekam_medis DESC;"
             );
             $query->execute();
