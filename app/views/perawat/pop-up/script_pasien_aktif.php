@@ -6,7 +6,7 @@
             btn.addEventListener('click', function () {
                 const mrn = this.getAttribute('data-mrn');
                 const nama = this.getAttribute('data-nama');
-                const nik = this.getAttribute('data-nik'); // <-- NIK sekarang ditangkap
+                const nik = this.getAttribute('data-nik');
                 const jk = this.getAttribute('data-jk');
                 const asal = this.getAttribute('data-asal');
                 const nohp = this.getAttribute('data-nohp');
@@ -26,7 +26,7 @@
 
                 if (document.getElementById('modalMrn')) document.getElementById('modalMrn').value = mrn || '-';
                 if (document.getElementById('modalNamaLengkap')) document.getElementById('modalNamaLengkap').value = nama || '-';
-                if (document.getElementById('modalNik')) document.getElementById('modalNik').value = nik || '-'; // <-- NIK sekarang disuntikkan
+                if (document.getElementById('modalNik')) document.getElementById('modalNik').value = nik || '-';
                 if (document.getElementById('modalJk')) document.getElementById('modalJk').value = (jk == 'L' ? 'Laki-laki' : (jk == 'P' ? 'Perempuan' : '-'));
                 if (document.getElementById('modalAsal')) document.getElementById('modalAsal').value = asal || '-';
                 if (document.getElementById('modalNoHp')) document.getElementById('modalNoHp').value = nohp || '-';
@@ -116,15 +116,23 @@
 
                 if (form) {
                     console.log("Check Validity: " + form.checkValidity());
-                    if (form.checkValidity()) {
+                        if (form.checkValidity()) {
                         const modalEditEl = document.getElementById('editRekamMedisModal-' + id);
                         console.log("Modal Edit ditemukan: ", modalEditEl);
+
+                        const modalEdit = bootstrap.Modal.getInstance(modalEditEl);
+                        if (modalEdit) {
+                            modalEdit.hide();
+                        }
                         
                         const confirmModalEl = document.getElementById('confirmSaveRekamMedisModal-' + id);
                         console.log("Modal Konfirmasi ditemukan: ", confirmModalEl);
 
                         if (confirmModalEl) {
-                            new bootstrap.Modal(confirmModalEl).show();
+                            
+                            setTimeout(function() {
+                                new bootstrap.Modal(confirmModalEl).show();
+                            }, 400); 
                         } else {
                             console.error("Modal Konfirmasi tidak ditemukan, cek ID!");
                         }
@@ -191,7 +199,7 @@
         const detailLengkapButtons = document.querySelectorAll('.btn-detail-lengkap');
         detailLengkapButtons.forEach(btn => {
             btn.addEventListener('click', function (e) {
-                e.preventDefault(); // Mencegah halaman melompat
+                e.preventDefault();
                 const idPasien = this.getAttribute('data-id');
 
                 const modalPertamaEl = document.getElementById('patientDetailModal-' + idPasien);
@@ -219,7 +227,7 @@
             btn.addEventListener('click', function (e) {
                 e.preventDefault(); 
                 const idPasien = this.getAttribute('data-idpasien');
-                const idRm = this.getAttribute('data-idrm'); // Ambil ID spesifik rekam medis
+                const idRm = this.getAttribute('data-idrm');
 
                 const modalPertamaEl = document.getElementById('patientDetailModal-' + idPasien);
                 const modalPertama = bootstrap.Modal.getInstance(modalPertamaEl);
@@ -270,17 +278,17 @@
                 e.preventDefault(); 
                 const idPasien = this.getAttribute('data-idpasien');
 
-                // 1. Tangkap pop-up yang sedang terbuka (Misalnya sedang di pop-up Detail)
+
                 const modalPertamaEl = document.getElementById('patientDetailModal-' + idPasien);
                 
-                // Cek apakah tombol ini memang diklik dari dalam modal pertama
+
                 if (modalPertamaEl) {
                     const modalPertama = bootstrap.Modal.getInstance(modalPertamaEl);
                     if (modalPertama) {
                         modalPertama.hide();
                     }
 
-                    // Tunggu modal pertama selesai tertutup, baru buka modal Lab
+
                     modalPertamaEl.addEventListener('hidden.bs.modal', function handler() {
                         const modalLabEl = document.getElementById('hasilLabModal-' + idPasien);
                         if (modalLabEl) {
@@ -291,7 +299,7 @@
                         modalPertamaEl.removeEventListener('hidden.bs.modal', handler);
                     });
                 } else {
-                    // Jika diklik langsung dari tabel utama (tanpa ada modal yang terbuka)
+
                     const modalLabEl = document.getElementById('hasilLabModal-' + idPasien);
                     if (modalLabEl) {
                         new bootstrap.Modal(modalLabEl).show();
@@ -300,29 +308,47 @@
             });
         });
 
-        // Membersihkan pesan error dan input merah setiap kali pop-up ditutup
-        // Membersihkan pesan error dan input merah setiap kali pop-up ditutup
+
+
         const allModals = document.querySelectorAll('.modal');
         allModals.forEach(modal => {
             modal.addEventListener('hidden.bs.modal', function () {
                 
-                // 1. Hilangkan garis merah dan hapus value pada kotak yang error
+
                 this.querySelectorAll('.is-invalid').forEach(el => {
                     el.classList.remove('is-invalid');
-                    el.value = ''; // Paksa hapus teks yang salah
+                    el.value = '';
                 });
                 
-                // 2. Kosongkan teks pesan error-nya
+
                 this.querySelectorAll('.text-danger, .invalid-feedback').forEach(el => {
                     if(el.tagName === 'DIV') el.innerHTML = '';
                 });
 
-                // 3. KHUSUS form input baru seperti Hasil Lab: Wajib kosongkan semua kotak!
-                // Kita cek dari ID modalnya agar tidak merusak modal Edit Pasien
+
+
                 if (this.id.includes('hasilLabModal')) {
-                    this.querySelectorAll('input:not([type="hidden"])').forEach(input => {
-                        input.value = ''; // Kosongkan semua input kecuali yang hidden
-                    });
+
+                    let form = this.querySelector('form');
+                    if (form) form.reset(); 
+
+
+                    let idPasien = this.id.split('-')[1];
+                    let btnEdit = document.getElementById('btnEditLab-' + idPasien);
+                    let btnSimpan = document.getElementById('btnSimpanLab-' + idPasien);
+
+
+                    if (btnEdit) {
+                        let inputs = this.querySelectorAll('.input-lab-' + idPasien);
+                        inputs.forEach(input => {
+                            input.setAttribute('readonly', 'readonly');
+                            input.style.backgroundColor = '#f1f5f9';
+                        });
+                        
+
+                        btnEdit.classList.remove('d-none');
+                        btnSimpan.classList.add('d-none');
+                    }
                 }
                 
             });

@@ -4,7 +4,7 @@
     class PerawatModel extends Model {
 
         public function prosesCheckInPerawat($nama_asli, $divisi, $shift) {
-            // TAHAP 1: Cocokkan inputan dropdown dengan data asli di database
+
             $queryDivisi = $this->db->prepare("SELECT id_divisi FROM divisi_perawat WHERE nama_divisi = :divisi");
             $queryDivisi->bindParam(":divisi", $divisi);
             $queryDivisi->execute();
@@ -16,7 +16,7 @@
             
             $id_divisi_target = $data_divisi['id_divisi'];
 
-            // TAHAP 2: Periksa apakah perawat sudah terdaftar sebelumnya
+
             $queryPerawat = $this->db->prepare(
                 "SELECT id_perawat, id_divisi FROM data_perawat WHERE nama_lengkap = :nama"
             );
@@ -40,7 +40,7 @@
                 ];
             }
 
-            // TAHAP 3: JIKA PERAWAT BARU: Masukkan data baru
+
             $insertPerawat = $this->db->prepare(
                 "INSERT INTO data_perawat (nama_lengkap, id_divisi) VALUES (:nama, :id_divisi)"
             );
@@ -75,17 +75,17 @@
         }
 
         public function pasienAktif_kapasitasBed_pasienKritis() {
-            // 1. Ambil Kapasitas Bed
+
             $query = $this->db->prepare("SELECT count(id_bed) as kapasitas from bed");
             $query->execute();
             $hasil = $query->fetchAll(PDO::FETCH_ASSOC);
             
-            // 2. Ambil Total Pasien Aktif
+
             $query = $this->db->prepare("SELECT count(id_rekam_medis) as pasien_aktif from rekam_medis where tanggal_keluar is null");
             $query->execute();
             $hasil2 = $query->fetchAll(PDO::FETCH_ASSOC);
             
-            // 3. Ambil Total Pasien yang Kondisi Terakhirnya 'Kritis' (Sudah Diperbaiki)
+
             $query = $this->db->prepare(
                 "SELECT COUNT(DISTINCT rk.id_pasien) as pasien_kritis
                 FROM rekam_medis rk
@@ -137,7 +137,6 @@
         }
 
         public function ambilTugasShift($nama_divisi, $shift_teks, $id_perawat) {
-            // Ekstrak angka dari string shift untuk kebutuhan komparasi integer
             $shift_ke = (int) preg_replace('/[^0-9]/', '', $shift_teks);
 
             $query = $this->db->prepare(
@@ -155,7 +154,8 @@
                     JOIN (
                         SELECT id_detail_s, MAX(tgl_dan_waktu) as max_waktu
                         FROM log_tugas_shift
-                        WHERE id_perawat = :id_perawat AND DATE(tgl_dan_waktu) = CURDATE()
+                        WHERE id_perawat = :id_perawat 
+                        AND DATE(DATE_SUB(tgl_dan_waktu, INTERVAL 8 HOUR)) = DATE(DATE_SUB(NOW(), INTERVAL 8 HOUR))
                         GROUP BY id_detail_s
                     ) l2 ON l1.id_detail_s = l2.id_detail_s AND l1.tgl_dan_waktu = l2.max_waktu
                     WHERE l1.id_perawat = :id_perawat
@@ -166,7 +166,6 @@
                 ORDER BY dts.tenggat ASC"
             );
             
-            // Perbaikan parameter binding agar sesuai dengan isi query SQL
             $query->bindParam(":nama_divisi", $nama_divisi);
             $query->bindParam(":shift_ke", $shift_ke, PDO::PARAM_INT);
             $query->bindParam(":id_perawat", $id_perawat, PDO::PARAM_INT);

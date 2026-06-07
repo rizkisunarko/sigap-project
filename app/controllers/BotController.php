@@ -4,7 +4,7 @@ require_once __DIR__ . '/../Services/toWhatsApp.php';
 
 class BotController extends Controller {
     public function tampilkanViewBot() {
-        // Panggil view-nya
+
         $this->view('perawat/testBot'); 
     }
     public function prosesKirimWA($nomorTujuan, $pesanTeks) {

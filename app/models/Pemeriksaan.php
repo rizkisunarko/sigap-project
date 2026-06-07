@@ -180,6 +180,19 @@
             return $hasil;
         }
 
+        public function ambilHasilLabTerbaru($id_rekam_medis) {
+            $query = $this->db->prepare(
+                "SELECT hl.id_hasil_lab, hl.ph_darah, hl.hb, hl.gula_darah 
+                FROM hasil_lab hl
+                JOIN observasi_pasien op ON hl.id_observasi = op.id_observasi
+                WHERE op.id_rekam_medis = :id_rekam_medis
+                ORDER BY hl.tgl_isi DESC
+                LIMIT 1"
+            );
+            $query->execute([':id_rekam_medis' => $id_rekam_medis]);
+            return $query->fetch(PDO::FETCH_ASSOC);
+        }
+
         public function ambilObservasiTerbaru($id_rekam_medis) {
             $query = $this->db->prepare(
                 "SELECT id_observasi 

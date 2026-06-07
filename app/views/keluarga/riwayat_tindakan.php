@@ -17,16 +17,16 @@
                             <p>JAM : <span><?= date('H:i', strtotime($row['waktu_catat'])) ?> WIB</span></p>
                             <p>STATUS PASIEN : 
                                 <?php 
-                                    // 1. Ambil statusnya dan jadikan huruf kecil semua agar mudah dicek
+
                                     $status_pasien = strtolower(trim($row['kondisi'] ?? ''));
                                     
-                                    // 2. Tentukan warna background berdasarkan kondisinya
+
                                     if (in_array($status_pasien, ['kritis', 'menurun'])) {
-                                        $warna_bg = '#dc3545'; // Merah (Bahaya)
+                                        $warna_bg = '#dc3545';
                                     } elseif (in_array($status_pasien, ['stabil', 'meningkat'])) {
-                                        $warna_bg = '#13c898'; // Hijau (Aman - menyesuaikan warna tema yang ada)
+                                        $warna_bg = '#13c898';
                                     } else {
-                                        $warna_bg = '#6c757d'; // Abu-abu (Default jika kosong/tidak diketahui)
+                                        $warna_bg = '#6c757d';
                                     }
                                 ?>
                                 <span class="badge-status-small text-white" style="background-color: <?= $warna_bg ?>;">

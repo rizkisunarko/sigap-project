@@ -25,7 +25,7 @@
                 from status_perkawinan
                 where nama_status = :nama_status"
             );
-            $query->bindParam(":nama_status". $status_perkawinan);
+            $query->bindParam(":nama_status", $status_perkawinan);
             $stat = $query->fetch(PDO::FETCH_ASSOC);
             $query = $this->db->prepare(
                 "INSERT into data_diri_pasien (nama_lengkap, nik, asal, tgl_lahir, jenis_kelamin,
@@ -63,7 +63,7 @@
                 from status_perkawinan
                 where nama_status = :nama_status"
             );
-            $query->bindParam(":nama_status". $status_perkawinan);
+            $query->bindParam(":nama_status", $status_perkawinan);
             $stat = $query->fetch(PDO::FETCH_ASSOC);
             $query = $this->db->prepare(
                 "UPDATE data_diri_pasien set

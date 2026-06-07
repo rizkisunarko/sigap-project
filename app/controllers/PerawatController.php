@@ -5,6 +5,7 @@ error_reporting(E_ALL);
 require_once __DIR__ . '/../../core/Controller.php';
 require_once __DIR__ . '/../models/Perawat.php';
 require_once __DIR__ . '/../models/Pasien.php';
+require_once __DIR__ . '/../models/Pemeriksaan.php';
 require_once __DIR__ . '/../models/RekamMedis.php';
 require_once __DIR__ . '/../models/KeluargaPasien.php';
 
@@ -115,29 +116,29 @@ class PerawatController extends Controller {
 
         $perawatModel = new PerawatModel();
         
-        // 1. Ambil Statistik Dashboard
+
         $rawStats = $perawatModel->pasienAktif_kapasitasBed_pasienKritis();
         
         $pasien_aktif = isset($rawStats[0][0]['pasien_aktif']) ? $rawStats[0][0]['pasien_aktif'] : 0;
         $kapasitas = isset($rawStats[1][0]['kapasitas']) ? $rawStats[1][0]['kapasitas'] : 40;
         
-        // Catatan: rawStats[2] sekarang adalah fetch() tunggal, bukan fetchAll(), 
-        // jadi kita bisa langsung mengakses ['pasien_kritis'] tanpa index [0]
+
+
         $pasien_kritis = isset($rawStats[2]['pasien_kritis']) ? $rawStats[2]['pasien_kritis'] : 0;
 
-        // 2. Ambil Ketersediaan Bed & Antrean Masuk
+
         $beds = $perawatModel->ketersediaanBed();
         $queue = $perawatModel->antreanMasuk();
 
-        // 3. Ambil Daftar Tugas Berdasarkan Divisi dan Shift Perawat Saat Ini
+
         $role = $_SESSION['user']['role'];
         $shift_aktif = $_SESSION['user']['shift'];
         $id_perawat = $_SESSION['perawat_id'] ?? 0;
         
-        // Cukup panggil satu fungsi ini, semua logika relasi sudah diurus oleh Database (Model)
+
         $tasks = $perawatModel->ambilTugasShift($role, $shift_aktif, $id_perawat);
 
-        // 4. Kirim Data ke View
+
         $data = [
             'pasien_aktif' => $pasien_aktif,
             'kapasitas' => $kapasitas,
@@ -175,16 +176,31 @@ class PerawatController extends Controller {
             exit;
         }
 
-        $db = new Database();
-        $conn = $db->connect();
-
         $ambilSPA = new PerawatModel();
         $patients = $ambilSPA->ambilSeluruhDataPasienAktif();
 
-        $data = ['patients' => $patients];
+        $daftar_semua_bed = $ambilSPA->ketersediaanBed(); 
+
+        $rmModel = new PemeriksaanModel();
+        $lab_terbaru = [];
+
+        if (!empty($patients)) {
+            foreach ($patients as $p) {
+
+                if (!empty($p['id_rekam_medis'])) {
+                    $lab_terbaru[$p['id_rekam_medis']] = $rmModel->ambilHasilLabTerbaru($p['id_rekam_medis']);
+                }
+            }
+        }
+
+        $data = [
+            'patients' => $patients,
+            'lab_terbaru' => $lab_terbaru,
+            'daftar_semua_bed' => $daftar_semua_bed 
+        ];
+        
         $this->view('perawat/input_data_pasien', $data);
     }
-
     public function tambahPasien() {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -473,17 +489,17 @@ class PerawatController extends Controller {
     }
 
         public function updateTugasShift() {
-        // TAMBAHKAN INI AGAR SESI TERBACA
+
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
 
-        // Sekarang $_SESSION['perawat_id'] akan terbaca dengan aman
+
         if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id_tugas'], $_POST['status'])) {
             $id_tugas = $_POST['id_tugas'];
             $status = $_POST['status'];
             
-            // Sekarang variabel ini tidak akan memicu warning lagi
+
             $id_perawat = $_SESSION['perawat_id'] ?? null;
 
             if (!$id_perawat) {
