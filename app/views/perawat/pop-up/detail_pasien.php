@@ -57,7 +57,7 @@
                     $riwayatKunjungan = $rmModel->ambilRiwayatPasien($patient['id_pasien']); 
                     
                     if (!is_array($riwayatKunjungan)) {
-                        $riwayatKunjungan = []; // Paksa jadi array kosong jika tidak ada data
+                        $riwayatKunjungan = [];
                     }
                     
                     $totalKunjungan = count($riwayatKunjungan);

@@ -1,7 +1,7 @@
 <?php 
     require_once __DIR__ . '/../../core/Controller.php';
     require_once __DIR__ . '/../models/Pendaftaran.php';
-    require_once __DIR__ . '/../models/RekamMedis.php'; // Ditambahkan untuk memicu antrean perawat
+    require_once __DIR__ . '/../models/RekamMedis.php';
 
     class PendaftaranController extends Controller {
         
@@ -42,9 +42,9 @@
             $hasilValidasi = $this->validasiPendaftaran($_POST, $ttd);
 
             if (!$hasilValidasi['sukses']) {
-                $_SESSION['error'] = $hasilValidasi['pesan'];
-                $_SESSION['errors'] = $hasilValidasi['data_errors'] ?? [];
-                $_SESSION['old'] = $_POST;
+                $_SESSION['pendaftaran_error'] = $hasilValidasi['pesan'];
+                $_SESSION['pendaftaran_errors'] = $hasilValidasi['data_errors'] ?? [];
+                $_SESSION['pendaftaran_old'] = $_POST;
 
                 session_write_close();
                 
@@ -61,8 +61,8 @@
                 $decoded = base64_decode($matches[2]);
                 
                 if ($decoded === false) {
-                    $_SESSION['error'] = "Gagal mendekode tanda tangan.";
-                    $_SESSION['old'] = $_POST;
+                    $_SESSION['pendaftaran_error'] = "Gagal mendekode tanda tangan.";
+                    $_SESSION['pendaftaran_old'] = $_POST;
                     
                     header('Location: ' . BASEURL . $ruteGagal);
                     exit;
@@ -90,22 +90,22 @@
                         $rekamMedisModel->IsiRekamMedis($id_pasien, date('Y-m-d'), null, null);
                     }
 
-                    unset($_SESSION['old'], $_SESSION['error'], $_SESSION['errors']);
+                    unset($_SESSION['pendaftaran_old'], $_SESSION['pendaftaran_error'], $_SESSION['pendaftaran_errors']);
                     
                     header('Location: ' . BASEURL . $ruteSukses);
                     exit;
                 } 
                 
-                $_SESSION['error'] = $pesanModel;
-                $_SESSION['old'] = $_POST;
+                $_SESSION['pendaftaran_error'] = $pesanModel;
+                $_SESSION['pendaftaran_old'] = $_POST;
                 
                 header('Location: ' . BASEURL . $ruteGagal);
                 exit;
 
             } 
             
-            $_SESSION['error'] = "Format tanda tangan tidak valid.";
-            $_SESSION['old'] = $_POST;
+            $_SESSION['pendaftaran_error'] = "Format tanda tangan tidak valid.";
+            $_SESSION['pendaftaran_old'] = $_POST;
             
             header('Location: ' . BASEURL . $ruteGagal);
             exit;

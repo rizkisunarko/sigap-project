@@ -135,7 +135,7 @@ unset($_SESSION['error']);
                 }
             }
 
-            perbaruiTampilanWaktu(); // Panggilan pertama agar tidak delay 1 detik
+            perbaruiTampilanWaktu();
             const intervalTimer = setInterval(perbaruiTampilanWaktu, 1000);
         });
     </script>

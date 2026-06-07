@@ -8,15 +8,6 @@
     $valRM = function($key_form) use ($rmOld) {
         return isset($rmOld[$key_form]) ? htmlspecialchars($rmOld[$key_form]) : '';
     };
-    if (!isset($rmModel)) {
-        if (!class_exists('RekamMedis')) {
-            require_once __DIR__ . '/../../../models/RekamMedis.php';
-        }
-        $rmModel = new RekamMedis();
-    }
-
-    $bedsTersedia = $rmModel->ambilBedTersedia();
-    $bedTerpilih = $rmOld['no_bed'] ?? $patient['nomor_bed'] ?? '';
 ?>
 
 <div class="modal fade" id="editRekamMedisModal-<?= $patient['id_pasien'] ?>" tabindex="-1" aria-labelledby="editRekamMedisModalLabel-<?= $patient['id_pasien'] ?>" aria-hidden="true">
@@ -31,41 +22,44 @@
             </div>
             <div class="modal-body px-4 py-4">
                 
+                
                 <form id="editRekamMedisForm-<?= $patient['id_pasien'] ?>" action="<?= BASEURL; ?>/rekammedis/update" method="POST">
                     
                     <input type="hidden" name="id_pasien" value="<?= $patient['id_pasien'] ?>">
- 
+
                     <div class="row mb-3 align-items-center">
                         <label class="col-4 col-form-label text-end pe-2" style="color: #043622; font-weight: 500; font-size: 0.85rem;">NO.BED :</label>
                         <div class="col-8">
-                            <?php if (!empty($bedTerpilih) && $bedTerpilih !== 'TBA' && $bedTerpilih !== 'Belum masuk bed'): ?>
-                                <input type="hidden" name="no_bed" id="noBedInput-<?= $patient['id_pasien'] ?>" value="<?= htmlspecialchars($bedTerpilih) ?>">
-                                <div class="d-flex align-items-center gap-2">
-                                    <span class="badge px-3 py-2 text-dark" style="border-radius: 20px; font-weight: 600; font-size: 0.85rem; border: 1px solid #111; background-color: #f1f3f5;">
-                                        <?= htmlspecialchars($bedTerpilih) ?>
-                                    </span>
-                                    <select class="form-control form-control-sm" style="border-radius: 20px; border: 1px solid #111; padding: 6px 15px; font-weight: 500; font-size: 0.85rem; color: #111; background-color: transparent;" onchange="if(this.value) { document.getElementById('noBedInput-<?= $patient['id_pasien'] ?>').value = this.value; } else { document.getElementById('noBedInput-<?= $patient['id_pasien'] ?>').value = '<?= htmlspecialchars($bedTerpilih) ?>'; }">
-                                        <option value="">-- Ubah Bed --</option>
-                                        <?php foreach ($bedsTersedia as $b): ?>
-                                            <option value="<?= htmlspecialchars($b['nomor_bed']) ?>"><?= htmlspecialchars($b['nomor_bed']) ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                            <?php else: ?>
-                                <select name="no_bed" class="form-control form-control-sm" style="border-radius: 20px; border: 1px solid #111; padding: 6px 15px; font-weight: 500; font-size: 0.85rem; color: #111; background-color: transparent;" required>
-                                    <option value="" disabled selected>-- Pilih Bed --</option>
-                                    <?php foreach ($bedsTersedia as $b): ?>
-                                        <option value="<?= htmlspecialchars($b['nomor_bed']) ?>"><?= htmlspecialchars($b['nomor_bed']) ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            <?php endif; ?>
-
-
-                            <?php if (isset($rmErrors['no_bed'])): ?>
-                                <div class="text-danger mt-1" style="font-size: 0.75rem; line-height: 1.2;">
-                                    <?= $rmErrors['no_bed']; ?>
-                                </div>
-                            <?php endif; ?>
+                            <select name="no_bed" class="form-control form-control-sm" style="border-radius: 20px; border: 1px solid #111; padding: 6px 15px; font-weight: 500; font-size: 0.85rem; color: #111; background-color: transparent;" required>
+                                
+                                <?php 
+                                    // 1. Tentukan nomor bed mana yang sedang dipakai (prioritas dari error/old form, lalu database)
+                                    $bedAktif = htmlspecialchars($rmOld['no_bed'] ?? $patient['nomor_bed'] ?? '');
+                                ?>
+                                
+                                <option value="" disabled <?= empty($bedAktif) ? 'selected' : ''; ?>>-- Pilih Bed --</option>
+                                
+                                <?php 
+                                    // 2. Looping daftar bed dari Controller
+                                    if (!empty($data['daftar_semua_bed'])):
+                                        foreach ($data['daftar_semua_bed'] as $b): 
+                                            $statusBed = strtoupper($b['status_bed'] ?? '');
+                                            
+                                            // TAMPILKAN JIKA: Bed tersebut TERSEDIA, ATAU bed tersebut adalah milik pasien ini
+                                            if ($statusBed === 'TERSEDIA' || $b['nomor_bed'] === $bedAktif):
+                                                
+                                                // Tandai otomatis jika itu bed milik pasien ini
+                                                $isSelected = ($b['nomor_bed'] === $bedAktif) ? 'selected' : '';
+                                ?>
+                                                <option value="<?= htmlspecialchars($b['nomor_bed']) ?>" <?= $isSelected ?>>
+                                                    <?= htmlspecialchars($b['nomor_bed']) ?>
+                                                </option>
+                                <?php 
+                                            endif;
+                                        endforeach; 
+                                    endif; 
+                                ?>
+                            </select>
                         </div>
                     </div>
 

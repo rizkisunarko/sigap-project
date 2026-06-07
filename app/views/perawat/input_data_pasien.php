@@ -44,16 +44,16 @@
                                 ICU-<?= str_pad($patient['id_pasien'], 3, '0', STR_PAD_LEFT) ?>
                             </td>
                             <?php 
-                                // 1. Ambil statusnya dan jadikan huruf kecil semua agar mudah dicek
+
                                 $status_klinis = strtolower(trim($patient['status_klinis'] ?? ''));
                                 
-                                // 2. Tentukan warna berdasarkan kondisinya
+
                                 if (in_array($status_klinis, ['kritis', 'menurun'])) {
-                                    $warna_teks = '#dc3545'; // Merah (Danger)
+                                    $warna_teks = '#dc3545';
                                 } elseif (in_array($status_klinis, ['stabil', 'meningkat'])) {
-                                    $warna_teks = '#198754'; // Hijau (Success)
+                                    $warna_teks = '#198754';
                                 } else {
-                                    $warna_teks = '#6c757d'; // Abu-abu (Default jika kosong/tidak diketahui)
+                                    $warna_teks = '#6c757d';
                                 }
                             ?>
                             <td style="font-size: 0.75rem; vertical-align: middle; padding: 14px 20px; border-bottom: 1px solid #eaeaea; font-weight: 800; text-transform: uppercase; color: <?= $warna_teks ?>;">
@@ -138,6 +138,9 @@
             if (errorModalEl) {
                 var modal = new bootstrap.Modal(errorModalEl);
                 modal.show();
+                errorModalEl.addEventListener('hidden.bs.modal', function () {
+                    window.location.href = '<?= BASEURL ?>/perawat/input_data_pasien';
+                });
             }
         });
     </script>
@@ -155,6 +158,9 @@
             if (errorModalEl) {
                 var modal = new bootstrap.Modal(errorModalEl);
                 modal.show();
+                errorModalEl.addEventListener('hidden.bs.modal', function () {
+                    window.location.href = '<?= BASEURL ?>/perawat/input_data_pasien';
+                });
             }
         });
     </script>
@@ -172,6 +178,9 @@
             if (errorModalEl) {
                 var modal = new bootstrap.Modal(errorModalEl);
                 modal.show();
+                errorModalEl.addEventListener('hidden.bs.modal', function () {
+                    window.location.href = '<?= BASEURL ?>/perawat/input_data_pasien';
+                });
             }
         });
     </script>

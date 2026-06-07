@@ -1,5 +1,5 @@
 <?php
-// Kalkulasi untuk Total Bed Terpakai
+
 $terpakai = $data['pasien_aktif'];
 $kapasitas = $data['kapasitas']; 
 $persentaseBed = ($kapasitas > 0) ? round(($terpakai / $kapasitas) * 100) : 0;
@@ -60,7 +60,7 @@ $persentaseBed = ($kapasitas > 0) ? round(($terpakai / $kapasitas) * 100) : 0;
                             <td class="pe-4" style="padding: 12px 15px; border-bottom: 1px solid #eaeaea;">
                                 <?php 
                                     $statusBed = strtoupper($bed['status_bed'] ?? 'TERSEDIA');
-                                    // Memberi indikator warna agar lebih jelas
+
                                     $warnaStatus = ($statusBed === 'TERPAKAI') ? '#dc3545' : '#198754';
                                 ?>
                                 <span style="color: <?= $warnaStatus ?>; font-weight: 700;">
@@ -128,7 +128,7 @@ $persentaseBed = ($kapasitas > 0) ? round(($terpakai / $kapasitas) * 100) : 0;
                         <?php 
                             $id_tugas = $task['id_detail_s'] ?? ''; 
                             $isChecked = ($task['status_dilakukan'] === 'sudah') ? 'checked' : '';
-                            // Tambahkan class opacity-50 dari Tailwind jika sudah selesai agar terlihat redup
+
                             $textClass = ($task['status_dilakukan'] === 'sudah') ? 'line-through opacity-50' : '';
                         ?>
                         <tr>
@@ -166,14 +166,14 @@ $persentaseBed = ($kapasitas > 0) ? round(($terpakai / $kapasitas) * 100) : 0;
                 const idTugas = this.getAttribute('data-idtugas');
                 const isChecked = this.checked;
                 
-                // Efek visual langsung
+
                 if (isChecked) {
                     taskText.classList.add('line-through', 'opacity-50');
                 } else {
                     taskText.classList.remove('line-through', 'opacity-50');
                 }
 
-                // Kirim update ke server
+
                 if(idTugas) {
                     fetch('<?= BASEURL; ?>/perawat/TugasShift', {
                         method: 'POST',
@@ -185,7 +185,7 @@ $persentaseBed = ($kapasitas > 0) ? round(($terpakai / $kapasitas) * 100) : 0;
                     .then(response => response.json())
                     .then(data => {
                         if(!data.sukses) {
-                            // Jika database gagal, batalkan centang
+
                             this.checked = !isChecked;
                             taskText.classList.toggle('line-through');
                             taskText.classList.toggle('opacity-50');

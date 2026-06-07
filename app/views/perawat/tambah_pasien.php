@@ -4,11 +4,11 @@
         session_start();
     }
 
-    $mainError = $_SESSION['error'] ?? '';
-    $errors = $_SESSION['errors'] ?? [];
-    $old = $_SESSION['old'] ?? [];
+    $mainError = $_SESSION['pendaftaran_error'] ?? '';
+    $errors = $_SESSION['pendaftaran_errors'] ?? [];
+    $old = $_SESSION['pendaftaran_old'] ?? [];
 
-    unset($_SESSION['error'], $_SESSION['errors'], $_SESSION['old']);
+    unset($_SESSION['pendaftaran_error'], $_SESSION['pendaftaran_errors'], $_SESSION['pendaftaran_old']);
 ?>
     <div class="form-card">
         <div class="form-header">PENDAFTARAN PASIEN BARU</div>

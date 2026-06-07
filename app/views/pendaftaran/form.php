@@ -2,11 +2,11 @@
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
-$old = isset($_SESSION['old']) ? $_SESSION['old'] : []; 
-$errors = isset($_SESSION['errors']) ? $_SESSION['errors'] : []; 
+$old = isset($_SESSION['pendaftaran_old']) ? $_SESSION['pendaftaran_old'] : []; 
+$errors = isset($_SESSION['pendaftaran_errors']) ? $_SESSION['pendaftaran_errors'] : []; 
 
-unset($_SESSION['old']);
-unset($_SESSION['errors']);
+unset($_SESSION['pendaftaran_old']);
+unset($_SESSION['pendaftaran_errors']);
 
 include __DIR__ . '/../layouts/header.php'; 
 ?>
@@ -17,13 +17,12 @@ include __DIR__ . '/../layouts/header.php';
         <h2 class="form-main-title">Daftar Akun</h2>
         <div class="form-title-divider"></div>
 
-        <?php if (isset($_SESSION['error'])): ?>
+        <?php if (isset($_SESSION['pendaftaran_error'])): ?>
             <div style="background-color: #ffe6e6; color: #cc0000; padding: 10px; border-radius: 5px; margin-bottom: 20px; font-weight: bold; text-align: center;">
-                <?= $_SESSION['error']; ?>
+                <?= $_SESSION['pendaftaran_error']; ?>
             </div>
-            <?php unset($_SESSION['error']); ?>
+            <?php unset($_SESSION['pendaftaran_error']); ?>
         <?php endif; ?>
-
         <?php if (isset($_GET['success'])): ?>
             <div style="background-color: #e6ffe6; color: #008000; padding: 10px; border-radius: 5px; margin-bottom: 20px; font-weight: bold; text-align: center;">
                 Pendaftaran berhasil disimpan ke dalam sistem!
